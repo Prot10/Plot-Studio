@@ -369,17 +369,17 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
         }
 
         const dataUrl = canvas.toDataURL('image/png', 1)
-        ;(async () => {
-          const { default: jsPDF } = await import('jspdf')
-          const pdf = new jsPDF({
-            orientation: measuredWidth >= measuredHeight ? 'landscape' : 'portrait',
-            unit: 'px',
-            format: [measuredWidth, measuredHeight],
-          })
-          pdf.addImage(dataUrl, 'PNG', 0, 0, measuredWidth, measuredHeight)
-          pdf.save(safeName.endsWith('.pdf') ? safeName : `${safeName}.pdf`)
-          resolve()
-        })().catch((error) => reject(error))
+          ; (async () => {
+            const { default: jsPDF } = await import('jspdf')
+            const pdf = new jsPDF({
+              orientation: measuredWidth >= measuredHeight ? 'landscape' : 'portrait',
+              unit: 'px',
+              format: [measuredWidth, measuredHeight],
+            })
+            pdf.addImage(dataUrl, 'PNG', 0, 0, measuredWidth, measuredHeight)
+            pdf.save(safeName.endsWith('.pdf') ? safeName : `${safeName}.pdf`)
+            resolve()
+          })().catch((error) => reject(error))
       }
       svgImage.onerror = () => reject(new Error('Failed to load SVG image'))
       svgImage.src = encoded
@@ -431,199 +431,199 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
   return (
     <>
       <div className="flex h-full flex-col gap-4" style={{ color: settings.textColor }}>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-semibold">Live preview</h2>
-          <p className="text-sm text-white/60">
-            Adjust the controls and export the chart once it looks right.
-          </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-semibold text-white">Live preview</h2>
+            <p className="text-sm text-white/60">
+              Adjust the controls and export the chart once it looks right.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            disabled={isExporting}
+            className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-white/20 disabled:cursor-wait disabled:opacity-60"
+          >
+            <Download className="h-4 w-4" />
+            {isExporting ? 'Exporting…' : 'Export'}
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          disabled={isExporting}
-          className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-white/20 disabled:cursor-wait disabled:opacity-60"
+        <div
+          ref={wrapperRef}
+          className="relative flex min-h-[420px] flex-1 items-center justify-center rounded-2xl border border-white/10"
+          style={{ backgroundColor: settings.backgroundColor, minHeight: `${minContainerHeight}px` }}
         >
-          <Download className="h-4 w-4" />
-          {isExporting ? 'Exporting…' : 'Export'}
-        </button>
-      </div>
-      <div
-        ref={wrapperRef}
-        className="relative flex min-h-[420px] flex-1 items-center justify-center rounded-2xl border border-white/10"
-        style={{ backgroundColor: settings.backgroundColor, minHeight: `${minContainerHeight}px` }}
-      >
-        <svg
-          ref={svgRef}
-          width={measuredWidth}
-          height={measuredHeight}
-          viewBox={`0 0 ${measuredWidth} ${measuredHeight}`}
-          role="img"
-        >
-          <title>{settings.title || 'Bar plot'}</title>
-          <defs>
-            <style>{`*{font-family:${fontFamily};}`}</style>
-          </defs>
-          <rect
-            data-role="background"
-            x={0}
-            y={0}
+          <svg
+            ref={svgRef}
             width={measuredWidth}
             height={measuredHeight}
-            fill={settings.backgroundColor}
-            onDoubleClick={(event) => sendHighlight(['chartBasics'], event)}
-          />
-          {settings.title ? (
-            <text
-              x={measuredWidth / 2}
-              y={chartTitleY}
-              textAnchor="middle"
-              fill={settings.textColor}
-              fontFamily={fontFamily}
-              fontSize={settings.titleFontSize}
-              fontWeight={600}
-              onDoubleClick={(event) => {
-                sendHighlight(['chartBasics'], event)
-                onRequestFocus({ type: 'chartTitle' })
-              }}
-            >
-              {settings.title}
-            </text>
-          ) : null}
+            viewBox={`0 0 ${measuredWidth} ${measuredHeight}`}
+            role="img"
+          >
+            <title>{settings.title || 'Bar plot'}</title>
+            <defs>
+              <style>{`*{font-family:${fontFamily};}`}</style>
+            </defs>
+            <rect
+              data-role="background"
+              x={0}
+              y={0}
+              width={measuredWidth}
+              height={measuredHeight}
+              fill={settings.backgroundColor}
+              onDoubleClick={(event) => sendHighlight(['chartBasics'], event)}
+            />
+            {settings.title ? (
+              <text
+                x={measuredWidth / 2}
+                y={chartTitleY}
+                textAnchor="middle"
+                fill={settings.textColor}
+                fontFamily={fontFamily}
+                fontSize={settings.titleFontSize}
+                fontWeight={600}
+                onDoubleClick={(event) => {
+                  sendHighlight(['chartBasics'], event)
+                  onRequestFocus({ type: 'chartTitle' })
+                }}
+              >
+                {settings.title}
+              </text>
+            ) : null}
 
-          {/* Y axis grid lines */}
-          <defs>
-            {barLayout
-              .filter(({ data }) => (data.pattern ?? 'solid') !== 'solid')
-              .map(({ data, opacity }) => {
-                const patternId = `pattern-${data.id}`
-                const patternType = data.pattern ?? 'solid'
-                const patternSizeRaw = Number.isFinite(data.patternSize) ? data.patternSize : 8
-                const patternSize = Math.max(patternSizeRaw, 2)
-                const accentOpacity = clamp(
-                  Number.isFinite(data.patternOpacity) ? data.patternOpacity : 0.35,
-                  0,
-                  1,
-                )
-                const accentColor = data.patternColor || '#ffffff'
-                const primaryStroke = Math.max(patternSize * 0.18, 0.75)
-                const secondaryStroke = Math.max(patternSize * 0.14, 0.6)
-                const halfSize = patternSize / 2
-                const quarterSize = patternSize / 4
-                const dotRadius = Math.max(patternSize * 0.2, 1)
-                switch (patternType) {
-                  case 'diagonal':
-                    return (
-                      <pattern
-                        key={patternId}
-                        id={patternId}
-                        patternUnits="userSpaceOnUse"
-                        width={patternSize}
-                        height={patternSize}
-                      >
-                        <rect width={patternSize} height={patternSize} fill={data.fillColor} opacity={opacity} />
-                        <path
-                          d={`M0 ${patternSize} L ${patternSize} 0`}
-                          stroke={accentColor}
-                          strokeOpacity={accentOpacity}
-                          strokeWidth={primaryStroke}
-                        />
-                        <path
-                          d={`M-${halfSize} ${patternSize} L ${halfSize} 0`}
-                          stroke={accentColor}
-                          strokeOpacity={accentOpacity}
-                          strokeWidth={primaryStroke}
-                        />
-                        <path
-                          d={`${halfSize} ${patternSize} L ${patternSize + halfSize} 0`}
-                          stroke={accentColor}
-                          strokeOpacity={accentOpacity}
-                          strokeWidth={primaryStroke}
-                        />
-                      </pattern>
-                    )
-                  case 'dots':
-                    return (
-                      <pattern
-                        key={patternId}
-                        id={patternId}
-                        patternUnits="userSpaceOnUse"
-                        width={patternSize}
-                        height={patternSize}
-                      >
-                        <rect width={patternSize} height={patternSize} fill={data.fillColor} opacity={opacity} />
-                        <circle
-                          cx={quarterSize * 1.5}
-                          cy={quarterSize * 1.5}
-                          r={dotRadius}
-                          fill={accentColor}
-                          fillOpacity={accentOpacity}
-                        />
-                        <circle
-                          cx={patternSize - quarterSize * 1.5}
-                          cy={patternSize - quarterSize * 1.5}
-                          r={dotRadius}
-                          fill={accentColor}
-                          fillOpacity={accentOpacity}
-                        />
-                      </pattern>
-                    )
-                  case 'crosshatch':
-                    return (
-                      <pattern
-                        key={patternId}
-                        id={patternId}
-                        patternUnits="userSpaceOnUse"
-                        width={patternSize}
-                        height={patternSize}
-                      >
-                        <rect width={patternSize} height={patternSize} fill={data.fillColor} opacity={opacity} />
-                        <path
-                          d={`M0 ${halfSize} H ${patternSize}`}
-                          stroke={accentColor}
-                          strokeOpacity={accentOpacity}
-                          strokeWidth={secondaryStroke}
-                        />
-                        <path
-                          d={`M${halfSize} 0 V ${patternSize}`}
-                          stroke={accentColor}
-                          strokeOpacity={accentOpacity}
-                          strokeWidth={secondaryStroke}
-                        />
-                      </pattern>
-                    )
-                  case 'vertical':
-                    return (
-                      <pattern
-                        key={patternId}
-                        id={patternId}
-                        patternUnits="userSpaceOnUse"
-                        width={patternSize}
-                        height={patternSize}
-                      >
-                        <rect width={patternSize} height={patternSize} fill={data.fillColor} opacity={opacity} />
-                        <path
-                          d={`M${quarterSize} 0 V ${patternSize}`}
-                          stroke={accentColor}
-                          strokeOpacity={accentOpacity}
-                          strokeWidth={primaryStroke}
-                        />
-                        <path
-                          d={`M${patternSize - quarterSize} 0 V ${patternSize}`}
-                          stroke={accentColor}
-                          strokeOpacity={accentOpacity}
-                          strokeWidth={primaryStroke}
-                        />
-                      </pattern>
-                    )
-                  default:
-                    return null
-                }
-              })}
-          </defs>
+            {/* Y axis grid lines */}
+            <defs>
+              {barLayout
+                .filter(({ data }) => (data.pattern ?? 'solid') !== 'solid')
+                .map(({ data, opacity }) => {
+                  const patternId = `pattern-${data.id}`
+                  const patternType = data.pattern ?? 'solid'
+                  const patternSizeRaw = Number.isFinite(data.patternSize) ? data.patternSize : 8
+                  const patternSize = Math.max(patternSizeRaw, 2)
+                  const accentOpacity = clamp(
+                    Number.isFinite(data.patternOpacity) ? data.patternOpacity : 0.35,
+                    0,
+                    1,
+                  )
+                  const accentColor = data.patternColor || '#ffffff'
+                  const primaryStroke = Math.max(patternSize * 0.18, 0.75)
+                  const secondaryStroke = Math.max(patternSize * 0.14, 0.6)
+                  const halfSize = patternSize / 2
+                  const quarterSize = patternSize / 4
+                  const dotRadius = Math.max(patternSize * 0.2, 1)
+                  switch (patternType) {
+                    case 'diagonal':
+                      return (
+                        <pattern
+                          key={patternId}
+                          id={patternId}
+                          patternUnits="userSpaceOnUse"
+                          width={patternSize}
+                          height={patternSize}
+                        >
+                          <rect width={patternSize} height={patternSize} fill={data.fillColor} opacity={opacity} />
+                          <path
+                            d={`M0 ${patternSize} L ${patternSize} 0`}
+                            stroke={accentColor}
+                            strokeOpacity={accentOpacity}
+                            strokeWidth={primaryStroke}
+                          />
+                          <path
+                            d={`M-${halfSize} ${patternSize} L ${halfSize} 0`}
+                            stroke={accentColor}
+                            strokeOpacity={accentOpacity}
+                            strokeWidth={primaryStroke}
+                          />
+                          <path
+                            d={`${halfSize} ${patternSize} L ${patternSize + halfSize} 0`}
+                            stroke={accentColor}
+                            strokeOpacity={accentOpacity}
+                            strokeWidth={primaryStroke}
+                          />
+                        </pattern>
+                      )
+                    case 'dots':
+                      return (
+                        <pattern
+                          key={patternId}
+                          id={patternId}
+                          patternUnits="userSpaceOnUse"
+                          width={patternSize}
+                          height={patternSize}
+                        >
+                          <rect width={patternSize} height={patternSize} fill={data.fillColor} opacity={opacity} />
+                          <circle
+                            cx={quarterSize * 1.5}
+                            cy={quarterSize * 1.5}
+                            r={dotRadius}
+                            fill={accentColor}
+                            fillOpacity={accentOpacity}
+                          />
+                          <circle
+                            cx={patternSize - quarterSize * 1.5}
+                            cy={patternSize - quarterSize * 1.5}
+                            r={dotRadius}
+                            fill={accentColor}
+                            fillOpacity={accentOpacity}
+                          />
+                        </pattern>
+                      )
+                    case 'crosshatch':
+                      return (
+                        <pattern
+                          key={patternId}
+                          id={patternId}
+                          patternUnits="userSpaceOnUse"
+                          width={patternSize}
+                          height={patternSize}
+                        >
+                          <rect width={patternSize} height={patternSize} fill={data.fillColor} opacity={opacity} />
+                          <path
+                            d={`M0 ${halfSize} H ${patternSize}`}
+                            stroke={accentColor}
+                            strokeOpacity={accentOpacity}
+                            strokeWidth={secondaryStroke}
+                          />
+                          <path
+                            d={`M${halfSize} 0 V ${patternSize}`}
+                            stroke={accentColor}
+                            strokeOpacity={accentOpacity}
+                            strokeWidth={secondaryStroke}
+                          />
+                        </pattern>
+                      )
+                    case 'vertical':
+                      return (
+                        <pattern
+                          key={patternId}
+                          id={patternId}
+                          patternUnits="userSpaceOnUse"
+                          width={patternSize}
+                          height={patternSize}
+                        >
+                          <rect width={patternSize} height={patternSize} fill={data.fillColor} opacity={opacity} />
+                          <path
+                            d={`M${quarterSize} 0 V ${patternSize}`}
+                            stroke={accentColor}
+                            strokeOpacity={accentOpacity}
+                            strokeWidth={primaryStroke}
+                          />
+                          <path
+                            d={`M${patternSize - quarterSize} 0 V ${patternSize}`}
+                            stroke={accentColor}
+                            strokeOpacity={accentOpacity}
+                            strokeWidth={primaryStroke}
+                          />
+                        </pattern>
+                      )
+                    default:
+                      return null
+                  }
+                })}
+            </defs>
 
-          {axisStyles.y.showGridLines
-            ? ticks.map((tick) => {
+            {axisStyles.y.showGridLines
+              ? ticks.map((tick) => {
                 const y = margin.top + scaleY(tick)
                 return (
                   <line
@@ -638,182 +638,182 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
                   />
                 )
               })
-            : null}
+              : null}
 
-          {/* Bars */}
-          {barLayout.map(({ data, x, y, width, height, center, opacity, borderWidth }) => {
-            const patternType = data.pattern ?? 'solid'
-            const barTop = y
-            const barHeight = Math.max(height, 0.01)
-            const cornerSetting = clamp(settings.barCornerRadius, 0, 96)
-            const radius = Math.min(cornerSetting, barHeight / 2, width / 2)
-            const pathD = createBarPath(x, barTop, width, barHeight, radius, settings.barCornerStyle)
-            const strokeWidth = Math.max(borderWidth, 0)
-            const maxLabelY = barTop - 4
-            const desiredLabelY = barTop - settings.valueLabelFontSize * 0.6 - 4
-            const baseLabelY = Math.min(desiredLabelY, maxLabelY)
-            const offsetLabelY = baseLabelY + (settings.valueLabelOffsetY ?? 0)
-            let valueLabelY = offsetLabelY
-            valueLabelY = Math.max(valueLabelY, 0)
-            valueLabelY = Math.min(valueLabelY, chartAreaBottom - 4)
-            const errorValue = Math.max(data.error, 0)
-            const upperY = toCanvasY(data.value + errorValue)
-            const lowerY = toCanvasY(data.value - errorValue)
-            const errorTopY = Math.min(upperY, lowerY)
-            const errorBottomY = Math.max(upperY, lowerY)
-            const errorLength = errorBottomY - errorTopY
-            const errorColor = settings.errorBarMode === 'match' ? data.borderColor : settings.errorBarColor
-            const errorStroke = Math.max(settings.errorBarWidth, 0)
-            const capHalfWidth = settings.errorBarCapWidth / 2
-            const errorVisible =
-              settings.showErrorBars && errorLength > 0.5 && errorTopY < errorBottomY - 0.5
-            const patternId = `pattern-${data.id}`
-            const fillValue = patternType === 'solid' ? data.fillColor : `url(#${patternId})`
-            const fillOpacity = patternType === 'solid' ? opacity : 1
-            const valueLabelX = center + (settings.valueLabelOffsetX ?? 0)
+            {/* Bars */}
+            {barLayout.map(({ data, x, y, width, height, center, opacity, borderWidth }) => {
+              const patternType = data.pattern ?? 'solid'
+              const barTop = y
+              const barHeight = Math.max(height, 0.01)
+              const cornerSetting = clamp(settings.barCornerRadius, 0, 96)
+              const radius = Math.min(cornerSetting, barHeight / 2, width / 2)
+              const pathD = createBarPath(x, barTop, width, barHeight, radius, settings.barCornerStyle)
+              const strokeWidth = Math.max(borderWidth, 0)
+              const maxLabelY = barTop - 4
+              const desiredLabelY = barTop - settings.valueLabelFontSize * 0.6 - 4
+              const baseLabelY = Math.min(desiredLabelY, maxLabelY)
+              const offsetLabelY = baseLabelY + (settings.valueLabelOffsetY ?? 0)
+              let valueLabelY = offsetLabelY
+              valueLabelY = Math.max(valueLabelY, 0)
+              valueLabelY = Math.min(valueLabelY, chartAreaBottom - 4)
+              const errorValue = Math.max(data.error, 0)
+              const upperY = toCanvasY(data.value + errorValue)
+              const lowerY = toCanvasY(data.value - errorValue)
+              const errorTopY = Math.min(upperY, lowerY)
+              const errorBottomY = Math.max(upperY, lowerY)
+              const errorLength = errorBottomY - errorTopY
+              const errorColor = settings.errorBarMode === 'match' ? data.borderColor : settings.errorBarColor
+              const errorStroke = Math.max(settings.errorBarWidth, 0)
+              const capHalfWidth = settings.errorBarCapWidth / 2
+              const errorVisible =
+                settings.showErrorBars && errorLength > 0.5 && errorTopY < errorBottomY - 0.5
+              const patternId = `pattern-${data.id}`
+              const fillValue = patternType === 'solid' ? data.fillColor : `url(#${patternId})`
+              const fillOpacity = patternType === 'solid' ? opacity : 1
+              const valueLabelX = center + (settings.valueLabelOffsetX ?? 0)
 
-            return (
-              <g
-                key={data.id}
-                onDoubleClick={(event) => sendHighlight(['data', 'barDesign'], event)}
+              return (
+                <g
+                  key={data.id}
+                  onDoubleClick={(event) => sendHighlight(['data', 'barDesign'], event)}
+                >
+                  {pathD ? (
+                    <path
+                      d={pathD}
+                      fill={fillValue}
+                      fillOpacity={fillOpacity}
+                      stroke={data.borderColor}
+                      strokeWidth={strokeWidth}
+                      strokeLinejoin="round"
+                    />
+                  ) : (
+                    <rect
+                      x={x}
+                      y={barTop}
+                      width={width}
+                      height={barHeight}
+                      fill={fillValue}
+                      fillOpacity={fillOpacity}
+                      stroke={data.borderColor}
+                      strokeWidth={strokeWidth}
+                    />
+                  )}
+                  {settings.showValueLabels ? (
+                    <text
+                      x={valueLabelX}
+                      y={valueLabelY}
+                      textAnchor="middle"
+                      fill={settings.textColor}
+                      fontFamily={fontFamily}
+                      fontSize={settings.valueLabelFontSize}
+                      fontWeight={500}
+                      onDoubleClick={(event) => {
+                        sendHighlight(['data', 'valueLabels'], event)
+                        onRequestFocus({ type: 'barValue', barId: data.id })
+                      }}
+                    >
+                      {`${data.value}`}
+                    </text>
+                  ) : null}
+                  {errorVisible ? (
+                    <g onDoubleClick={(event) => sendHighlight(['errorBars'], event)}>
+                      <line
+                        x1={center}
+                        x2={center}
+                        y1={errorTopY}
+                        y2={errorBottomY}
+                        stroke={errorColor}
+                        strokeWidth={errorStroke}
+                        strokeLinecap="round"
+                      />
+                      <line
+                        x1={center - capHalfWidth}
+                        x2={center + capHalfWidth}
+                        y1={errorTopY}
+                        y2={errorTopY}
+                        stroke={errorColor}
+                        strokeWidth={errorStroke}
+                        strokeLinecap="round"
+                      />
+                      <line
+                        x1={center - capHalfWidth}
+                        x2={center + capHalfWidth}
+                        y1={errorBottomY}
+                        y2={errorBottomY}
+                        stroke={errorColor}
+                        strokeWidth={errorStroke}
+                        strokeLinecap="round"
+                      />
+                    </g>
+                  ) : null}
+                </g>
+              )
+            })}
+
+            {/* Axes */}
+            {axisStyles.x.showAxisLines ? (
+              <line
+                x1={margin.left}
+                x2={measuredWidth - margin.right}
+                y1={margin.top + chartBounds.height}
+                y2={margin.top + chartBounds.height}
+                stroke={axisStyles.x.axisLineColor}
+                strokeWidth={axisStyles.x.axisLineWidth}
+                onDoubleClick={(event) => sendHighlight(['xAxis'], event)}
+              />
+            ) : null}
+            {axisStyles.y.showAxisLines ? (
+              <line
+                x1={margin.left}
+                x2={margin.left}
+                y1={margin.top}
+                y2={margin.top + chartBounds.height}
+                stroke={axisStyles.y.axisLineColor}
+                strokeWidth={axisStyles.y.axisLineWidth}
+                onDoubleClick={(event) => sendHighlight(['yAxis'], event)}
+              />
+            ) : null}
+
+            {/* Axis titles */}
+            {axisStyles.x.title ? (
+              <text
+                x={(measuredWidth - margin.right + margin.left) / 2}
+                y={xAxisTitleY}
+                textAnchor="middle"
+                fill={axisStyles.x.axisLineColor}
+                fontFamily={fontFamily}
+                fontSize={settings.axisTitleFontSize}
+                fontWeight={500}
+                onDoubleClick={(event) => {
+                  sendHighlight(['xAxis'], event)
+                  onRequestFocus({ type: 'xAxisTitle' })
+                }}
               >
-                {pathD ? (
-                  <path
-                    d={pathD}
-                    fill={fillValue}
-                    fillOpacity={fillOpacity}
-                    stroke={data.borderColor}
-                    strokeWidth={strokeWidth}
-                    strokeLinejoin="round"
-                  />
-                ) : (
-                  <rect
-                    x={x}
-                    y={barTop}
-                    width={width}
-                    height={barHeight}
-                    fill={fillValue}
-                    fillOpacity={fillOpacity}
-                    stroke={data.borderColor}
-                    strokeWidth={strokeWidth}
-                  />
-                )}
-                {settings.showValueLabels ? (
-                  <text
-                    x={valueLabelX}
-                    y={valueLabelY}
-                    textAnchor="middle"
-                    fill={settings.textColor}
-                    fontFamily={fontFamily}
-                    fontSize={settings.valueLabelFontSize}
-                    fontWeight={500}
-                    onDoubleClick={(event) => {
-                      sendHighlight(['data', 'valueLabels'], event)
-                      onRequestFocus({ type: 'barValue', barId: data.id })
-                    }}
-                  >
-                    {`${data.value}`}
-                  </text>
-                ) : null}
-                {errorVisible ? (
-                  <g onDoubleClick={(event) => sendHighlight(['errorBars'], event)}>
-                    <line
-                      x1={center}
-                      x2={center}
-                      y1={errorTopY}
-                      y2={errorBottomY}
-                      stroke={errorColor}
-                      strokeWidth={errorStroke}
-                      strokeLinecap="round"
-                    />
-                    <line
-                      x1={center - capHalfWidth}
-                      x2={center + capHalfWidth}
-                      y1={errorTopY}
-                      y2={errorTopY}
-                      stroke={errorColor}
-                      strokeWidth={errorStroke}
-                      strokeLinecap="round"
-                    />
-                    <line
-                      x1={center - capHalfWidth}
-                      x2={center + capHalfWidth}
-                      y1={errorBottomY}
-                      y2={errorBottomY}
-                      stroke={errorColor}
-                      strokeWidth={errorStroke}
-                      strokeLinecap="round"
-                    />
-                  </g>
-                ) : null}
-              </g>
-            )
-          })}
+                {axisStyles.x.title}
+              </text>
+            ) : null}
+            {axisStyles.y.title ? (
+              <text
+                x={yAxisTitleX}
+                y={yAxisTitleY}
+                textAnchor="middle"
+                fill={axisStyles.y.axisLineColor}
+                fontFamily={fontFamily}
+                fontSize={settings.axisTitleFontSize}
+                fontWeight={500}
+                transform={`rotate(-90 ${yAxisTitleX} ${yAxisTitleY})`}
+                onDoubleClick={(event) => {
+                  sendHighlight(['yAxis'], event)
+                  onRequestFocus({ type: 'yAxisTitle' })
+                }}
+              >
+                {axisStyles.y.title}
+              </text>
+            ) : null}
 
-          {/* Axes */}
-          {axisStyles.x.showAxisLines ? (
-            <line
-              x1={margin.left}
-              x2={measuredWidth - margin.right}
-              y1={margin.top + chartBounds.height}
-              y2={margin.top + chartBounds.height}
-              stroke={axisStyles.x.axisLineColor}
-              strokeWidth={axisStyles.x.axisLineWidth}
-              onDoubleClick={(event) => sendHighlight(['xAxis'], event)}
-            />
-          ) : null}
-          {axisStyles.y.showAxisLines ? (
-            <line
-              x1={margin.left}
-              x2={margin.left}
-              y1={margin.top}
-              y2={margin.top + chartBounds.height}
-              stroke={axisStyles.y.axisLineColor}
-              strokeWidth={axisStyles.y.axisLineWidth}
-              onDoubleClick={(event) => sendHighlight(['yAxis'], event)}
-            />
-          ) : null}
-
-          {/* Axis titles */}
-          {axisStyles.x.title ? (
-            <text
-              x={(measuredWidth - margin.right + margin.left) / 2}
-              y={xAxisTitleY}
-              textAnchor="middle"
-              fill={axisStyles.x.axisLineColor}
-              fontFamily={fontFamily}
-              fontSize={settings.axisTitleFontSize}
-              fontWeight={500}
-              onDoubleClick={(event) => {
-                sendHighlight(['xAxis'], event)
-                onRequestFocus({ type: 'xAxisTitle' })
-              }}
-            >
-              {axisStyles.x.title}
-            </text>
-          ) : null}
-          {axisStyles.y.title ? (
-            <text
-              x={yAxisTitleX}
-              y={yAxisTitleY}
-              textAnchor="middle"
-              fill={axisStyles.y.axisLineColor}
-              fontFamily={fontFamily}
-              fontSize={settings.axisTitleFontSize}
-              fontWeight={500}
-              transform={`rotate(-90 ${yAxisTitleX} ${yAxisTitleY})`}
-              onDoubleClick={(event) => {
-                sendHighlight(['yAxis'], event)
-                onRequestFocus({ type: 'yAxisTitle' })
-              }}
-            >
-              {axisStyles.y.title}
-            </text>
-          ) : null}
-
-          {/* Tick labels */}
-          {axisStyles.y.showTickLabels
-            ? ticks.map((tick) => {
+            {/* Tick labels */}
+            {axisStyles.y.showTickLabels
+              ? ticks.map((tick) => {
                 const y = margin.top + scaleY(tick)
                 return (
                   <text
@@ -830,10 +830,10 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
                   </text>
                 )
               })
-            : null}
+              : null}
 
-          {axisStyles.x.showTickLabels
-            ? barLayout.map(({ data, center }) => (
+            {axisStyles.x.showTickLabels
+              ? barLayout.map(({ data, center }) => (
                 <text
                   key={`xlabel-${data.id}`}
                   x={center}
@@ -850,9 +850,9 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
                   {data.label}
                 </text>
               ))
-            : null}
-        </svg>
-      </div>
+              : null}
+          </svg>
+        </div>
       </div>
       {isModalOpen ? (
         <div
