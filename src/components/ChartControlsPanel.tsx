@@ -1,4 +1,5 @@
-import { useEffect, useRef, type ChangeEvent, type MutableRefObject } from 'react'
+import { useEffect, useRef, type MutableRefObject } from 'react'
+import { NumericInput } from '../shared/components/NumericInput'
 import { useHighlightEffect } from '../shared/hooks/useHighlightEffect'
 import type { AxisSettings, ChartSettings, FocusRequest, HighlightKey } from '../types'
 import { ColorField } from './ColorField'
@@ -15,17 +16,6 @@ type ToggleProps = {
   value: boolean
   onChange: (value: boolean) => void
   description?: string
-  disabled?: boolean
-}
-
-type NumberFieldProps = {
-  label: string
-  value: number
-  onChange: (value: number) => void
-  min?: number
-  max?: number
-  step?: number
-  suffix?: string
   disabled?: boolean
 }
 
@@ -56,33 +46,6 @@ function Toggle({ label, description, value, onChange, disabled }: ToggleProps) 
         />
       </button>
     </div>
-  )
-}
-
-function NumberField({ label, value, onChange, min, max, step, suffix, disabled }: NumberFieldProps) {
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const parsed = Number.parseFloat(event.target.value)
-    if (Number.isNaN(parsed)) {
-      return
-    }
-    onChange(parsed)
-  }
-
-  return (
-    <label className={`flex flex-col gap-1 text-sm text-white ${disabled ? 'opacity-60' : ''}`}>
-      <span className="text-xs uppercase tracking-wide text-white/50">{label}</span>
-      <input
-        type="number"
-        value={value}
-        min={min}
-        max={max}
-        step={step}
-        onChange={handleChange}
-        disabled={disabled}
-        className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40 disabled:cursor-not-allowed disabled:bg-white/10"
-      />
-      {suffix ? <span className="text-xs text-white/40">{suffix}</span> : null}
-    </label>
   )
 }
 
@@ -166,13 +129,14 @@ function AxisSection({
         />
       </label>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <NumberField
-          label="Line width"
+        <NumericInput
+          title="Line width"
           value={settings.axisLineWidth}
           min={0}
           max={8}
           step={0.5}
-          onChange={(value) => update('axisLineWidth', Number.isNaN(value) ? settings.axisLineWidth : value)}
+          precision={1}
+          onChange={(value) => update('axisLineWidth', value)}
           disabled={disabled}
         />
         <ColorField
@@ -269,23 +233,25 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
       >
         <h2 className="text-lg font-semibold text-white">Bar design</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <NumberField
-            label="Default opacity"
+          <NumericInput
+            title="Default opacity"
             value={settings.barOpacity}
             min={0}
             max={1}
             step={0.05}
-            onChange={(value) => update('barOpacity', Number.isNaN(value) ? settings.barOpacity : Math.min(Math.max(value, 0), 1))}
-            suffix="0 → transparent, 1 → solid"
+            precision={2}
+            onChange={(value) => update('barOpacity', value)}
+            description="0 → transparent, 1 → solid"
           />
-          <NumberField
-            label="Default border width"
+          <NumericInput
+            title="Default border width"
             value={settings.barBorderWidth}
             min={0}
             max={20}
             step={0.5}
-            onChange={(value) => update('barBorderWidth', Number.isNaN(value) ? settings.barBorderWidth : Math.max(value, 0))}
-            suffix="Pixels"
+            precision={1}
+            onChange={(value) => update('barBorderWidth', value)}
+            suffix="px"
           />
           <label className="flex flex-col gap-1 text-sm text-white">
             <span className="text-xs uppercase tracking-wide text-white/50">Bar spacing</span>
@@ -358,22 +324,24 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
                 Using each bar border color
               </div>
             )}
-            <NumberField
-              label="Line width"
+            <NumericInput
+              title="Line width"
               value={settings.errorBarWidth}
               min={0}
               max={12}
               step={0.5}
-              onChange={(value) => update('errorBarWidth', Number.isNaN(value) ? settings.errorBarWidth : Math.max(value, 0))}
+              precision={1}
+              onChange={(value) => update('errorBarWidth', value)}
               suffix="px"
             />
-            <NumberField
-              label="Cap width"
+            <NumericInput
+              title="Cap width"
               value={settings.errorBarCapWidth}
               min={0}
               max={96}
               step={2}
-              onChange={(value) => update('errorBarCapWidth', Number.isNaN(value) ? settings.errorBarCapWidth : Math.max(value, 0))}
+              precision={0}
+              onChange={(value) => update('errorBarCapWidth', value)}
               suffix="px"
             />
           </div>
@@ -385,85 +353,96 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
       >
         <h2 className="text-lg font-semibold text-white">Typography</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <NumberField
-            label="Chart title"
+          <NumericInput
+            title="Chart title"
             value={settings.titleFontSize}
             min={10}
             max={96}
             step={1}
-            onChange={(value) => update('titleFontSize', Number.isNaN(value) ? settings.titleFontSize : Math.max(value, 8))}
+            precision={0}
+            onChange={(value) => update('titleFontSize', value)}
             suffix="px"
           />
-          <NumberField
-            label="Title offset"
+          <NumericInput
+            title="Title offset"
             value={settings.titleOffsetY}
             min={-200}
             max={200}
             step={1}
-            onChange={(value) => update('titleOffsetY', Number.isNaN(value) ? settings.titleOffsetY : value)}
+            precision={0}
+            onChange={(value) => update('titleOffsetY', value)}
             suffix="px"
           />
-          <NumberField
-            label="Value labels"
+          <NumericInput
+            title="Value labels"
             value={settings.valueLabelFontSize}
             min={8}
             max={64}
             step={1}
-            onChange={(value) => update('valueLabelFontSize', Number.isNaN(value) ? settings.valueLabelFontSize : Math.max(value, 6))}
+            precision={0}
+            onChange={(value) => update('valueLabelFontSize', value)}
             suffix="px"
           />
-          <NumberField
-            label="Value label offset"
+          <NumericInput
+            title="Value label offset"
             value={settings.valueLabelOffsetY}
             min={-200}
             max={200}
             step={1}
-            onChange={(value) => update('valueLabelOffsetY', Number.isNaN(value) ? settings.valueLabelOffsetY : value)}
-            suffix="px (positive moves down)"
+            precision={0}
+            onChange={(value) => update('valueLabelOffsetY', value)}
+            description="Positive moves down"
+            suffix="px"
           />
-          <NumberField
-            label="Value label X offset"
+          <NumericInput
+            title="Value label X offset"
             value={settings.valueLabelOffsetX}
             min={-200}
             max={200}
             step={1}
-            onChange={(value) => update('valueLabelOffsetX', Number.isNaN(value) ? settings.valueLabelOffsetX : value)}
-            suffix="px (positive moves right)"
+            precision={0}
+            onChange={(value) => update('valueLabelOffsetX', value)}
+            description="Positive moves right"
+            suffix="px"
           />
-          <NumberField
-            label="Axis titles"
+          <NumericInput
+            title="Axis titles"
             value={settings.axisTitleFontSize}
             min={8}
             max={72}
             step={1}
-            onChange={(value) => update('axisTitleFontSize', Number.isNaN(value) ? settings.axisTitleFontSize : Math.max(value, 6))}
+            precision={0}
+            onChange={(value) => update('axisTitleFontSize', value)}
             suffix="px"
           />
-          <NumberField
-            label="X label offset"
+          <NumericInput
+            title="X label offset"
             value={settings.xAxisTitleOffsetY}
             min={-200}
             max={200}
             step={1}
-            onChange={(value) => update('xAxisTitleOffsetY', Number.isNaN(value) ? settings.xAxisTitleOffsetY : value)}
+            precision={0}
+            onChange={(value) => update('xAxisTitleOffsetY', value)}
             suffix="px"
           />
-          <NumberField
-            label="Axis ticks"
+          <NumericInput
+            title="Axis ticks"
             value={settings.axisTickFontSize}
             min={6}
             max={48}
             step={1}
-            onChange={(value) => update('axisTickFontSize', Number.isNaN(value) ? settings.axisTickFontSize : Math.max(value, 6))}
+            precision={0}
+            onChange={(value) => update('axisTickFontSize', value)}
             suffix="px"
           />
-          <NumberField
-            label="Y label offset"
+          <NumericInput
+            title="Y label offset"
             value={settings.yAxisTitleOffsetX}
             min={-200}
             max={200}
             step={1}
-            onChange={(value) => update('yAxisTitleOffsetX', Number.isNaN(value) ? settings.yAxisTitleOffsetX : value)}
+            precision={0}
+            onChange={(value) => update('yAxisTitleOffsetX', value)}
             suffix="px"
           />
         </div>

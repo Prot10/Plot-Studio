@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { NumericInput } from '../shared/components/NumericInput'
 import { useHighlightEffect } from '../shared/hooks/useHighlightEffect'
 import { paletteOptions, palettes } from '../shared/utils/palettes'
 import type { BarDatum, ChartSettings, FocusRequest, HighlightKey, PaletteKey } from '../types'
@@ -84,19 +85,17 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
           ))}
         </select>
       </label>
-      <label className="flex flex-col gap-1 text-sm text-white">
-        <span className="text-xs uppercase tracking-wide text-white/50">Inner padding</span>
-        <input
-          type="number"
-          value={settings.canvasPadding}
-          min={0}
-          max={160}
-          step={4}
-          onChange={(event) => update('canvasPadding', Math.max(Number.parseFloat(event.target.value) || 0, 0))}
-          className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
-        />
-        <span className="text-xs text-white/40">Space around the plot</span>
-      </label>
+      <NumericInput
+        title="Inner padding"
+        value={settings.canvasPadding}
+        min={0}
+        max={160}
+        step={4}
+        precision={0}
+        onChange={(value) => update('canvasPadding', value)}
+        description="Space around the plot"
+        suffix="px"
+      />
       <ColorField
         label="Background"
         value={settings.backgroundColor}
@@ -182,21 +181,16 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
           />
         </label>
       </div>
-      <label className="flex flex-col gap-2 text-sm text-white">
-        <span className="text-xs uppercase tracking-wide text-white/50">Aspect ratio</span>
-        <input
-          type="range"
-          min={0.3}
-          max={1.2}
-          step={0.02}
-          value={settings.aspectRatio}
-          onChange={(event) => update('aspectRatio', Number.parseFloat(event.target.value))}
-          className="accent-sky-400"
-        />
-        <span className="text-xs text-white/40">
-          Height = width × {settings.aspectRatio.toFixed(2)}
-        </span>
-      </label>
+      <NumericInput
+        title="Aspect ratio"
+        value={settings.aspectRatio}
+        onChange={(value) => update('aspectRatio', value)}
+        min={0.3}
+        max={1.2}
+        step={0.02}
+        precision={2}
+        description="Height = width × aspect ratio"
+      />
     </section>
   )
 }
