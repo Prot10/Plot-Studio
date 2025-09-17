@@ -1,18 +1,19 @@
 import { useEffect, useRef } from 'react'
-import { useHighlightEffect } from '../shared/hooks/useHighlightEffect'
-import { createBar } from '../shared/utils/barFactory'
-import type { BarDatum, FocusRequest, PaletteKey } from '../types'
-import { ColorField } from './ColorField'
+import { ColorField } from '../../../shared/components/ColorField'
+import { useHighlightEffect } from '../../../shared/hooks/useHighlightEffect'
+import { createBar } from '../../../shared/utils/barFactory'
+import type { BarDataPoint } from '../../../types/bar'
+import type { FocusRequest, PaletteKey } from '../../../types/base'
 
 type BarDataEditorProps = {
-  bars: BarDatum[]
+  bars: BarDataPoint[]
   paletteName: PaletteKey
-  onChange: (bars: BarDatum[]) => void
+  onChange: (bars: BarDataPoint[]) => void
   highlightSignal?: number
   focusRequest?: FocusRequest | null
 }
 
-const patternOptions: Array<{ value: BarDatum['pattern']; label: string }> = [
+const patternOptions: Array<{ value: BarDataPoint['pattern']; label: string }> = [
   { value: 'solid', label: 'Solid' },
   { value: 'diagonal', label: 'Diagonal lines' },
   { value: 'dots', label: 'Dots' },
@@ -29,7 +30,7 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
     if (!input) return false
     try {
       input.focus({ preventScroll: true })
-    } catch (error) {
+    } catch {
       input.focus()
     }
     input.select()
@@ -60,7 +61,7 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
   }, [focusRequest])
   const handleFieldChange = (
     id: string,
-    field: keyof Omit<BarDatum, 'id'>,
+    field: keyof Omit<BarDataPoint, 'id'>,
     rawValue: string,
   ) => {
     const nextBars = bars.map((bar) => {
@@ -106,7 +107,7 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
       }
 
       if (field === 'pattern') {
-        return { ...bar, pattern: rawValue as BarDatum['pattern'] }
+        return { ...bar, pattern: rawValue as BarDataPoint['pattern'] }
       }
 
       return { ...bar, [field]: rawValue }

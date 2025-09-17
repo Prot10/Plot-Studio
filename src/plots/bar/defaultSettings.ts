@@ -1,13 +1,13 @@
-import { createBar } from "./shared/utils/barFactory";
-import type { ChartSettings } from "./types";
+import { createBar } from "../../shared/utils/barFactory";
+import type { BarChartSettings } from "../../types/bar";
 
 const defaultPaletteName = "vibrant";
 const baseBars = Array.from({ length: 3 }, (_, index) =>
   createBar(index, defaultPaletteName)
 );
 
-export const defaultSettings: ChartSettings = {
-  bars: baseBars,
+export const defaultBarChartSettings: BarChartSettings = {
+  data: baseBars,
   showErrorBars: false,
   showValueLabels: true,
   barOpacity: 0.85,

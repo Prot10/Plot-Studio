@@ -1,0 +1,107 @@
+import type {
+  ScatterDataPoint,
+  ScatterPlotSettings,
+} from "../../types/scatter";
+
+function randomId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return Math.random().toString(36).slice(2, 10);
+}
+
+const defaultData: ScatterDataPoint[] = [
+  {
+    id: randomId(),
+    label: "Point 1",
+    x: 10,
+    y: 15,
+    size: 8,
+    fillColor: "#3b82f6",
+    borderColor: "#0f172a",
+    borderWidth: 1,
+    opacity: 0.8,
+    shape: "circle",
+  },
+  {
+    id: randomId(),
+    label: "Point 2",
+    x: 20,
+    y: 25,
+    size: 10,
+    fillColor: "#10b981",
+    borderColor: "#0f172a",
+    borderWidth: 1,
+    opacity: 0.8,
+    shape: "circle",
+  },
+  {
+    id: randomId(),
+    label: "Point 3",
+    x: 15,
+    y: 30,
+    size: 12,
+    fillColor: "#f59e0b",
+    borderColor: "#0f172a",
+    borderWidth: 1,
+    opacity: 0.8,
+    shape: "circle",
+  },
+];
+
+export const defaultScatterPlotSettings: ScatterPlotSettings = {
+  data: defaultData,
+  showValueLabels: false,
+  defaultPointSize: 8,
+  pointOpacity: 0.8,
+  pointBorderWidth: 1,
+  valueLabelFontSize: 12,
+  valueLabelOffsetY: 0,
+  valueLabelOffsetX: 0,
+  showConnectingLines: false,
+  connectingLineColor: "#e2e8f0",
+  connectingLineWidth: 2,
+  xAxisMin: null,
+  xAxisMax: null,
+  xAxisTickStep: null,
+  backgroundColor: "#0f172a",
+  canvasPadding: 48,
+  textColor: "#f8fafc",
+  title: "Custom scatter plot",
+  titleFontSize: 20,
+  titleOffsetY: 0,
+  axisTitleFontSize: 14,
+  axisTickFontSize: 12,
+  aspectRatio: 0.8,
+  customWidth: null,
+  customHeight: null,
+  exportScale: 2,
+  exportTransparent: false,
+  exportFileName: "scatterplot",
+  paletteName: "vibrant",
+  xAxis: {
+    showAxisLines: true,
+    showTickLabels: true,
+    showGridLines: true,
+    axisLineColor: "#e2e8f0",
+    axisLineWidth: 1.5,
+    tickLabelColor: "#e2e8f0",
+    gridLineColor: "#334155",
+    title: "X Values",
+  },
+  yAxis: {
+    showAxisLines: true,
+    showTickLabels: true,
+    showGridLines: true,
+    axisLineColor: "#e2e8f0",
+    axisLineWidth: 1.5,
+    tickLabelColor: "#e2e8f0",
+    gridLineColor: "#334155",
+    title: "Y Values",
+  },
+  yAxisMin: null,
+  yAxisMax: null,
+  yAxisTickStep: null,
+  xAxisTitleOffsetY: 0,
+  yAxisTitleOffsetX: 0,
+};

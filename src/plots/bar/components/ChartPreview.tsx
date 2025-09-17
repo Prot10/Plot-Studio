@@ -1,11 +1,12 @@
 import { Download } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
-import useElementSize from '../shared/hooks/useElementSize'
-import type { ChartSettings, FocusTarget, HighlightKey } from '../types'
+import useElementSize from '../../../shared/hooks/useElementSize'
+import type { BarChartSettings } from '../../../types/bar'
+import type { FocusTarget, HighlightKey } from '../../../types/base'
 
 type ChartPreviewProps = {
-  settings: ChartSettings
-  onUpdateSettings: (settings: ChartSettings) => void
+  settings: BarChartSettings
+  onUpdateSettings: (settings: BarChartSettings) => void
   onHighlight: (keys: HighlightKey[]) => void
   onRequestFocus: (target: FocusTarget) => void
 }
@@ -27,7 +28,7 @@ function createBarPath(
   width: number,
   height: number,
   radius: number,
-  style: ChartSettings['barCornerStyle'],
+  style: BarChartSettings['barCornerStyle'],
 ) {
   const r = Math.max(Math.min(radius, width / 2, height / 2), 0)
   if (r === 0) return ''
@@ -176,7 +177,7 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
   const { dataMin, dataMax } = useMemo(() => {
     let min = Number.POSITIVE_INFINITY
     let max = Number.NEGATIVE_INFINITY
-    settings.bars.forEach((bar) => {
+    settings.data.forEach((bar) => {
       const lower = settings.showErrorBars ? bar.value - bar.error : bar.value
       const upper = settings.showErrorBars ? bar.value + bar.error : bar.value
       min = Math.min(min, lower)
@@ -190,7 +191,7 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
       dataMin: Math.min(min, 0),
       dataMax: max,
     }
-  }, [settings.bars, settings.showErrorBars])
+  }, [settings.data, settings.showErrorBars])
 
   const { axisMin, axisMax, ticks } = useMemo(() => {
     const desiredMin = settings.yAxisMin ?? dataMin
@@ -246,7 +247,7 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
   }
 
   const barLayout = useMemo(() => {
-    const { bars, barGap, barBorderWidth, barOpacity } = settings
+    const { data: bars, barGap, barBorderWidth, barOpacity } = settings
     const count = bars.length || 1
     const band = chartBounds.width / count
     const gap = band * clamp(barGap, 0, 0.9)
@@ -675,7 +676,7 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
               return (
                 <g
                   key={data.id}
-                  onDoubleClick={(event) => sendHighlight(['data', 'barDesign'], event)}
+                  onDoubleClick={(event) => sendHighlight(['data', 'design'], event)}
                 >
                   {pathD ? (
                     <path
@@ -709,7 +710,7 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
                       fontWeight={500}
                       onDoubleClick={(event) => {
                         sendHighlight(['data', 'valueLabels'], event)
-                        onRequestFocus({ type: 'barValue', barId: data.id })
+                        onRequestFocus({ type: 'dataValue', dataId: data.id })
                       }}
                     >
                       {`${data.value}`}

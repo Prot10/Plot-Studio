@@ -1,20 +1,21 @@
 import { useEffect, useRef } from 'react'
-import { useHighlightEffect } from '../shared/hooks/useHighlightEffect'
-import { paletteOptions, palettes } from '../shared/utils/palettes'
-import type { BarDatum, ChartSettings, FocusRequest, HighlightKey, PaletteKey } from '../types'
-import { ColorField } from './ColorField'
+import { ColorField } from '../../../shared/components/ColorField'
+import { useHighlightEffect } from '../../../shared/hooks/useHighlightEffect'
+import { paletteOptions, palettes } from '../../../shared/utils/palettes'
+import type { BarChartSettings, BarDataPoint } from '../../../types/bar'
+import type { FocusRequest, HighlightKey, PaletteKey } from '../../../types/base'
 
 type ChartBasicsPanelProps = {
-  settings: ChartSettings
-  bars: BarDatum[]
-  onChange: (settings: ChartSettings) => void
-  onBarsChange: (bars: BarDatum[]) => void
+  settings: BarChartSettings
+  bars: BarDataPoint[]
+  onChange: (settings: BarChartSettings) => void
+  onBarsChange: (bars: BarDataPoint[]) => void
   highlightSignals?: Partial<Record<HighlightKey, number>>
   focusRequest?: FocusRequest | null
 }
 
 export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highlightSignals, focusRequest }: ChartBasicsPanelProps) {
-  const update = <K extends keyof ChartSettings>(key: K, value: ChartSettings[K]) => {
+  const update = <K extends keyof BarChartSettings>(key: K, value: BarChartSettings[K]) => {
     onChange({ ...settings, [key]: value })
   }
 
@@ -34,7 +35,7 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
     handledFocusRef.current = focusRequest.requestId
     try {
       input.focus({ preventScroll: true })
-    } catch (error) {
+    } catch {
       input.focus()
     }
     input.select()

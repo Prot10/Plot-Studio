@@ -1,11 +1,12 @@
 import { useEffect, useRef, type ChangeEvent, type MutableRefObject } from 'react'
-import { useHighlightEffect } from '../shared/hooks/useHighlightEffect'
-import type { AxisSettings, ChartSettings, FocusRequest, HighlightKey } from '../types'
-import { ColorField } from './ColorField'
+import { ColorField } from '../../../shared/components/ColorField'
+import { useHighlightEffect } from '../../../shared/hooks/useHighlightEffect'
+import type { BarChartSettings } from '../../../types/bar'
+import type { AxisSettings, FocusRequest, HighlightKey } from '../../../types/base'
 
 type ChartControlsPanelProps = {
-  settings: ChartSettings
-  onChange: (settings: ChartSettings) => void
+  settings: BarChartSettings
+  onChange: (settings: BarChartSettings) => void
   highlightSignals?: Partial<Record<HighlightKey, number>>
   focusRequest?: FocusRequest | null
 }
@@ -87,7 +88,7 @@ function NumberField({ label, value, onChange, min, max, step, suffix, disabled 
 }
 
 type CornerStyleOption = {
-  value: ChartSettings['barCornerStyle']
+  value: BarChartSettings['barCornerStyle']
   label: string
 }
 
@@ -100,8 +101,8 @@ function CornerStyleSelector({
   value,
   onChange,
 }: {
-  value: ChartSettings['barCornerStyle']
-  onChange: (value: ChartSettings['barCornerStyle']) => void
+  value: BarChartSettings['barCornerStyle']
+  onChange: (value: BarChartSettings['barCornerStyle']) => void
 }) {
   return (
     <div className="flex gap-2">
@@ -215,7 +216,7 @@ function AxisSection({
 }
 
 export function ChartControlsPanel({ settings, onChange, highlightSignals, focusRequest }: ChartControlsPanelProps) {
-  const update = <K extends keyof ChartSettings>(key: K, value: ChartSettings[K]) => {
+  const update = <K extends keyof BarChartSettings>(key: K, value: BarChartSettings[K]) => {
     onChange({ ...settings, [key]: value })
   }
 
@@ -223,7 +224,7 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
     onChange({ ...settings, [key]: value })
   }
 
-  const barDesignHighlight = useHighlightEffect(highlightSignals?.barDesign)
+  const barDesignHighlight = useHighlightEffect(highlightSignals?.design)
   const typographyHighlight = useHighlightEffect(highlightSignals?.valueLabels)
   const errorHighlight = useHighlightEffect(highlightSignals?.errorBars)
   const xAxisTitleRef = useRef<HTMLInputElement | null>(null)
@@ -234,7 +235,7 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
     if (!input) return false
     try {
       input.focus({ preventScroll: true })
-    } catch (error) {
+    } catch {
       input.focus()
     }
     input.select()
@@ -340,7 +341,7 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
               <span className="text-xs uppercase tracking-wide text-white/50">Color mode</span>
               <select
                 value={settings.errorBarMode}
-                onChange={(event) => update('errorBarMode', event.target.value as ChartSettings['errorBarMode'])}
+                onChange={(event) => update('errorBarMode', event.target.value as BarChartSettings['errorBarMode'])}
                 className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
               >
                 <option value="global">Use global color</option>
