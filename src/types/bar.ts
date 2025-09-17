@@ -14,6 +14,7 @@ export interface BarDataPoint extends BaseDataPoint {
   borderWidth: number;
   opacity: number;
   error: number;
+  group?: string;
   pattern: BarPattern;
   patternColor: string;
   patternOpacity: number;

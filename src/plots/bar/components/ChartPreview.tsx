@@ -1,8 +1,9 @@
-import { Download } from 'lucide-react'
+import { Download, Upload } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import useElementSize from '../../../shared/hooks/useElementSize'
-import type { BarChartSettings } from '../../../types/bar'
+import type { BarChartSettings, BarDataPoint } from '../../../types/bar'
 import type { FocusTarget, HighlightKey } from '../../../types/base'
+import { DataImportDialog } from './DataImportDialog'
 
 type ChartPreviewProps = {
   settings: BarChartSettings
@@ -107,7 +108,8 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
   const [wrapperRef, size] = useElementSize<HTMLDivElement>()
   const svgRef = useRef<SVGSVGElement | null>(null)
   const [isExporting, setIsExporting] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false)
   const [exportFormat, setExportFormat] = useState<ExportFormat>('png')
   const [exportFileName, setExportFileName] = useState(settings.exportFileName)
   const [exportScale, setExportScale] = useState(settings.exportScale)
@@ -387,23 +389,23 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
     })
   }
 
-  const closeModal = () => {
+  const closeExportDialog = () => {
     if (isExporting) return
-    setIsModalOpen(false)
+    setIsExportDialogOpen(false)
   }
 
   useEffect(() => {
-    if (!isModalOpen) return
+    if (!isExportDialogOpen) return
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setIsModalOpen(false)
+        setIsExportDialogOpen(false)
       }
     }
     window.addEventListener('keydown', handleKey)
     return () => {
       window.removeEventListener('keydown', handleKey)
     }
-  }, [isModalOpen])
+  }, [isExportDialogOpen])
 
   const handleExportConfirm = async () => {
     if (isExporting) return
@@ -423,27 +425,49 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
         exportTransparent: options.transparent,
       })
       await download(options)
-      setIsModalOpen(false)
+      setIsExportDialogOpen(false)
     } finally {
       setIsExporting(false)
     }
   }
 
+  const handleImportConfirm = (bars: BarDataPoint[]) => {
+    setIsImportDialogOpen(false)
+    if (!bars.length) return
+    onUpdateSettings({
+      ...settings,
+      data: bars,
+    })
+    onHighlight(['data'])
+  }
+
+  const handleImportCancel = () => {
+    setIsImportDialogOpen(false)
+  }
+
   return (
     <>
       <div className="flex h-full flex-col gap-4" style={{ color: settings.textColor }}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsImportDialogOpen(true)}
+            className="order-1 inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-white/20"
+          >
+            <Upload className="h-4 w-4" />
+            Import data
+          </button>
+          <div className="order-2 w-full text-center sm:order-2 sm:flex-1 sm:w-auto">
             <h2 className="text-xl font-semibold text-white">Live preview</h2>
             <p className="text-sm text-white/60">
-              Adjust the controls and export the chart once it looks right.
+              Import data, fine-tune the design, and export the chart once it looks right.
             </p>
           </div>
           <button
             type="button"
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => setIsExportDialogOpen(true)}
             disabled={isExporting}
-            className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-white/20 disabled:cursor-wait disabled:opacity-60"
+            className="order-3 inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-white/20 disabled:cursor-wait disabled:opacity-60"
           >
             <Download className="h-4 w-4" />
             {isExporting ? 'Exporting…' : 'Export'}
@@ -855,10 +879,16 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
           </svg>
         </div>
       </div>
-      {isModalOpen ? (
+      <DataImportDialog
+        isOpen={isImportDialogOpen}
+        paletteName={settings.paletteName}
+        onCancel={handleImportCancel}
+        onConfirm={handleImportConfirm}
+      />
+      {isExportDialogOpen ? (
         <div
           className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm"
-          onClick={closeModal}
+          onClick={closeExportDialog}
         >
           <div
             className="w-full max-w-md scale-100 rounded-2xl border border-white/10 bg-slate-950/95 p-6 text-white shadow-2xl"
@@ -868,7 +898,7 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
               <h3 className="text-lg font-semibold">Export chart</h3>
               <button
                 type="button"
-                onClick={closeModal}
+                onClick={closeExportDialog}
                 className="text-white/60 transition hover:text-white"
                 aria-label="Close export dialog"
               >
@@ -942,7 +972,7 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
             <div className="mt-6 flex justify-end gap-3 text-sm">
               <button
                 type="button"
-                onClick={closeModal}
+                onClick={closeExportDialog}
                 disabled={isExporting}
                 className="rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
               >
