@@ -66,9 +66,19 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
     const nextBars = bars.map((bar) => {
       if (bar.id !== id) return bar
 
-      if (field === 'value' || field === 'error' || field === 'opacity' || field === 'borderWidth') {
+      if (
+        field === 'value' ||
+        field === 'error' ||
+        field === 'opacity' ||
+        field === 'borderWidth' ||
+        field === 'patternOpacity' ||
+        field === 'patternSize'
+      ) {
         const numeric = Number.parseFloat(rawValue)
         if (Number.isNaN(numeric)) {
+          if (field === 'patternSize') {
+            return { ...bar, patternSize: 2 }
+          }
           return { ...bar, [field]: 0 }
         }
 
@@ -80,6 +90,16 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
         if (field === 'borderWidth') {
           const clamped = Math.max(numeric, 0)
           return { ...bar, borderWidth: clamped }
+        }
+
+        if (field === 'patternOpacity') {
+          const clamped = Math.min(Math.max(numeric, 0), 1)
+          return { ...bar, patternOpacity: clamped }
+        }
+
+        if (field === 'patternSize') {
+          const clamped = Math.max(numeric, 2)
+          return { ...bar, patternSize: clamped }
         }
 
         return { ...bar, [field]: numeric }
@@ -261,6 +281,40 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
                   </select>
                 </label>
               </div>
+              {bar.pattern !== 'solid' ? (
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                  <ColorField
+                    label="Pattern color"
+                    value={bar.patternColor}
+                    onChange={(next) => handleFieldChange(bar.id, 'patternColor', next)}
+                  />
+                  <label className="flex flex-col gap-1">
+                    <span className="text-xs uppercase tracking-wide text-white/50">Pattern opacity</span>
+                    <input
+                      type="number"
+                      value={bar.patternOpacity}
+                      min={0}
+                      max={1}
+                      step={0.05}
+                      onChange={(event) => handleFieldChange(bar.id, 'patternOpacity', event.target.value)}
+                      className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
+                    />
+                  </label>
+                  <label className="flex flex-col gap-1">
+                    <span className="text-xs uppercase tracking-wide text-white/50">Pattern size</span>
+                    <input
+                      type="number"
+                      value={bar.patternSize}
+                      min={2}
+                      max={64}
+                      step={1}
+                      onChange={(event) => handleFieldChange(bar.id, 'patternSize', event.target.value)}
+                      className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
+                    />
+                    <span className="text-xs text-white/40">Higher values create larger pattern tiles</span>
+                  </label>
+                </div>
+              ) : null}
             </div>
           </div>
         ))}

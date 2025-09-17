@@ -32,5 +32,8 @@ export function createBar(index: number, paletteName: keyof typeof palettes = 'v
     opacity: 0.85,
     error: 0,
     pattern: 'solid',
+    patternColor: '#ffffff',
+    patternOpacity: 0.35,
+    patternSize: 8,
   }
 }

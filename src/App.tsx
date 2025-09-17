@@ -61,6 +61,10 @@ function App() {
           opacity: typeof bar?.opacity === 'number' ? bar.opacity : defaults.opacity,
           error: typeof bar?.error === 'number' ? bar.error : defaults.error,
           pattern: (bar?.pattern as BarDatum['pattern']) ?? defaults.pattern,
+          patternColor: typeof bar?.patternColor === 'string' ? bar.patternColor : defaults.patternColor,
+          patternOpacity:
+            typeof bar?.patternOpacity === 'number' ? bar.patternOpacity : defaults.patternOpacity,
+          patternSize: typeof bar?.patternSize === 'number' ? bar.patternSize : defaults.patternSize,
         }
       })
 

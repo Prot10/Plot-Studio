@@ -497,8 +497,20 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
               .filter(({ data }) => (data.pattern ?? 'solid') !== 'solid')
               .map(({ data, opacity }) => {
                 const patternId = `pattern-${data.id}`
-                const accentOpacity = 0.35
                 const patternType = data.pattern ?? 'solid'
+                const patternSizeRaw = Number.isFinite(data.patternSize) ? data.patternSize : 8
+                const patternSize = Math.max(patternSizeRaw, 2)
+                const accentOpacity = clamp(
+                  Number.isFinite(data.patternOpacity) ? data.patternOpacity : 0.35,
+                  0,
+                  1,
+                )
+                const accentColor = data.patternColor || '#ffffff'
+                const primaryStroke = Math.max(patternSize * 0.18, 0.75)
+                const secondaryStroke = Math.max(patternSize * 0.14, 0.6)
+                const halfSize = patternSize / 2
+                const quarterSize = patternSize / 4
+                const dotRadius = Math.max(patternSize * 0.2, 1)
                 switch (patternType) {
                   case 'diagonal':
                     return (
@@ -506,27 +518,27 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
                         key={patternId}
                         id={patternId}
                         patternUnits="userSpaceOnUse"
-                        width={8}
-                        height={8}
+                        width={patternSize}
+                        height={patternSize}
                       >
-                        <rect width={8} height={8} fill={data.fillColor} opacity={opacity} />
+                        <rect width={patternSize} height={patternSize} fill={data.fillColor} opacity={opacity} />
                         <path
-                          d="M0 8 L8 0"
-                          stroke="#ffffff"
+                          d={`M0 ${patternSize} L ${patternSize} 0`}
+                          stroke={accentColor}
                           strokeOpacity={accentOpacity}
-                          strokeWidth={1.5}
+                          strokeWidth={primaryStroke}
                         />
                         <path
-                          d="M-4 8 L4 0"
-                          stroke="#ffffff"
+                          d={`M-${halfSize} ${patternSize} L ${halfSize} 0`}
+                          stroke={accentColor}
                           strokeOpacity={accentOpacity}
-                          strokeWidth={1.5}
+                          strokeWidth={primaryStroke}
                         />
                         <path
-                          d="M4 8 L12 0"
-                          stroke="#ffffff"
+                          d={`${halfSize} ${patternSize} L ${patternSize + halfSize} 0`}
+                          stroke={accentColor}
                           strokeOpacity={accentOpacity}
-                          strokeWidth={1.5}
+                          strokeWidth={primaryStroke}
                         />
                       </pattern>
                     )
@@ -536,12 +548,24 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
                         key={patternId}
                         id={patternId}
                         patternUnits="userSpaceOnUse"
-                        width={8}
-                        height={8}
+                        width={patternSize}
+                        height={patternSize}
                       >
-                        <rect width={8} height={8} fill={data.fillColor} opacity={opacity} />
-                        <circle cx={2} cy={2} r={1.3} fill="#ffffff" fillOpacity={accentOpacity} />
-                        <circle cx={6} cy={6} r={1.3} fill="#ffffff" fillOpacity={accentOpacity} />
+                        <rect width={patternSize} height={patternSize} fill={data.fillColor} opacity={opacity} />
+                        <circle
+                          cx={quarterSize * 1.5}
+                          cy={quarterSize * 1.5}
+                          r={dotRadius}
+                          fill={accentColor}
+                          fillOpacity={accentOpacity}
+                        />
+                        <circle
+                          cx={patternSize - quarterSize * 1.5}
+                          cy={patternSize - quarterSize * 1.5}
+                          r={dotRadius}
+                          fill={accentColor}
+                          fillOpacity={accentOpacity}
+                        />
                       </pattern>
                     )
                   case 'crosshatch':
@@ -550,21 +574,21 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
                         key={patternId}
                         id={patternId}
                         patternUnits="userSpaceOnUse"
-                        width={8}
-                        height={8}
+                        width={patternSize}
+                        height={patternSize}
                       >
-                        <rect width={8} height={8} fill={data.fillColor} opacity={opacity} />
+                        <rect width={patternSize} height={patternSize} fill={data.fillColor} opacity={opacity} />
                         <path
-                          d="M0 4 H8"
-                          stroke="#ffffff"
+                          d={`M0 ${halfSize} H ${patternSize}`}
+                          stroke={accentColor}
                           strokeOpacity={accentOpacity}
-                          strokeWidth={1.2}
+                          strokeWidth={secondaryStroke}
                         />
                         <path
-                          d="M4 0 V8"
-                          stroke="#ffffff"
+                          d={`M${halfSize} 0 V ${patternSize}`}
+                          stroke={accentColor}
                           strokeOpacity={accentOpacity}
-                          strokeWidth={1.2}
+                          strokeWidth={secondaryStroke}
                         />
                       </pattern>
                     )
@@ -574,21 +598,21 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
                         key={patternId}
                         id={patternId}
                         patternUnits="userSpaceOnUse"
-                        width={8}
-                        height={8}
+                        width={patternSize}
+                        height={patternSize}
                       >
-                        <rect width={8} height={8} fill={data.fillColor} opacity={opacity} />
+                        <rect width={patternSize} height={patternSize} fill={data.fillColor} opacity={opacity} />
                         <path
-                          d="M2 0 V8"
-                          stroke="#ffffff"
+                          d={`M${quarterSize} 0 V ${patternSize}`}
+                          stroke={accentColor}
                           strokeOpacity={accentOpacity}
-                          strokeWidth={1.4}
+                          strokeWidth={primaryStroke}
                         />
                         <path
-                          d="M6 0 V8"
-                          stroke="#ffffff"
+                          d={`M${patternSize - quarterSize} 0 V ${patternSize}`}
+                          stroke={accentColor}
                           strokeOpacity={accentOpacity}
-                          strokeWidth={1.4}
+                          strokeWidth={primaryStroke}
                         />
                       </pattern>
                     )

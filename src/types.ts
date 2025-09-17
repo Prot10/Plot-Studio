@@ -8,6 +8,9 @@ export type BarDatum = {
   opacity: number
   error: number
   pattern: BarPattern
+  patternColor: string
+  patternOpacity: number
+  patternSize: number
 }
 
 export type BarPattern = 'solid' | 'diagonal' | 'dots' | 'crosshatch' | 'vertical'
