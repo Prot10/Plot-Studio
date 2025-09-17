@@ -1,5 +1,5 @@
-import type { ChangeEvent } from 'react'
-import type { AxisSettings, ChartSettings, HighlightKey } from '../types'
+import { useEffect, useRef, type ChangeEvent, type MutableRefObject } from 'react'
+import type { AxisSettings, ChartSettings, FocusRequest, HighlightKey } from '../types'
 import { useHighlightEffect } from '../hooks/useHighlightEffect'
 import { ColorField } from './ColorField'
 
@@ -7,6 +7,7 @@ type ChartControlsPanelProps = {
   settings: ChartSettings
   onChange: (settings: ChartSettings) => void
   highlightSignals?: Partial<Record<HighlightKey, number>>
+  focusRequest?: FocusRequest | null
 }
 
 type ToggleProps = {
@@ -126,11 +127,13 @@ function AxisSection({
   settings,
   onChange,
   highlightSignal,
+  titleRef,
 }: {
   label: string
   settings: AxisSettings
   onChange: (settings: AxisSettings) => void
   highlightSignal?: number
+  titleRef?: MutableRefObject<HTMLInputElement | null>
 }) {
   const update = <K extends keyof AxisSettings>(key: K, value: AxisSettings[K]) => {
     onChange({ ...settings, [key]: value })
@@ -159,6 +162,7 @@ function AxisSection({
           onChange={(event) => update('title', event.target.value)}
           className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60 disabled:cursor-not-allowed disabled:bg-white/10"
           disabled={disabled}
+          ref={titleRef}
         />
       </label>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -210,7 +214,7 @@ function AxisSection({
   )
 }
 
-export function ChartControlsPanel({ settings, onChange, highlightSignals }: ChartControlsPanelProps) {
+export function ChartControlsPanel({ settings, onChange, highlightSignals, focusRequest }: ChartControlsPanelProps) {
   const update = <K extends keyof ChartSettings>(key: K, value: ChartSettings[K]) => {
     onChange({ ...settings, [key]: value })
   }
@@ -222,6 +226,41 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals }: Cha
   const barDesignHighlight = useHighlightEffect(highlightSignals?.barDesign)
   const typographyHighlight = useHighlightEffect(highlightSignals?.valueLabels)
   const errorHighlight = useHighlightEffect(highlightSignals?.errorBars)
+  const xAxisTitleRef = useRef<HTMLInputElement | null>(null)
+  const yAxisTitleRef = useRef<HTMLInputElement | null>(null)
+  const handledFocusRef = useRef(0)
+
+  const focusInput = (input: HTMLInputElement | null | undefined) => {
+    if (!input) return false
+    try {
+      input.focus({ preventScroll: true })
+    } catch (error) {
+      input.focus()
+    }
+    input.select()
+    if (typeof input.scrollIntoView === 'function') {
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+    return true
+  }
+
+  useEffect(() => {
+    if (!focusRequest) return
+    if (focusRequest.requestId === handledFocusRef.current) return
+
+    if (focusRequest.target.type === 'xAxisTitle') {
+      if (focusInput(xAxisTitleRef.current)) {
+        handledFocusRef.current = focusRequest.requestId
+      }
+      return
+    }
+
+    if (focusRequest.target.type === 'yAxisTitle') {
+      if (focusInput(yAxisTitleRef.current)) {
+        handledFocusRef.current = focusRequest.requestId
+      }
+    }
+  }, [focusRequest])
 
   return (
     <div className="space-y-6">
@@ -435,12 +474,14 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals }: Cha
         settings={settings.xAxis}
         onChange={(config) => updateAxis('xAxis', config)}
         highlightSignal={highlightSignals?.xAxis}
+        titleRef={xAxisTitleRef}
       />
       <AxisSection
         label="Y"
         settings={settings.yAxis}
         onChange={(config) => updateAxis('yAxis', config)}
         highlightSignal={highlightSignals?.yAxis}
+        titleRef={yAxisTitleRef}
       />
 
     </div>

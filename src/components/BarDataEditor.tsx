@@ -1,4 +1,5 @@
-import type { BarDatum, PaletteKey } from '../types'
+import { useEffect, useRef } from 'react'
+import type { BarDatum, FocusRequest, PaletteKey } from '../types'
 import { createBar } from '../utils/barFactory'
 import { ColorField } from './ColorField'
 import { useHighlightEffect } from '../hooks/useHighlightEffect'
@@ -8,6 +9,7 @@ type BarDataEditorProps = {
   paletteName: PaletteKey
   onChange: (bars: BarDatum[]) => void
   highlightSignal?: number
+  focusRequest?: FocusRequest | null
 }
 
 const patternOptions: Array<{ value: BarDatum['pattern']; label: string }> = [
@@ -17,8 +19,45 @@ const patternOptions: Array<{ value: BarDatum['pattern']; label: string }> = [
   { value: 'crosshatch', label: 'Crosshatch' },
   { value: 'vertical', label: 'Vertical stripes' },
 ]
-export function BarDataEditor({ bars, paletteName, onChange, highlightSignal }: BarDataEditorProps) {
+export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, focusRequest }: BarDataEditorProps) {
   const highlight = useHighlightEffect(highlightSignal)
+  const labelRefs = useRef<Record<string, HTMLInputElement | null>>({})
+  const valueRefs = useRef<Record<string, HTMLInputElement | null>>({})
+  const handledFocusRef = useRef(0)
+
+  const focusInput = (input: HTMLInputElement | null | undefined) => {
+    if (!input) return false
+    try {
+      input.focus({ preventScroll: true })
+    } catch (error) {
+      input.focus()
+    }
+    input.select()
+    if (typeof input.scrollIntoView === 'function') {
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+    return true
+  }
+
+  useEffect(() => {
+    if (!focusRequest) return
+    if (focusRequest.requestId === handledFocusRef.current) return
+
+    if (focusRequest.target.type === 'barLabel') {
+      const input = labelRefs.current[focusRequest.target.barId]
+      if (focusInput(input)) {
+        handledFocusRef.current = focusRequest.requestId
+      }
+      return
+    }
+
+    if (focusRequest.target.type === 'barValue') {
+      const input = valueRefs.current[focusRequest.target.barId]
+      if (focusInput(input)) {
+        handledFocusRef.current = focusRequest.requestId
+      }
+    }
+  }, [focusRequest])
   const handleFieldChange = (
     id: string,
     field: keyof Omit<BarDatum, 'id'>,
@@ -103,6 +142,13 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal }: 
                   type="text"
                   value={bar.label}
                   onChange={(event) => handleFieldChange(bar.id, 'label', event.target.value)}
+                  ref={(node) => {
+                    if (node) {
+                      labelRefs.current[bar.id] = node
+                    } else {
+                      delete labelRefs.current[bar.id]
+                    }
+                  }}
                   className="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60"
                 />
               </div>
@@ -143,6 +189,13 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal }: 
                     min={0}
                     step={0.1}
                     onChange={(event) => handleFieldChange(bar.id, 'value', event.target.value)}
+                    ref={(node) => {
+                      if (node) {
+                        valueRefs.current[bar.id] = node
+                      } else {
+                        delete valueRefs.current[bar.id]
+                      }
+                    }}
                     className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
                   />
                 </label>

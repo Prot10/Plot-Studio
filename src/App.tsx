@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { BarDataEditor } from './components/BarDataEditor'
 import { ChartBasicsPanel } from './components/ChartBasicsPanel'
 import { ChartControlsPanel } from './components/ChartControlsPanel'
 import { ChartPreview } from './components/ChartPreview'
 import { defaultSettings } from './defaultSettings'
-import type { BarDatum, ChartSettings, HighlightKey } from './types'
+import type { BarDatum, ChartSettings, HighlightKey, FocusRequest, FocusTarget } from './types'
 import { createBar } from './utils/barFactory'
 import useHighlightEffect from './hooks/useHighlightEffect'
 
@@ -22,6 +22,8 @@ function App() {
     valueLabels: 0,
     errorBars: 0,
   })
+  const focusRequestIdRef = useRef(0)
+  const [focusRequest, setFocusRequest] = useState<FocusRequest | null>(null)
 
   useEffect(() => {
     if (typeof window === 'undefined' || isHydrated) return
@@ -97,6 +99,11 @@ function App() {
     })
   }, [])
 
+  const requestFocus = useCallback((target: FocusTarget) => {
+    focusRequestIdRef.current += 1
+    setFocusRequest({ target, requestId: focusRequestIdRef.current })
+  }, [])
+
   const basicsHighlight = useHighlightEffect(highlightSignals.chartBasics)
   const dataHighlight = useHighlightEffect(highlightSignals.data)
   const controlsHighlightSignal =
@@ -138,6 +145,7 @@ function App() {
                 onChange={handleSettingsChange}
                 onBarsChange={handleBarsChange}
                 highlightSignals={highlightSignals}
+                focusRequest={focusRequest}
               />
             </section>
             <section
@@ -148,6 +156,7 @@ function App() {
                 paletteName={settings.paletteName}
                 onChange={handleBarsChange}
                 highlightSignal={highlightSignals.data}
+                focusRequest={focusRequest}
               />
             </section>
           </div>
@@ -156,6 +165,7 @@ function App() {
               settings={settings}
               onUpdateSettings={setSettings}
               onHighlight={triggerHighlight}
+              onRequestFocus={requestFocus}
             />
           </section>
           <section
@@ -165,6 +175,7 @@ function App() {
               settings={settings}
               onChange={handleSettingsChange}
               highlightSignals={highlightSignals}
+              focusRequest={focusRequest}
             />
           </section>
         </div>

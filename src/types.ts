@@ -73,3 +73,15 @@ export type HighlightKey =
   | 'barDesign'
   | 'valueLabels'
   | 'errorBars'
+
+export type FocusTarget =
+  | { type: 'chartTitle' }
+  | { type: 'barLabel'; barId: string }
+  | { type: 'barValue'; barId: string }
+  | { type: 'xAxisTitle' }
+  | { type: 'yAxisTitle' }
+
+export type FocusRequest = {
+  target: FocusTarget
+  requestId: number
+}

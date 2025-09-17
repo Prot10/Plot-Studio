@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import { Download } from 'lucide-react'
-import type { ChartSettings, HighlightKey } from '../types'
+import type { ChartSettings, FocusTarget, HighlightKey } from '../types'
 import useElementSize from '../hooks/useElementSize'
 
 type ChartPreviewProps = {
   settings: ChartSettings
   onUpdateSettings: (settings: ChartSettings) => void
   onHighlight: (keys: HighlightKey[]) => void
+  onRequestFocus: (target: FocusTarget) => void
 }
 
 type ExportFormat = 'png' | 'svg' | 'pdf'
@@ -101,7 +102,7 @@ function generateTicksRange(minValue: number, maxValue: number, count = 6) {
   return ticks
 }
 
-export function ChartPreview({ settings, onUpdateSettings, onHighlight }: ChartPreviewProps) {
+export function ChartPreview({ settings, onUpdateSettings, onHighlight, onRequestFocus }: ChartPreviewProps) {
   const [wrapperRef, size] = useElementSize<HTMLDivElement>()
   const svgRef = useRef<SVGSVGElement | null>(null)
   const [isExporting, setIsExporting] = useState(false)
@@ -449,7 +450,7 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight }: ChartP
       </div>
       <div
         ref={wrapperRef}
-        className="flex min-h-[420px] flex-1 items-center justify-center rounded-2xl border border-white/10"
+        className="relative flex min-h-[420px] flex-1 items-center justify-center rounded-2xl border border-white/10"
         style={{ backgroundColor: settings.backgroundColor, minHeight: `${minContainerHeight}px` }}
       >
         <svg
@@ -481,7 +482,10 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight }: ChartP
               fontFamily={fontFamily}
               fontSize={settings.titleFontSize}
               fontWeight={600}
-              onDoubleClick={(event) => sendHighlight(['chartBasics'], event)}
+              onDoubleClick={(event) => {
+                sendHighlight(['chartBasics'], event)
+                onRequestFocus({ type: 'chartTitle' })
+              }}
             >
               {settings.title}
             </text>
@@ -679,7 +683,10 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight }: ChartP
                     fontFamily={fontFamily}
                     fontSize={settings.valueLabelFontSize}
                     fontWeight={500}
-                    onDoubleClick={(event) => sendHighlight(['valueLabels'], event)}
+                    onDoubleClick={(event) => {
+                      sendHighlight(['data', 'valueLabels'], event)
+                      onRequestFocus({ type: 'barValue', barId: data.id })
+                    }}
                   >
                     {`${data.value}`}
                   </text>
@@ -753,7 +760,10 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight }: ChartP
               fontFamily={fontFamily}
               fontSize={settings.axisTitleFontSize}
               fontWeight={500}
-              onDoubleClick={(event) => sendHighlight(['xAxis'], event)}
+              onDoubleClick={(event) => {
+                sendHighlight(['xAxis'], event)
+                onRequestFocus({ type: 'xAxisTitle' })
+              }}
             >
               {axisStyles.x.title}
             </text>
@@ -768,7 +778,10 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight }: ChartP
               fontSize={settings.axisTitleFontSize}
               fontWeight={500}
               transform={`rotate(-90 ${yAxisTitleX} ${yAxisTitleY})`}
-              onDoubleClick={(event) => sendHighlight(['yAxis'], event)}
+              onDoubleClick={(event) => {
+                sendHighlight(['yAxis'], event)
+                onRequestFocus({ type: 'yAxisTitle' })
+              }}
             >
               {axisStyles.y.title}
             </text>
@@ -805,7 +818,10 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight }: ChartP
                   fill={axisStyles.x.tickLabelColor}
                   fontFamily={fontFamily}
                   fontSize={settings.axisTickFontSize}
-                  onDoubleClick={(event) => sendHighlight(['xAxis'], event)}
+                  onDoubleClick={(event) => {
+                    sendHighlight(['data'], event)
+                    onRequestFocus({ type: 'barLabel', barId: data.id })
+                  }}
                 >
                   {data.label}
                 </text>

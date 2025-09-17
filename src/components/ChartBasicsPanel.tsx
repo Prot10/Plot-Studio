@@ -1,4 +1,5 @@
-import type { BarDatum, ChartSettings, HighlightKey, PaletteKey } from '../types'
+import type { BarDatum, ChartSettings, FocusRequest, HighlightKey, PaletteKey } from '../types'
+import { useEffect, useRef } from 'react'
 import { palettes, paletteOptions } from '../utils/palettes'
 import { ColorField } from './ColorField'
 import { useHighlightEffect } from '../hooks/useHighlightEffect'
@@ -9,15 +10,38 @@ type ChartBasicsPanelProps = {
   onChange: (settings: ChartSettings) => void
   onBarsChange: (bars: BarDatum[]) => void
   highlightSignals?: Partial<Record<HighlightKey, number>>
+  focusRequest?: FocusRequest | null
 }
 
-export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highlightSignals }: ChartBasicsPanelProps) {
+export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highlightSignals, focusRequest }: ChartBasicsPanelProps) {
   const update = <K extends keyof ChartSettings>(key: K, value: ChartSettings[K]) => {
     onChange({ ...settings, [key]: value })
   }
 
   const panelHighlight = useHighlightEffect(highlightSignals?.chartBasics)
   const yAxisHighlight = useHighlightEffect(highlightSignals?.yAxis)
+  const titleInputRef = useRef<HTMLInputElement | null>(null)
+  const handledFocusRef = useRef(0)
+
+  useEffect(() => {
+    if (!focusRequest) return
+    if (focusRequest.requestId === handledFocusRef.current) return
+    if (focusRequest.target.type !== 'chartTitle') return
+
+    const input = titleInputRef.current
+    if (!input) return
+
+    handledFocusRef.current = focusRequest.requestId
+    try {
+      input.focus({ preventScroll: true })
+    } catch (error) {
+      input.focus()
+    }
+    input.select()
+    if (typeof input.scrollIntoView === 'function') {
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [focusRequest])
 
   const handlePaletteChange = (nextPalette: PaletteKey) => {
     const palette = palettes[nextPalette]
@@ -41,6 +65,7 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
           type="text"
           value={settings.title}
           onChange={(event) => update('title', event.target.value)}
+          ref={titleInputRef}
           className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60"
           placeholder="Untitled chart"
         />
