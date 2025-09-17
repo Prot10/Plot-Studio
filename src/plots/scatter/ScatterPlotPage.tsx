@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ChartPageBlock, ChartPageLayout } from '../../shared/components/ChartPageLayout';
 import { useHighlightEffect } from '../../shared/hooks/useHighlightEffect';
 import type { HighlightKey } from '../../types/base';
 import type { ScatterPlotSettings } from '../../types/scatter';
@@ -83,56 +84,58 @@ export function ScatterPlotPage({ onBack }: ScatterPlotPageProps) {
                     </div>
                 </div>
             </header>
-            <main className="mx-auto w-full max-w-content flex-1 px-6 py-8">
-                <div className="grid gap-6 xl:grid-cols-[minmax(360px,460px)_minmax(520px,_1fr)_minmax(320px,380px)]">
-                    <div className="flex flex-col gap-6">
-                        <section
-                            className={`rounded-2xl border border-white/10 bg-black/30 p-5 shadow-xl backdrop-blur ${basicsHighlight ? 'highlight-pulse' : ''}`}
-                        >
-                            <div className="text-white">
-                                <h2 className="text-lg font-semibold">Chart</h2>
-                                <p className="text-white/60 mt-2">Scatter plot basics panel will go here</p>
+            <ChartPageLayout
+                left={
+                    <>
+                        <ChartPageBlock title="Chart basics" highlighted={basicsHighlight}>
+                            <div className="space-y-3 text-white">
+                                <p className="text-white/60">
+                                    Scatter plot basics panel will go here
+                                </p>
                             </div>
-                        </section>
-                        <section className="rounded-2xl border border-white/10 bg-black/30 p-5 shadow-xl backdrop-blur">
-                            <div className="text-white">
-                                <h2 className="text-lg font-semibold">Data Editor</h2>
-                                <p className="text-white/60 mt-2">Point data editor will go here</p>
-                                <div className="mt-4 space-y-2">
+                        </ChartPageBlock>
+                        <ChartPageBlock title="Data">
+                            <div className="space-y-3 text-white">
+                                <p className="text-white/60">Point data editor will go here</p>
+                                <div className="space-y-2">
                                     {settings.data.map((point, index) => (
-                                        <div key={point.id} className="bg-white/10 p-3 rounded-lg">
+                                        <div key={point.id} className="rounded-lg bg-white/10 p-3">
                                             <p className="text-sm">Point {index + 1}: ({point.x}, {point.y})</p>
                                         </div>
                                     ))}
                                 </div>
                             </div>
-                        </section>
-                    </div>
+                        </ChartPageBlock>
+                    </>
+                }
+                center={
                     <section className="rounded-3xl border border-white/10 bg-black/50 p-6 shadow-2xl backdrop-blur">
                         <div className="text-white text-center">
-                            <h2 className="text-lg font-semibold">Chart Preview</h2>
-                            <p className="text-white/60 mt-2">Scatter plot preview will go here</p>
-                            <div className="mt-8 h-64 bg-white/10 rounded-lg flex items-center justify-center">
+                            <h2 className="text-lg font-semibold">Chart preview</h2>
+                            <p className="mt-2 text-white/60">Scatter plot preview will go here</p>
+                            <div className="mt-8 flex h-64 items-center justify-center rounded-lg bg-white/10">
                                 <p className="text-white/40">Scatter Plot Preview Placeholder</p>
                             </div>
                         </div>
                     </section>
-                    <section className="rounded-2xl border border-white/10 bg-black/30 p-5 shadow-xl backdrop-blur">
-                        <div className="text-white">
-                            <h2 className="text-lg font-semibold">Controls</h2>
-                            <p className="text-white/60 mt-2">Point styling and advanced controls will go here</p>
-                            <div className="mt-4 space-y-3">
+                }
+                right={
+                    <>
+                        <ChartPageBlock title="Point styling">
+                            <div className="space-y-3 text-white">
                                 <label className="flex flex-col gap-1 text-sm">
-                                    <span className="text-xs uppercase tracking-wide text-white/50">Point Size</span>
+                                    <span className="text-xs uppercase tracking-wide text-white/50">Point size</span>
                                     <input
                                         type="range"
                                         min={4}
                                         max={20}
                                         value={settings.defaultPointSize}
-                                        onChange={(e) => handleSettingsChange({
-                                            ...settings,
-                                            defaultPointSize: Number(e.target.value)
-                                        })}
+                                        onChange={(event) =>
+                                            handleSettingsChange({
+                                                ...settings,
+                                                defaultPointSize: Number(event.target.value),
+                                            })
+                                        }
                                         className="accent-sky-400"
                                     />
                                     <span className="text-xs text-white/40">{settings.defaultPointSize}px</span>
@@ -145,19 +148,21 @@ export function ScatterPlotPage({ onBack }: ScatterPlotPageProps) {
                                         max={1}
                                         step={0.1}
                                         value={settings.pointOpacity}
-                                        onChange={(e) => handleSettingsChange({
-                                            ...settings,
-                                            pointOpacity: Number(e.target.value)
-                                        })}
+                                        onChange={(event) =>
+                                            handleSettingsChange({
+                                                ...settings,
+                                                pointOpacity: Number(event.target.value),
+                                            })
+                                        }
                                         className="accent-sky-400"
                                     />
-                                    <span className="text-xs text-white/40">{(settings.pointOpacity * 100)}%</span>
+                                    <span className="text-xs text-white/40">{(settings.pointOpacity * 100).toFixed(0)}%</span>
                                 </label>
                             </div>
-                        </div>
-                    </section>
-                </div>
-            </main>
+                        </ChartPageBlock>
+                    </>
+                }
+            />
         </div>
     );
 }

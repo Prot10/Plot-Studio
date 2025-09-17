@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { ChartPageBlock, ChartPageLayout } from '../../shared/components/ChartPageLayout';
 import { useHighlightEffect } from '../../shared/hooks/useHighlightEffect';
 import { createBar } from '../../shared/utils/barFactory';
 import type { BarChartSettings, BarDataPoint } from '../../types/bar';
@@ -156,12 +157,10 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                     </div>
                 </div>
             </header>
-            <main className="mx-auto w-full max-w-content flex-1 px-6 py-8">
-                <div className="grid gap-6 xl:grid-cols-[minmax(360px,460px)_minmax(520px,_1fr)_minmax(320px,380px)]">
-                    <div className="flex flex-col gap-6">
-                        <section
-                            className={`rounded-2xl border border-white/10 bg-black/30 p-5 shadow-xl backdrop-blur ${basicsHighlight ? 'highlight-pulse' : ''}`}
-                        >
+            <ChartPageLayout
+                left={
+                    <>
+                        <ChartPageBlock title="Chart basics" highlighted={basicsHighlight}>
                             <ChartBasicsPanel
                                 settings={settings}
                                 bars={settings.data}
@@ -170,10 +169,8 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                                 highlightSignals={highlightSignals}
                                 focusRequest={focusRequest}
                             />
-                        </section>
-                        <section
-                            className={`rounded-2xl border border-white/10 bg-black/30 p-5 shadow-xl backdrop-blur ${dataHighlight ? 'highlight-pulse' : ''}`}
-                        >
+                        </ChartPageBlock>
+                        <ChartPageBlock title="Data" highlighted={dataHighlight}>
                             <BarDataEditor
                                 bars={settings.data}
                                 paletteName={settings.paletteName}
@@ -181,8 +178,10 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                                 highlightSignal={highlightSignals.data}
                                 focusRequest={focusRequest}
                             />
-                        </section>
-                    </div>
+                        </ChartPageBlock>
+                    </>
+                }
+                center={
                     <section className="rounded-3xl border border-white/10 bg-black/50 p-6 shadow-2xl backdrop-blur">
                         <ChartPreview
                             settings={settings}
@@ -191,18 +190,18 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                             onRequestFocus={requestFocus}
                         />
                     </section>
-                    <section
-                        className={`rounded-2xl border border-white/10 bg-black/30 p-5 shadow-xl backdrop-blur ${controlsHighlight ? 'highlight-pulse' : ''}`}
-                    >
+                }
+                right={
+                    <div className={`flex flex-col gap-6 ${controlsHighlight ? 'highlight-pulse' : ''}`}>
                         <ChartControlsPanel
                             settings={settings}
                             onChange={handleSettingsChange}
                             highlightSignals={highlightSignals}
                             focusRequest={focusRequest}
                         />
-                    </section>
-                </div>
-            </main>
+                    </div>
+                }
+            />
         </div>
     );
 }

@@ -4,7 +4,7 @@ export function useHighlightEffect(signal?: number) {
   const [active, setActive] = useState(false)
 
   useEffect(() => {
-    if (signal === undefined) return
+    if (signal === undefined || signal === 0) return
     setActive(true)
     const timeout = setTimeout(() => {
       setActive(false)

@@ -1,4 +1,5 @@
 import { useEffect, useRef, type MutableRefObject } from 'react'
+import { ChartPageBlock } from '../../../shared/components/ChartPageLayout'
 import { ColorField } from '../../../shared/components/ColorField'
 import { NumericInput } from '../../../shared/components/NumericInput'
 import { useHighlightEffect } from '../../../shared/hooks/useHighlightEffect'
@@ -107,11 +108,14 @@ function AxisSection({
   const highlight = useHighlightEffect(highlightSignal)
 
   return (
-    <section
-      className={`flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-4 ${disabled ? 'opacity-80' : ''} ${highlight ? 'highlight-pulse' : ''}`}
+    <ChartPageBlock
+      title={`${label} axis`}
+      highlighted={highlight}
+      className={disabled ? 'opacity-80' : undefined}
+      bodyClassName="flex flex-col gap-3"
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">{label} axis</h3>
+        <span className="text-sm font-semibold text-white">Visibility</span>
         <Toggle
           label={settings.showAxisLines ? 'Visible' : 'Hidden'}
           value={settings.showAxisLines}
@@ -175,7 +179,7 @@ function AxisSection({
           disabled={disabled}
         />
       ) : null}
-    </section>
+    </ChartPageBlock>
   )
 }
 
@@ -228,11 +232,12 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
   }, [focusRequest])
 
   return (
-    <div className="space-y-6">
-      <section
-        className={`space-y-4 rounded-xl border border-white/10 bg-white/5 p-4 ${barDesignHighlight ? 'highlight-pulse' : ''}`}
+    <>
+      <ChartPageBlock
+        title="Bar design"
+        highlighted={barDesignHighlight}
+        bodyClassName="space-y-4"
       >
-        <h2 className="text-lg font-semibold text-white">Bar design</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <NumericInput
             title="Default opacity"
@@ -301,7 +306,7 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
         />
         {settings.showErrorBars ? (
           <div
-            className={`grid grid-cols-1 gap-3 sm:grid-cols-3 ${errorHighlight ? 'highlight-pulse' : ''}`}
+            className={`${errorHighlight ? 'highlight-pulse ' : ''}grid grid-cols-1 gap-3 sm:grid-cols-3`}
           >
             <label className="flex flex-col gap-1 text-sm text-white">
               <span className="text-xs uppercase tracking-wide text-white/50">Color mode</span>
@@ -347,107 +352,106 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
             />
           </div>
         ) : null}
-      </section>
+      </ChartPageBlock>
 
-      <section
-        className={`space-y-3 rounded-xl border border-white/10 bg-white/5 p-4 ${typographyHighlight ? 'highlight-pulse' : ''}`}
+      <ChartPageBlock
+        title="Typography"
+        highlighted={typographyHighlight}
+        bodyClassName="grid grid-cols-1 gap-3 sm:grid-cols-2"
       >
-        <h2 className="text-lg font-semibold text-white">Typography</h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <NumericInput
-            title="Chart title"
-            value={settings.titleFontSize}
-            min={10}
-            max={96}
-            step={1}
-            precision={0}
-            onChange={(value) => update('titleFontSize', value)}
-            suffix="px"
-          />
-          <NumericInput
-            title="Title offset"
-            value={settings.titleOffsetY}
-            min={-200}
-            max={200}
-            step={1}
-            precision={0}
-            onChange={(value) => update('titleOffsetY', value)}
-            suffix="px"
-          />
-          <NumericInput
-            title="Value labels"
-            value={settings.valueLabelFontSize}
-            min={8}
-            max={64}
-            step={1}
-            precision={0}
-            onChange={(value) => update('valueLabelFontSize', value)}
-            suffix="px"
-          />
-          <NumericInput
-            title="Value label offset"
-            value={settings.valueLabelOffsetY}
-            min={-200}
-            max={200}
-            step={1}
-            precision={0}
-            onChange={(value) => update('valueLabelOffsetY', value)}
-            description="Positive moves down"
-            suffix="px"
-          />
-          <NumericInput
-            title="Value label X offset"
-            value={settings.valueLabelOffsetX}
-            min={-200}
-            max={200}
-            step={1}
-            precision={0}
-            onChange={(value) => update('valueLabelOffsetX', value)}
-            description="Positive moves right"
-            suffix="px"
-          />
-          <NumericInput
-            title="Axis titles"
-            value={settings.axisTitleFontSize}
-            min={8}
-            max={72}
-            step={1}
-            precision={0}
-            onChange={(value) => update('axisTitleFontSize', value)}
-            suffix="px"
-          />
-          <NumericInput
-            title="X label offset"
-            value={settings.xAxisTitleOffsetY}
-            min={-200}
-            max={200}
-            step={1}
-            precision={0}
-            onChange={(value) => update('xAxisTitleOffsetY', value)}
-            suffix="px"
-          />
-          <NumericInput
-            title="Axis ticks"
-            value={settings.axisTickFontSize}
-            min={6}
-            max={48}
-            step={1}
-            precision={0}
-            onChange={(value) => update('axisTickFontSize', value)}
-            suffix="px"
-          />
-          <NumericInput
-            title="Y label offset"
-            value={settings.yAxisTitleOffsetX}
-            min={-200}
-            max={200}
-            step={1}
-            precision={0}
-            onChange={(value) => update('yAxisTitleOffsetX', value)}
-            suffix="px"
-          />
-        </div>
-      </section>
+        <NumericInput
+          title="Chart title"
+          value={settings.titleFontSize}
+          min={10}
+          max={96}
+          step={1}
+          precision={0}
+          onChange={(value) => update('titleFontSize', value)}
+          suffix="px"
+        />
+        <NumericInput
+          title="Title offset"
+          value={settings.titleOffsetY}
+          min={-200}
+          max={200}
+          step={1}
+          precision={0}
+          onChange={(value) => update('titleOffsetY', value)}
+          suffix="px"
+        />
+        <NumericInput
+          title="Value labels"
+          value={settings.valueLabelFontSize}
+          min={8}
+          max={64}
+          step={1}
+          precision={0}
+          onChange={(value) => update('valueLabelFontSize', value)}
+          suffix="px"
+        />
+        <NumericInput
+          title="Value label offset"
+          value={settings.valueLabelOffsetY}
+          min={-200}
+          max={200}
+          step={1}
+          precision={0}
+          onChange={(value) => update('valueLabelOffsetY', value)}
+          description="Positive moves down"
+          suffix="px"
+        />
+        <NumericInput
+          title="Value label X offset"
+          value={settings.valueLabelOffsetX}
+          min={-200}
+          max={200}
+          step={1}
+          precision={0}
+          onChange={(value) => update('valueLabelOffsetX', value)}
+          description="Positive moves right"
+          suffix="px"
+        />
+        <NumericInput
+          title="Axis titles"
+          value={settings.axisTitleFontSize}
+          min={8}
+          max={72}
+          step={1}
+          precision={0}
+          onChange={(value) => update('axisTitleFontSize', value)}
+          suffix="px"
+        />
+        <NumericInput
+          title="X label offset"
+          value={settings.xAxisTitleOffsetY}
+          min={-200}
+          max={200}
+          step={1}
+          precision={0}
+          onChange={(value) => update('xAxisTitleOffsetY', value)}
+          suffix="px"
+        />
+        <NumericInput
+          title="Axis ticks"
+          value={settings.axisTickFontSize}
+          min={6}
+          max={48}
+          step={1}
+          precision={0}
+          onChange={(value) => update('axisTickFontSize', value)}
+          suffix="px"
+        />
+        <NumericInput
+          title="Y label offset"
+          value={settings.yAxisTitleOffsetX}
+          min={-200}
+          max={200}
+          step={1}
+          precision={0}
+          onChange={(value) => update('yAxisTitleOffsetX', value)}
+          suffix="px"
+        />
+      </ChartPageBlock>
 
       <AxisSection
         label="X"
@@ -463,8 +467,7 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
         highlightSignal={highlightSignals?.yAxis}
         titleRef={yAxisTitleRef}
       />
-
-    </div>
+    </>
   )
 }
 
