@@ -3,7 +3,7 @@ export const MONO_FONT_STACK = '"JetBrains Mono", ui-monospace, SFMono-Regular, 
 export const MODERN_FONT_STACK = '"Poppins", "Segoe UI", system-ui, sans-serif'
 
 export const DEFAULT_FONT_OPTIONS = [
-  { label: 'Inter (Default)', value: DEFAULT_FONT_STACK },
+  { label: 'Inter', value: DEFAULT_FONT_STACK },
   { label: 'JetBrains Mono', value: MONO_FONT_STACK },
   { label: 'Poppins', value: MODERN_FONT_STACK },
 ]

@@ -60,6 +60,7 @@ function mergeStoredSettings(stored?: Partial<BarChartSettings>): BarChartSettin
     const xAxis = { ...defaultBarChartSettings.xAxis, ...stored.xAxis };
     const yAxis = { ...defaultBarChartSettings.yAxis, ...stored.yAxis };
 
+    const globalFontFamily = stored.globalFontFamily ?? defaults.globalFontFamily;
     const titleColor = typeof stored.titleColor === 'string' ? stored.titleColor : defaults.titleColor;
     const titleFontFamily = stored.titleFontFamily ?? defaults.titleFontFamily;
     const titleIsBold = typeof stored.titleIsBold === 'boolean' ? stored.titleIsBold : defaults.titleIsBold;
@@ -85,6 +86,7 @@ function mergeStoredSettings(stored?: Partial<BarChartSettings>): BarChartSettin
         data: mergedData,
         xAxis,
         yAxis,
+        globalFontFamily,
         titleColor,
         titleFontFamily,
         titleIsBold,

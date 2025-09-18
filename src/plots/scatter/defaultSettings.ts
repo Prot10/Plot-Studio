@@ -65,6 +65,7 @@ export const defaultScatterPlotSettings: ScatterPlotSettings = {
   backgroundColor: "#0f172a",
   canvasPadding: 48,
   textColor: "#f8fafc",
+  globalFontFamily: DEFAULT_FONT_STACK,
   titleColor: "#f8fafc",
   titleFontFamily: DEFAULT_FONT_STACK,
   titleIsBold: true,

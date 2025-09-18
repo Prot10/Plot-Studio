@@ -3,10 +3,8 @@ import type { FocusRequest } from '../../types/base'
 import { useHighlightEffect } from '../hooks/useHighlightEffect'
 import { NumericInput } from './NumericInput'
 import { ColorField } from './ColorField'
-import { FontPicker } from './FontPicker'
 import { TextStyleControls } from './TextStyleControls'
 import { TextInput } from './TextInput'
-import { DEFAULT_FONT_OPTIONS, DEFAULT_FONT_STACK } from '../constants/fonts'
 
 type TitleSettingsShape = {
   title: string
@@ -110,59 +108,52 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
           />
         </div>
 
-      <div className="flex flex-wrap items-center gap-8">
-        <FontPicker
-          label="Title font"
-          className="w-[12rem] flex-1"
-          value={settings.titleFontFamily || DEFAULT_FONT_STACK}
-          onChange={(value) => update('titleFontFamily', value)}
-          options={DEFAULT_FONT_OPTIONS}
-        />
-        <div className="min-w-[12rem] flex-1 sm:flex-none">
+        <div className="flex flex-wrap items-center gap-8">
+          <div className="min-w-[12rem] flex-1 sm:flex-none">
+            <NumericInput
+              title="Size"
+              value={settings.titleFontSize}
+              min={10}
+              max={96}
+              step={1}
+              precision={0}
+              onChange={(value) => update('titleFontSize', value)}
+              suffix="px"
+            />
+          </div>
+          <TextStyleControls
+            label="Title style"
+            value={{
+              bold: settings.titleIsBold,
+              italic: settings.titleIsItalic,
+              underline: settings.titleIsUnderline,
+            }}
+            onChange={handleTitleStyleChange}
+          />
+        </div>
+
+        <div className="grid gap-16 sm:grid-cols-2">
           <NumericInput
-            title="Size"
-            value={settings.titleFontSize}
-            min={10}
-            max={96}
+            title="Vertical offset"
+            value={settings.titleOffsetY}
+            min={-200}
+            max={200}
             step={1}
             precision={0}
-            onChange={(value) => update('titleFontSize', value)}
+            onChange={(value) => update('titleOffsetY', value)}
+            suffix="px"
+          />
+          <NumericInput
+            title="Horizontal offset"
+            value={settings.titleOffsetX}
+            min={-400}
+            max={400}
+            step={1}
+            precision={0}
+            onChange={(value) => update('titleOffsetX', value)}
             suffix="px"
           />
         </div>
-        <TextStyleControls
-          label="Title style"
-          value={{
-            bold: settings.titleIsBold,
-            italic: settings.titleIsItalic,
-            underline: settings.titleIsUnderline,
-          }}
-          onChange={handleTitleStyleChange}
-        />
-      </div>
-
-      <div className="grid gap-16 sm:grid-cols-2">
-        <NumericInput
-          title="Vertical offset"
-          value={settings.titleOffsetY}
-          min={-200}
-          max={200}
-          step={1}
-          precision={0}
-          onChange={(value) => update('titleOffsetY', value)}
-          suffix="px"
-        />
-        <NumericInput
-          title="Horizontal offset"
-          value={settings.titleOffsetX}
-          min={-400}
-          max={400}
-          step={1}
-          precision={0}
-          onChange={(value) => update('titleOffsetX', value)}
-          suffix="px"
-        />
-      </div>
       </div>
 
       <div className="space-y-8 border-t border-white/10 pt-8">
@@ -183,13 +174,6 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
         </div>
 
         <div className="flex flex-wrap items-center gap-8">
-          <FontPicker
-            label="Subtitle font"
-            className="w-[12rem] flex-1"
-            value={settings.subtitleFontFamily || DEFAULT_FONT_STACK}
-            onChange={(value) => update('subtitleFontFamily', value)}
-            options={DEFAULT_FONT_OPTIONS}
-          />
           <div className="min-w-[12rem] flex-1 sm:flex-none">
             <NumericInput
               title="Size"

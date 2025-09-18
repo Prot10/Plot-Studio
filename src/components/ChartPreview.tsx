@@ -322,14 +322,12 @@ export function ChartPreview({
     { value: 'pdf', label: 'PDF', description: 'Printable document' },
   ]
 
-  const defaultFontFamily = DEFAULT_FONT_STACK
+  const globalFontFamily = settings.globalFontFamily || DEFAULT_FONT_STACK
   const titleColor = settings.titleColor ?? settings.textColor
-  const titleFontFamily = settings.titleFontFamily || defaultFontFamily
   const titleFontWeight = settings.titleIsBold ? 700 : 500
   const titleFontStyle = settings.titleIsItalic ? 'italic' : 'normal'
   const titleTextDecoration = settings.titleIsUnderline ? 'underline' : 'none'
   const subtitleColor = settings.subtitleColor || settings.textColor
-  const subtitleFontFamily = settings.subtitleFontFamily || defaultFontFamily
   const subtitleFontWeight = settings.subtitleIsBold ? 600 : 400
   const subtitleFontStyle = settings.subtitleIsItalic ? 'italic' : 'normal'
   const subtitleTextDecoration = settings.subtitleIsUnderline ? 'underline' : 'none'
@@ -519,7 +517,7 @@ export function ChartPreview({
           >
             <title>{settings.title || 'Bar plot'}</title>
             <defs>
-              <style>{`*{font-family:${defaultFontFamily};}`}</style>
+              {/* No global font styling - fonts applied individually to text elements */}
             </defs>
             <rect
               data-role="background"
@@ -537,8 +535,8 @@ export function ChartPreview({
                 textAnchor="middle"
                 fill={titleColor}
                 fontSize={settings.titleFontSize}
+                fontFamily={globalFontFamily}
                 style={{
-                  fontFamily: titleFontFamily,
                   fontWeight: titleFontWeight,
                   fontStyle: titleFontStyle,
                   textDecoration: titleTextDecoration,
@@ -558,8 +556,8 @@ export function ChartPreview({
                 textAnchor="middle"
                 fill={subtitleColor}
                 fontSize={settings.subtitleFontSize}
+                fontFamily={globalFontFamily}
                 style={{
-                  fontFamily: subtitleFontFamily,
                   fontWeight: subtitleFontWeight,
                   fontStyle: subtitleFontStyle,
                   textDecoration: subtitleTextDecoration,
@@ -803,7 +801,7 @@ export function ChartPreview({
                       y={valueLabelY}
                       textAnchor="middle"
                       fill={settings.textColor}
-                      fontFamily={defaultFontFamily}
+                      fontFamily={globalFontFamily}
                       fontSize={settings.valueLabelFontSize}
                       fontWeight={500}
                       onDoubleClick={(event) => {
@@ -880,7 +878,7 @@ export function ChartPreview({
                 y={xAxisTitleY}
                 textAnchor="middle"
                 fill={axisStyles.x.axisLineColor}
-                fontFamily={defaultFontFamily}
+                fontFamily={globalFontFamily}
                 fontSize={settings.axisTitleFontSize}
                 fontWeight={500}
                 onDoubleClick={(event) => {
@@ -897,7 +895,7 @@ export function ChartPreview({
                 y={yAxisTitleY}
                 textAnchor="middle"
                 fill={axisStyles.y.axisLineColor}
-                fontFamily={defaultFontFamily}
+                fontFamily={globalFontFamily}
                 fontSize={settings.axisTitleFontSize}
                 fontWeight={500}
                 transform={`rotate(-90 ${yAxisTitleX} ${yAxisTitleY})`}
@@ -922,7 +920,7 @@ export function ChartPreview({
                     y={y + settings.axisTickFontSize / 3}
                     textAnchor="end"
                     fill={axisStyles.y.tickLabelColor}
-                    fontFamily={defaultFontFamily}
+                    fontFamily={globalFontFamily}
                     fontSize={settings.axisTickFontSize}
                     transform={axisStyles.y.tickLabelOrientation !== 0 ? `rotate(${axisStyles.y.tickLabelOrientation}, ${x}, ${y + settings.axisTickFontSize / 3})` : undefined}
                     onDoubleClick={(event) => sendHighlight(['yAxis'], event)}
@@ -941,7 +939,7 @@ export function ChartPreview({
                   y={xTickBaseY}
                   textAnchor="middle"
                   fill={axisStyles.x.tickLabelColor}
-                  fontFamily={defaultFontFamily}
+                  fontFamily={globalFontFamily}
                   fontSize={settings.axisTickFontSize}
                   transform={axisStyles.x.tickLabelOrientation !== 0 ? `rotate(${axisStyles.x.tickLabelOrientation}, ${center}, ${xTickBaseY})` : undefined}
                   onDoubleClick={(event) => {

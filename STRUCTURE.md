@@ -121,8 +121,8 @@ export interface LineDataPoint extends BaseDataPoint {
 src/plots/line/
 ├── components/
 │   ├── LineDataEditor.tsx
-│   ├── ChartBasicsPanel.tsx      # Can reuse from shared
-│   ├── ChartControlsPanel.tsx
+│   ├── LeftPanel.tsx             # General chart settings
+│   ├── RightPanel.tsx            # Design + data controls
 │   └── ChartPreview.tsx
 ├── LineChartPage.tsx
 └── index.ts
@@ -144,34 +144,33 @@ export default function LineChartPage() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Left Pane - Basics */}
-      <div className="w-80 bg-white border-r">
-        <ChartBasicsPanel
+      {/* Left Pane - General settings */}
+      <div className="w-80 border-r bg-white">
+        <LeftPanel
           settings={settings}
-          onSettingsChange={setSettings}
-          highlightSignals={highlightSignals}
-        />
-      </div>
-
-      {/* Middle Pane - Data Editor */}
-      <div className="flex-1 bg-white border-r">
-        <LineDataEditor
           data={data}
+          onSettingsChange={setSettings}
           onDataChange={setData}
           highlightSignals={highlightSignals}
         />
       </div>
 
-      {/* Right Pane - Preview & Controls */}
-      <div className="w-96 bg-white flex flex-col">
+      {/* Middle Pane - Live preview */}
+      <div className="flex-1 border-r bg-white">
         <ChartPreview
           settings={settings}
           data={data}
           highlightSignals={highlightSignals}
         />
-        <ChartControlsPanel
+      </div>
+
+      {/* Right Pane - Design & data tools */}
+      <div className="w-96 bg-white">
+        <RightPanel
           settings={settings}
+          data={data}
           onSettingsChange={setSettings}
+          onDataChange={setData}
           highlightSignals={highlightSignals}
         />
       </div>

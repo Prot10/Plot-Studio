@@ -50,6 +50,7 @@ export type BaseChartSettings = {
   backgroundColor: string;
   canvasPadding: number;
   textColor: string;
+  globalFontFamily: string;
   title: string;
   titleFontSize: number;
   titleOffsetY: number;

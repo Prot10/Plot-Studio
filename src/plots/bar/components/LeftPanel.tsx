@@ -1,8 +1,10 @@
 import { ChartPageBlock } from '../../../shared/components/ChartPageLayout'
 import { ColorField } from '../../../shared/components/ColorField'
+import { FontPicker } from '../../../shared/components/FontPicker'
 import { NumericInput } from '../../../shared/components/NumericInput'
 import { SelectField } from '../../../shared/components/SelectField'
 import { TitleSettingsPanel } from '../../../shared/components/TitleSettingsPanel'
+import { DEFAULT_FONT_OPTIONS } from '../../../shared/constants/fonts'
 import { useHighlightEffect } from '../../../shared/hooks/useHighlightEffect'
 import { paletteOptions, palettes } from '../../../shared/utils/palettes'
 import type { BarChartSettings, BarDataPoint } from '../../../types/bar'
@@ -96,7 +98,13 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
             />
           </div>
 
-          <div className="grid gap-16 sm:grid-cols-1">
+          <div className="grid gap-16 sm:grid-cols-2">
+            <FontPicker
+              label="Chart text font"
+              value={settings.globalFontFamily}
+              onChange={(value) => update('globalFontFamily', value)}
+              options={DEFAULT_FONT_OPTIONS}
+            />
             <NumericInput
               title="Inner padding"
               value={settings.canvasPadding}

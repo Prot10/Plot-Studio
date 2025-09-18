@@ -42,6 +42,7 @@ export type ChartSettings = {
   backgroundColor: string
   canvasPadding: number
   textColor: string
+  globalFontFamily: string
   titleColor: string
   titleFontFamily: string
   titleIsBold: boolean
