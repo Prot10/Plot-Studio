@@ -112,6 +112,7 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
           onChange={handleStyleChange}
         />
         <FontPicker
+          label="Font"
           className="w-[12rem] flex-1"
           value={settings.titleFontFamily || DEFAULT_FONT_STACK}
           onChange={(value) => update('titleFontFamily', value)}
