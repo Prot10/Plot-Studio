@@ -26,8 +26,8 @@ src/
 │   ├── bar/            # Bar chart implementation
 │   │   ├── components/
 │   │   │   ├── BarDataEditor.tsx
-│   │   │   ├── ChartBasicsPanel.tsx
-│   │   │   ├── ChartControlsPanel.tsx
+│   │   │   ├── LeftPanel.tsx
+│   │   │   ├── RightPanel.tsx
 │   │   │   └── ChartPreview.tsx
 │   │   ├── BarChartPage.tsx
 │   │   └── index.ts

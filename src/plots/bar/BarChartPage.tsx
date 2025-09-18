@@ -1,18 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Database, Download, Settings, Sparkles, UploadCloud } from 'lucide-react';
 import { ChartActionMenu } from '../../shared/components/ChartActionMenu';
-import { ChartPageBlock, ChartPageLayout } from '../../shared/components/ChartPageLayout';
-import { TitleSettingsPanel } from '../../shared/components/TitleSettingsPanel';
-import { useHighlightEffect } from '../../shared/hooks/useHighlightEffect';
+import { ChartPageLayout } from '../../shared/components/ChartPageLayout';
 import { createBar } from '../../shared/utils/barFactory';
 import type { BarChartSettings, BarDataPoint } from '../../types/bar';
 import type { FocusRequest, FocusTarget, HighlightKey, PaletteKey } from '../../types/base';
-import { BarDataEditor } from './components/BarDataEditor';
-import { ChartBasicsPanel } from './components/ChartBasicsPanel';
-import { ChartControlsPanel } from './components/ChartControlsPanel';
+import { LeftPanel } from './components/LeftPanel';
+import { RightPanel } from './components/RightPanel';
 import { ChartPreview } from './components/ChartPreview';
-import { XAxisPanel } from './components/XAxisPanel';
-import { YAxisPanel } from './components/YAxisPanel';
 import { defaultBarChartSettings } from './defaultSettings';
 
 const STORAGE_KEY = 'barplot-studio-state-v1';
@@ -218,18 +213,6 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
         setFocusRequest({ target, requestId: focusRequestIdRef.current });
     }, []);
 
-    const basicsHighlight = useHighlightEffect(highlightSignals?.chartBasics);
-    const titleHighlight = useHighlightEffect(highlightSignals?.title);
-    const dataHighlight = useHighlightEffect(highlightSignals.data);
-    const controlsHighlightSignal =
-        (highlightSignals.design ?? 0) +
-        (highlightSignals.valueLabels ?? 0) +
-        (highlightSignals.errorBars ?? 0) +
-        (highlightSignals.xAxis ?? 0) +
-        (highlightSignals.yAxis ?? 0);
-    const controlsSignalValue = controlsHighlightSignal === 0 ? undefined : controlsHighlightSignal;
-    const controlsHighlight = useHighlightEffect(controlsSignalValue);
-
     const activeSettings = plots[activePlot];
 
     const handleSettingsChange = useCallback(
@@ -363,54 +346,16 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
             </header>
             <ChartPageLayout
                 left={
-                    <>
-                        <ChartPageBlock title="General Settings" highlighted={basicsHighlight}>
-                            <ChartBasicsPanel
-                                settings={activeSettings}
-                                bars={activeSettings.data}
-                                onChange={handleSettingsChange}
-                                onBarsChange={(bars) =>
-                                    setPlot(activePlot, (current) => ({ ...current, data: bars }))
-                                }
-                                highlightSignals={highlightSignals}
-                            />
-                        </ChartPageBlock>
-                        <ChartPageBlock title="Title & Subtitle" highlighted={titleHighlight}>
-                            <TitleSettingsPanel
-                                settings={activeSettings}
-                                onChange={handleSettingsChange}
-                                focusRequest={focusRequest}
-                                highlightSignal={highlightSignals?.title}
-                            />
-                        </ChartPageBlock>
-                        <ChartPageBlock title="Y-Axis" highlighted={useHighlightEffect(highlightSignals?.yAxis)}>
-                            <YAxisPanel
-                                settings={activeSettings}
-                                onChange={handleSettingsChange}
-                                highlightSignals={highlightSignals}
-                                focusRequest={focusRequest}
-                            />
-                        </ChartPageBlock>
-                        <ChartPageBlock title="X-Axis" highlighted={useHighlightEffect(highlightSignals?.xAxis)}>
-                            <XAxisPanel
-                                settings={activeSettings}
-                                onChange={handleSettingsChange}
-                                highlightSignals={highlightSignals}
-                                focusRequest={focusRequest}
-                            />
-                        </ChartPageBlock>
-                        <ChartPageBlock title="Data" highlighted={dataHighlight}>
-                            <BarDataEditor
-                                bars={activeSettings.data}
-                                paletteName={activeSettings.paletteName}
-                                onChange={(bars) =>
-                                    setPlot(activePlot, (current) => ({ ...current, data: bars }))
-                                }
-                                highlightSignal={highlightSignals.data}
-                                focusRequest={focusRequest}
-                            />
-                        </ChartPageBlock>
-                    </>
+                    <LeftPanel
+                        settings={activeSettings}
+                        bars={activeSettings.data}
+                        onChange={handleSettingsChange}
+                        onBarsChange={(bars: BarDataPoint[]) =>
+                            setPlot(activePlot, (current) => ({ ...current, data: bars }))
+                        }
+                        highlightSignals={highlightSignals}
+                        focusRequest={focusRequest}
+                    />
                 }
                 center={
                     <>
@@ -447,13 +392,16 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                     </>
                 }
                 right={
-                    <div className={`flex flex-col gap-6 ${controlsHighlight ? 'highlight-pulse' : ''}`}>
-                        <ChartControlsPanel
-                            settings={activeSettings}
-                            onChange={handleSettingsChange}
-                            highlightSignals={highlightSignals}
-                        />
-                    </div>
+                    <RightPanel
+                        settings={activeSettings}
+                        bars={activeSettings.data}
+                        onChange={handleSettingsChange}
+                        onBarsChange={(bars: BarDataPoint[]) =>
+                            setPlot(activePlot, (current) => ({ ...current, data: bars }))
+                        }
+                        highlightSignals={highlightSignals}
+                        focusRequest={focusRequest}
+                    />
                 }
             />
         </div>

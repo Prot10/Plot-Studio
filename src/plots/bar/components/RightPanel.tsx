@@ -3,13 +3,17 @@ import { ColorField } from '../../../shared/components/ColorField'
 import { NumericInput } from '../../../shared/components/NumericInput'
 import { SelectField } from '../../../shared/components/SelectField'
 import { useHighlightEffect } from '../../../shared/hooks/useHighlightEffect'
-import type { BarChartSettings } from '../../../types/bar'
-import type { HighlightKey } from '../../../types/base'
+import type { BarChartSettings, BarDataPoint } from '../../../types/bar'
+import type { FocusRequest, HighlightKey } from '../../../types/base'
+import { BarDataEditor } from './BarDataEditor'
 
-type ChartControlsPanelProps = {
+type RightPanelProps = {
   settings: BarChartSettings
+  bars: BarDataPoint[]
   onChange: (settings: BarChartSettings) => void
+  onBarsChange: (bars: BarDataPoint[]) => void
   highlightSignals?: Partial<Record<HighlightKey, number>>
+  focusRequest?: FocusRequest | null
 }
 
 type ToggleProps = {
@@ -87,14 +91,14 @@ function CornerStyleSelector({
   )
 }
 
-export function ChartControlsPanel({ settings, onChange, highlightSignals }: ChartControlsPanelProps) {
+export function RightPanel({ settings, bars, onChange, onBarsChange, highlightSignals, focusRequest }: RightPanelProps) {
   const update = <K extends keyof BarChartSettings>(key: K, value: BarChartSettings[K]) => {
     onChange({ ...settings, [key]: value })
   }
 
   const barDesignHighlight = useHighlightEffect(highlightSignals?.design)
-  const typographyHighlight = useHighlightEffect(highlightSignals?.valueLabels)
   const errorHighlight = useHighlightEffect(highlightSignals?.errorBars)
+  const dataHighlight = useHighlightEffect(highlightSignals?.data)
 
   return (
     <>
@@ -207,74 +211,17 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals }: Cha
         ) : null}
       </ChartPageBlock>
 
-      <ChartPageBlock
-        title="Value Labels"
-        highlighted={typographyHighlight}
-        bodyClassName="space-y-4"
-      >
-        {/* First row: Toggle to show value labels and font size */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <Toggle
-              title="Show value labels"
-              value={settings.showValueLabels}
-              onChange={(value) => update('showValueLabels', value)}
-            />
-          </div>
-
-          <div className={`transition-opacity ${!settings.showValueLabels ? 'opacity-50 pointer-events-none' : ''}`}>
-            <NumericInput
-              title="Font size"
-              value={settings.valueLabelFontSize}
-              min={6}
-              max={48}
-              step={1}
-              precision={0}
-              onChange={(value) => update('valueLabelFontSize', value)}
-              suffix="px"
-            />
-          </div>
-        </div>
-
-        {/* Second row: Color, X offset, Y offset */}
-        <div className={`grid grid-cols-1 sm:grid-cols-3 gap-4 transition-opacity ${!settings.showValueLabels ? 'opacity-50 pointer-events-none' : ''}`}>
-          <div>
-            <ColorField
-              label="Label color"
-              value={settings.textColor}
-              onChange={(value) => update('textColor', value)}
-            />
-          </div>
-
-          <div>
-            <NumericInput
-              title="X offset"
-              value={settings.valueLabelOffsetX}
-              min={-100}
-              max={100}
-              step={1}
-              precision={0}
-              onChange={(value) => update('valueLabelOffsetX', value)}
-              suffix="px"
-            />
-          </div>
-
-          <div>
-            <NumericInput
-              title="Y offset"
-              value={settings.valueLabelOffsetY}
-              min={-100}
-              max={100}
-              step={1}
-              precision={0}
-              onChange={(value) => update('valueLabelOffsetY', value)}
-              suffix="px"
-            />
-          </div>
-        </div>
+      <ChartPageBlock title="Data" highlighted={dataHighlight}>
+        <BarDataEditor
+          bars={bars}
+          paletteName={settings.paletteName}
+          onChange={onBarsChange}
+          highlightSignal={highlightSignals?.data}
+          focusRequest={focusRequest}
+        />
       </ChartPageBlock>
     </>
   )
 }
 
-export default ChartControlsPanel
+export default RightPanel
