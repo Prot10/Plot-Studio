@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Download, Eraser, SlidersHorizontal, Sparkles, UploadCloud } from 'lucide-react';
+import { ChartActionMenu } from '../../shared/components/ChartActionMenu';
 import { ChartPageBlock, ChartPageLayout } from '../../shared/components/ChartPageLayout';
 import { useHighlightEffect } from '../../shared/hooks/useHighlightEffect';
 import { createBar } from '../../shared/utils/barFactory';
 import type { BarChartSettings, BarDataPoint } from '../../types/bar';
-import type { FocusRequest, FocusTarget, HighlightKey } from '../../types/base';
+import type { FocusRequest, FocusTarget, HighlightKey, PaletteKey } from '../../types/base';
 import { BarDataEditor } from './components/BarDataEditor';
 import { ChartBasicsPanel } from './components/ChartBasicsPanel';
 import { ChartControlsPanel } from './components/ChartControlsPanel';
@@ -11,6 +13,20 @@ import { ChartPreview } from './components/ChartPreview';
 import { defaultBarChartSettings } from './defaultSettings';
 
 const STORAGE_KEY = 'barplot-studio-state-v1';
+const DEFAULT_DATA_LENGTH = defaultBarChartSettings.data.length;
+
+function buildDefaultData(paletteName: PaletteKey) {
+    return Array.from({ length: DEFAULT_DATA_LENGTH }, (_, index) => createBar(index, paletteName));
+}
+
+function buildDefaultSettings(): BarChartSettings {
+    return {
+        ...defaultBarChartSettings,
+        data: buildDefaultData(defaultBarChartSettings.paletteName),
+        xAxis: { ...defaultBarChartSettings.xAxis },
+        yAxis: { ...defaultBarChartSettings.yAxis },
+    };
+}
 
 interface BarChartPageProps {
     onBack: () => void;
@@ -31,6 +47,7 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
     });
     const focusRequestIdRef = useRef(0);
     const [focusRequest, setFocusRequest] = useState<FocusRequest | null>(null);
+    const [previewAction, setPreviewAction] = useState<'importData' | 'exportChart' | null>(null);
 
     useEffect(() => {
         if (typeof window === 'undefined' || isHydrated) return;
@@ -134,6 +151,71 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
         setSettings(nextSettings);
     };
 
+    const handlePreviewActionHandled = useCallback(() => {
+        setPreviewAction(null);
+    }, []);
+
+    const handleRequestImport = useCallback(() => {
+        setPreviewAction('importData');
+    }, []);
+
+    const handleRequestExport = useCallback(() => {
+        setPreviewAction('exportChart');
+    }, []);
+
+    const handleResetStudio = useCallback(() => {
+        const defaults = buildDefaultSettings();
+        setSettings(defaults);
+        setFocusRequest(null);
+        triggerHighlight(['chartBasics', 'data']);
+        if (typeof window !== 'undefined') {
+            try {
+                window.localStorage.removeItem(STORAGE_KEY);
+            } catch (error) {
+                console.warn('Failed to clear saved chart state', error);
+            }
+        }
+    }, [triggerHighlight]);
+
+    const handleResetData = useCallback(() => {
+        setSettings((current) => ({
+            ...current,
+            data: buildDefaultData(current.paletteName),
+        }));
+        triggerHighlight(['data']);
+    }, [triggerHighlight]);
+
+    const handleResetSettings = useCallback(() => {
+        setSettings((current) => {
+            const defaults = buildDefaultSettings();
+            const paletteTemplate = defaults.data;
+            const nextData = current.data.map((bar, index) => {
+                const template = paletteTemplate[index % paletteTemplate.length];
+                return {
+                    ...bar,
+                    fillColor: template.fillColor,
+                    borderColor: template.borderColor,
+                };
+            });
+            return {
+                ...defaults,
+                data: nextData,
+            };
+        });
+        triggerHighlight(['chartBasics']);
+    }, [triggerHighlight]);
+
+    const actionMenuItems = useMemo(
+        () => [
+            { id: 'upload', label: 'Upload data', icon: UploadCloud, onClick: handleRequestImport },
+            { id: 'clean-studio', label: 'Clean Studio', icon: Sparkles, onClick: handleResetStudio },
+            { id: 'clean-data', label: 'Clean Data', icon: Eraser, onClick: handleResetData },
+            { id: 'clean-settings', label: 'Clean Settings', icon: SlidersHorizontal, onClick: handleResetSettings },
+            { id: 'export', label: 'Export chart', icon: Download, onClick: handleRequestExport },
+        ],
+        [handleRequestImport, handleResetStudio, handleResetData, handleResetSettings, handleRequestExport],
+    );
+
     return (
         <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
             <header className="border-b border-white/10 bg-black/20 backdrop-blur">
@@ -182,14 +264,19 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                     </>
                 }
                 center={
-                    <section className="rounded-3xl border border-white/10 bg-black/50 p-6 shadow-2xl backdrop-blur">
-                        <ChartPreview
-                            settings={settings}
-                            onUpdateSettings={setSettings}
-                            onHighlight={triggerHighlight}
-                            onRequestFocus={requestFocus}
-                        />
-                    </section>
+                    <>
+                        <ChartActionMenu actions={actionMenuItems} />
+                        <section className="rounded-3xl border border-white/10 bg-black/50 p-6 shadow-2xl backdrop-blur">
+                            <ChartPreview
+                                settings={settings}
+                                onUpdateSettings={setSettings}
+                                onHighlight={triggerHighlight}
+                                onRequestFocus={requestFocus}
+                                actionRequest={previewAction}
+                                onActionHandled={handlePreviewActionHandled}
+                            />
+                        </section>
+                    </>
                 }
                 right={
                     <div className={`flex flex-col gap-6 ${controlsHighlight ? 'highlight-pulse' : ''}`}>

@@ -1,15 +1,18 @@
-import { Download, Upload } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import useElementSize from '../../../shared/hooks/useElementSize'
 import type { BarChartSettings, BarDataPoint } from '../../../types/bar'
 import type { FocusTarget, HighlightKey } from '../../../types/base'
 import { DataImportDialog } from './DataImportDialog'
 
+type ChartPreviewAction = 'importData' | 'exportChart'
+
 type ChartPreviewProps = {
   settings: BarChartSettings
   onUpdateSettings: (settings: BarChartSettings) => void
   onHighlight: (keys: HighlightKey[]) => void
   onRequestFocus: (target: FocusTarget) => void
+  actionRequest?: ChartPreviewAction | null
+  onActionHandled?: () => void
 }
 
 type ExportFormat = 'png' | 'svg' | 'pdf'
@@ -104,7 +107,14 @@ function generateTicksRange(minValue: number, maxValue: number, count = 6) {
   return ticks
 }
 
-export function ChartPreview({ settings, onUpdateSettings, onHighlight, onRequestFocus }: ChartPreviewProps) {
+export function ChartPreview({
+  settings,
+  onUpdateSettings,
+  onHighlight,
+  onRequestFocus,
+  actionRequest,
+  onActionHandled,
+}: ChartPreviewProps) {
   const [wrapperRef, size] = useElementSize<HTMLDivElement>()
   const svgRef = useRef<SVGSVGElement | null>(null)
   const [isExporting, setIsExporting] = useState(false)
@@ -120,6 +130,16 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
     setExportScale(settings.exportScale)
     setExportTransparent(settings.exportTransparent)
   }, [settings.exportFileName, settings.exportScale, settings.exportTransparent])
+
+  useEffect(() => {
+    if (!actionRequest) return
+    if (actionRequest === 'importData') {
+      setIsImportDialogOpen(true)
+    } else if (actionRequest === 'exportChart') {
+      setIsExportDialogOpen(true)
+    }
+    onActionHandled?.()
+  }, [actionRequest, onActionHandled])
 
   const customWidth = settings.customWidth && settings.customWidth > 0 ? settings.customWidth : null
   const customHeight = settings.customHeight && settings.customHeight > 0 ? settings.customHeight : null
@@ -448,30 +468,11 @@ export function ChartPreview({ settings, onUpdateSettings, onHighlight, onReques
   return (
     <>
       <div className="flex h-full flex-col gap-4" style={{ color: settings.textColor }}>
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setIsImportDialogOpen(true)}
-            className="order-1 inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-white/20"
-          >
-            <Upload className="h-4 w-4" />
-            Import data
-          </button>
-          <div className="order-2 w-full text-center sm:order-2 sm:flex-1 sm:w-auto">
-            <h2 className="text-xl font-semibold text-white">Live preview</h2>
-            <p className="text-sm text-white/60">
-              Import data, fine-tune the design, and export the chart once it looks right.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setIsExportDialogOpen(true)}
-            disabled={isExporting}
-            className="order-3 inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-white/20 disabled:cursor-wait disabled:opacity-60"
-          >
-            <Download className="h-4 w-4" />
-            {isExporting ? 'Exporting…' : 'Export'}
-          </button>
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-white">Live preview</h2>
+          <p className="text-sm text-white/60">
+            Import data, fine-tune the design, and export the chart once it looks right.
+          </p>
         </div>
         <div
           ref={wrapperRef}
