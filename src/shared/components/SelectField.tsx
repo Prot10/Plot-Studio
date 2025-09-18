@@ -16,6 +16,7 @@ type DropdownPosition = {
 }
 
 type SelectFieldProps<TValue extends string> = {
+  label: string
   value: TValue | null
   onChange: (value: TValue) => void
   options: Array<SelectOption<TValue>>
@@ -28,6 +29,7 @@ type SelectFieldProps<TValue extends string> = {
 }
 
 export function SelectField<TValue extends string>({
+  label,
   value,
   onChange,
   options,
@@ -365,36 +367,39 @@ export function SelectField<TValue extends string>({
       : null
 
   return (
-    <div ref={containerRef} className={classNames('relative w-full', className)}>
-      {name ? <input type="hidden" name={name} value={selectedOption?.value ?? ''} /> : null}
-      <button
-        id={triggerId}
-        ref={triggerRef}
-        type="button"
-        role="combobox"
-        aria-haspopup="listbox"
-        aria-expanded={isOpen}
-        aria-controls={isOpen ? `${triggerId}-options` : undefined}
-        disabled={disabled}
-        onClick={handleToggle}
-        onKeyDown={handleKeyDown}
-        className={classNames(
-          'relative flex w-full items-center justify-between gap-2 rounded-lg border border-white/15 bg-white/10 px-4 py-2.5 text-start text-sm font-medium text-white shadow-sm transition focus:outline-none focus:ring-2 focus:ring-sky-400/70 focus:border-sky-300',
-          disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:bg-white/15',
-          isOpen ? 'border-sky-300/60' : null,
-        )}
-      >
-        <span className={classNames('block truncate', showPlaceholder ? 'font-normal text-white/50' : 'text-white')}>
-          {displayLabel}
-        </span>
-        <span className="pointer-events-none">
-          <svg className="h-4 w-4 text-white/60" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m7 15 5 5 5-5" />
-            <path d="m7 9 5-5 5 5" />
-          </svg>
-        </span>
-      </button>
-      {dropdownNode}
+    <div className={`flex flex-col gap-1 text-sm text-white ${className || ''}`}>
+      <span className="text-xs uppercase tracking-wide text-white/50">{label}</span>
+      <div ref={containerRef} className="relative w-full">
+        {name ? <input type="hidden" name={name} value={selectedOption?.value ?? ''} /> : null}
+        <button
+          id={triggerId}
+          ref={triggerRef}
+          type="button"
+          role="combobox"
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? `${triggerId}-options` : undefined}
+          disabled={disabled}
+          onClick={handleToggle}
+          onKeyDown={handleKeyDown}
+          className={classNames(
+            'relative flex w-full items-center justify-between gap-2 h-9 rounded-md border border-white/10 bg-white/10 px-3 py-2 text-start text-sm text-white transition focus:outline-none focus:ring-2 focus:ring-sky-300/60 focus:border-sky-300',
+            disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:bg-white/15',
+            isOpen ? 'border-sky-300/60' : null,
+          )}
+        >
+          <span className={classNames('block truncate', showPlaceholder ? 'font-normal text-white/40' : 'text-white')}>
+            {displayLabel}
+          </span>
+          <span className="pointer-events-none">
+            <svg className="h-4 w-4 text-white/60" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m7 15 5 5 5-5" />
+              <path d="m7 9 5-5 5 5" />
+            </svg>
+          </span>
+        </button>
+        {dropdownNode}
+      </div>
     </div>
   )
 }

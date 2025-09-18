@@ -28,15 +28,14 @@ export function FontPicker({ label, value, onChange, options = DEFAULT_FONT_OPTI
   const currentValue = value ?? DEFAULT_FONT_STACK
 
   return (
-    <div className={`flex flex-col gap-1 text-sm text-white ${className || ''}`}>
-      <span className="text-xs uppercase tracking-wide text-white/50">{label}</span>
-      <SelectField<string>
-        value={currentValue}
-        onChange={onChange}
-        options={selectOptions}
-        placeholder={placeholder ?? 'Select font'}
-      />
-    </div>
+    <SelectField<string>
+      label={label}
+      className={className}
+      value={currentValue}
+      onChange={onChange}
+      options={selectOptions}
+      placeholder={placeholder ?? 'Select font'}
+    />
   )
 }
 
