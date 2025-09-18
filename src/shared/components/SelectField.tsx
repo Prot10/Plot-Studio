@@ -310,60 +310,60 @@ export function SelectField<TValue extends string>({
   const dropdownNode =
     isOpen && dropdownPosition && portalTarget
       ? createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            top: dropdownPosition.top,
+            left: dropdownPosition.left,
+            width: dropdownPosition.width,
+            zIndex: 1000,
+          }}
+        >
           <div
-            style={{
-              position: 'fixed',
-              top: dropdownPosition.top,
-              left: dropdownPosition.left,
-              width: dropdownPosition.width,
-              zIndex: 1000,
-            }}
+            ref={listRef}
+            id={`${triggerId}-options`}
+            role="listbox"
+            aria-labelledby={triggerId}
+            style={{ maxHeight: dropdownPosition.maxHeight }}
+            className={classNames(
+              'max-h-72 w-full overflow-y-auto rounded-lg border border-white/10 bg-slate-950/95 p-1 shadow-xl backdrop-blur-sm scrollbar-thin scrollbar-track-white/10 scrollbar-thumb-white/30',
+              dropdownClassName,
+            )}
           >
-            <div
-              ref={listRef}
-              id={`${triggerId}-options`}
-              role="listbox"
-              aria-labelledby={triggerId}
-              style={{ maxHeight: dropdownPosition.maxHeight }}
-              className={classNames(
-                'max-h-72 w-full overflow-y-auto rounded-lg border border-white/10 bg-slate-950/95 p-1 shadow-xl backdrop-blur-sm scrollbar-thin scrollbar-track-white/10 scrollbar-thumb-white/30',
-                dropdownClassName,
-              )}
-            >
-              {options.map((option, index) => {
-                const isSelected = option.value === selectedOption?.value
-                const isHighlighted = index === highlightedIndex
-                return (
-                  <button
-                    type="button"
-                    key={option.value}
-                    data-index={index}
-                    role="option"
-                    aria-selected={isSelected}
-                    disabled={option.disabled}
-                    className={classNames(
-                      'flex w-full items-center justify-between rounded-md px-3 py-2 text-sm transition',
-                      option.disabled ? 'cursor-not-allowed text-white/30' : 'cursor-pointer text-white/80 hover:bg-white/10',
-                      isHighlighted ? 'bg-white/15 text-white' : null,
-                      isSelected ? 'font-semibold text-sky-300' : null,
-                    )}
-                    onMouseEnter={() => highlightIndex(index)}
-                    onMouseDown={(event) => event.preventDefault()}
-                    onClick={() => handleOptionSelect(index)}
-                  >
-                    <span className="truncate text-left">{option.label}</span>
-                    <span className={classNames('ml-3 text-sky-300 transition', isSelected ? 'opacity-100' : 'opacity-0')}>
-                      <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>,
-          portalTarget,
-        )
+            {options.map((option, index) => {
+              const isSelected = option.value === selectedOption?.value
+              const isHighlighted = index === highlightedIndex
+              return (
+                <button
+                  type="button"
+                  key={option.value}
+                  data-index={index}
+                  role="option"
+                  aria-selected={isSelected}
+                  disabled={option.disabled}
+                  className={classNames(
+                    'flex w-full items-center justify-between rounded-md px-3 py-2 text-sm transition',
+                    option.disabled ? 'cursor-not-allowed text-white/30' : 'cursor-pointer text-white/80 hover:bg-white/10',
+                    isHighlighted ? 'bg-white/15 text-white' : null,
+                    isSelected ? 'font-semibold text-sky-300' : null,
+                  )}
+                  onMouseEnter={() => highlightIndex(index)}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => handleOptionSelect(index)}
+                >
+                  <span className="truncate text-left">{option.label}</span>
+                  <span className={classNames('ml-3 text-sky-300 transition', isSelected ? 'opacity-100' : 'opacity-0')}>
+                    <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </div>,
+        portalTarget,
+      )
       : null
 
   return (

@@ -73,7 +73,7 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
   }, [focusRequest])
 
   return (
-    <section className={classNames('space-y-16', highlight ? 'highlight-pulse' : null, className)}>
+    <section className={classNames('space-y-8', highlight ? 'highlight-pulse' : null, className)}>
       <div className="grid gap-16 sm:grid-cols-2">
         <TextInput
           ref={titleRef}
@@ -90,9 +90,16 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
       </div>
 
       <div className="flex flex-wrap items-center gap-8">
+        <FontPicker
+          label="Font"
+          className="w-[12rem] flex-1"
+          value={settings.titleFontFamily || DEFAULT_FONT_STACK}
+          onChange={(value) => update('titleFontFamily', value)}
+          options={DEFAULT_FONT_OPTIONS}
+        />
         <div className="min-w-[12rem] flex-1 sm:flex-none">
           <NumericInput
-            title="Font size"
+            title="Size"
             value={settings.titleFontSize}
             min={10}
             max={96}
@@ -111,16 +118,9 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
           }}
           onChange={handleStyleChange}
         />
-        <FontPicker
-          label="Font"
-          className="w-[12rem] flex-1"
-          value={settings.titleFontFamily || DEFAULT_FONT_STACK}
-          onChange={(value) => update('titleFontFamily', value)}
-          options={DEFAULT_FONT_OPTIONS}
-        />
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-16 sm:grid-cols-2">
         <NumericInput
           title="Vertical offset"
           value={settings.titleOffsetY}
