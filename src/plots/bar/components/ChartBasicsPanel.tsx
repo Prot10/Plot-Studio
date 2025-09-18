@@ -39,7 +39,7 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
     <section className={classNames('space-y-10', panelHighlight ? 'highlight-pulse' : null)}>
       <div className="space-y-8">
         <h3 className="text-sm font-semibold text-white/80">Chart Appearance</h3>
-        
+
         <div className="grid gap-16 sm:grid-cols-2">
           <SelectField<PaletteKey>
             label="Color Palette"
@@ -76,7 +76,7 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
 
       <div className="space-y-8 border-t border-white/10 pt-8">
         <h3 className="text-sm font-semibold text-white/80">Chart Dimensions</h3>
-        
+
         <div className="grid gap-16 sm:grid-cols-2">
           <div className="flex flex-col gap-1 text-sm text-white">
             <span className="text-xs uppercase tracking-wide text-white/50">Custom width</span>
@@ -125,7 +125,7 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
 
       <div className={classNames('space-y-8 border-t border-white/10 pt-8', yAxisHighlight ? 'highlight-pulse' : null)}>
         <h3 className="text-sm font-semibold text-white/80">Y-Axis Range</h3>
-        
+
         <div className="grid gap-16 sm:grid-cols-2">
           <div className="flex flex-col gap-1 text-sm text-white">
             <span className="text-xs uppercase tracking-wide text-white/50">Y min</span>
