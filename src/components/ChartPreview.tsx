@@ -159,11 +159,18 @@ export function ChartPreview({
     onHighlight(keys)
   }
 
+  const hasTitle = Boolean(settings.title)
+  const hasSubtitle = Boolean(settings.subtitle)
+  const headingGap = hasTitle && hasSubtitle ? Math.max(settings.subtitleFontSize * 0.5, 12) : 0
   const basePadding = settings.canvasPadding
   const margin = useMemo(() => {
-    const topExtra = settings.title
-      ? settings.titleFontSize * 1.6 + Math.max(-settings.titleOffsetY, 0)
-      : 16
+    const titleBlock = hasTitle ? settings.titleFontSize * 1.6 : 0
+    const subtitleBlock = hasSubtitle ? settings.subtitleFontSize * 1.4 : 0
+    const topNegativeOffset = Math.max(
+      hasTitle ? Math.max(-settings.titleOffsetY, 0) : 0,
+      hasSubtitle ? Math.max(-settings.subtitleOffsetY, 0) : 0,
+    )
+    const topExtra = hasTitle || hasSubtitle ? titleBlock + subtitleBlock + headingGap + topNegativeOffset : 16
     const bottomExtra =
       (settings.xAxis.showTickLabels ? settings.axisTickFontSize + 24 : 16) +
       Math.max(settings.xAxisTitleOffsetY, 0)
@@ -180,13 +187,17 @@ export function ChartPreview({
     return { top, right, bottom, left }
   }, [
     basePadding,
+    hasSubtitle,
+    hasTitle,
+    headingGap,
     measuredHeight,
     measuredWidth,
     settings.axisTickFontSize,
+    settings.subtitleFontSize,
+    settings.subtitleOffsetY,
     settings.valueLabelOffsetY,
-    settings.titleOffsetY,
-    settings.title,
     settings.titleFontSize,
+    settings.titleOffsetY,
     settings.xAxisTitleOffsetY,
     settings.xAxis.showTickLabels,
     settings.yAxisTitleOffsetX,
@@ -317,6 +328,11 @@ export function ChartPreview({
   const titleFontWeight = settings.titleIsBold ? 700 : 500
   const titleFontStyle = settings.titleIsItalic ? 'italic' : 'normal'
   const titleTextDecoration = settings.titleIsUnderline ? 'underline' : 'none'
+  const subtitleColor = settings.subtitleColor || settings.textColor
+  const subtitleFontFamily = settings.subtitleFontFamily || defaultFontFamily
+  const subtitleFontWeight = settings.subtitleIsBold ? 600 : 400
+  const subtitleFontStyle = settings.subtitleIsItalic ? 'italic' : 'normal'
+  const subtitleTextDecoration = settings.subtitleIsUnderline ? 'underline' : 'none'
 
   const chartAreaTop = margin.top
   const chartAreaBottom = margin.top + chartBounds.height
@@ -326,6 +342,17 @@ export function ChartPreview({
   const baseTitleX = measuredWidth / 2
   const chartTitleX = clamp(
     baseTitleX + (settings.titleOffsetX ?? 0),
+    margin.left,
+    measuredWidth - margin.right,
+  )
+  const subtitleBaseOffset = clamp(settings.subtitleFontSize * 0.6, 10, Math.max(margin.top - 8, 10))
+  const baseSubtitleY = hasTitle
+    ? chartTitleY + settings.titleFontSize + headingGap
+    : margin.top - subtitleBaseOffset
+  const chartSubtitleY = baseSubtitleY + settings.subtitleOffsetY
+  const baseSubtitleX = measuredWidth / 2
+  const chartSubtitleX = clamp(
+    baseSubtitleX + (settings.subtitleOffsetX ?? 0),
     margin.left,
     measuredWidth - margin.right,
   )
@@ -522,6 +549,27 @@ export function ChartPreview({
                 }}
               >
                 {settings.title}
+              </text>
+            ) : null}
+            {settings.subtitle ? (
+              <text
+                x={chartSubtitleX}
+                y={chartSubtitleY}
+                textAnchor="middle"
+                fill={subtitleColor}
+                fontSize={settings.subtitleFontSize}
+                style={{
+                  fontFamily: subtitleFontFamily,
+                  fontWeight: subtitleFontWeight,
+                  fontStyle: subtitleFontStyle,
+                  textDecoration: subtitleTextDecoration,
+                }}
+                onDoubleClick={(event) => {
+                  sendHighlight(['title'], event)
+                  onRequestFocus({ type: 'chartSubtitle' })
+                }}
+              >
+                {settings.subtitle}
               </text>
             ) : null}
 

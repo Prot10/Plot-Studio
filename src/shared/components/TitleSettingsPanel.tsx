@@ -18,6 +18,15 @@ type TitleSettingsShape = {
   titleIsBold: boolean
   titleIsItalic: boolean
   titleIsUnderline: boolean
+  subtitle: string
+  subtitleFontSize: number
+  subtitleOffsetY: number
+  subtitleOffsetX: number
+  subtitleColor: string
+  subtitleFontFamily: string
+  subtitleIsBold: boolean
+  subtitleIsItalic: boolean
+  subtitleIsUnderline: boolean
 }
 
 type TitleSettingsPanelProps<TSettings extends TitleSettingsShape> = {
@@ -36,6 +45,7 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
   className,
 }: TitleSettingsPanelProps<TSettings>) {
   const titleRef = useRef<HTMLInputElement | null>(null)
+  const subtitleRef = useRef<HTMLInputElement | null>(null)
   const handledFocusRef = useRef(0)
   const highlight = useHighlightEffect(highlightSignal)
 
@@ -43,7 +53,7 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
     onChange({ ...settings, [key]: value })
   }
 
-  const handleStyleChange = (next: { bold: boolean; italic: boolean; underline: boolean }) => {
+  const handleTitleStyleChange = (next: { bold: boolean; italic: boolean; underline: boolean }) => {
     onChange({
       ...settings,
       titleIsBold: next.bold,
@@ -52,12 +62,21 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
     })
   }
 
+  const handleSubtitleStyleChange = (next: { bold: boolean; italic: boolean; underline: boolean }) => {
+    onChange({
+      ...settings,
+      subtitleIsBold: next.bold,
+      subtitleIsItalic: next.italic,
+      subtitleIsUnderline: next.underline,
+    })
+  }
+
   useEffect(() => {
     if (!focusRequest) return
     if (focusRequest.requestId === handledFocusRef.current) return
-    if (focusRequest.target.type !== 'chartTitle') return
+    if (focusRequest.target.type !== 'chartTitle' && focusRequest.target.type !== 'chartSubtitle') return
 
-    const input = titleRef.current
+    const input = focusRequest.target.type === 'chartTitle' ? titleRef.current : subtitleRef.current
     if (!input) return
 
     handledFocusRef.current = focusRequest.requestId
@@ -73,25 +92,27 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
   }, [focusRequest])
 
   return (
-    <section className={classNames('space-y-8', highlight ? 'highlight-pulse' : null, className)}>
-      <div className="grid gap-16 sm:grid-cols-2">
-        <TextInput
-          ref={titleRef}
-          label="Text"
-          value={settings.title}
-          onChange={(value) => update('title', value)}
-          placeholder="Untitled chart"
-        />
-        <ColorField
-          label="Color"
-          value={settings.titleColor}
-          onChange={(value) => update('titleColor', value)}
-        />
-      </div>
+    <section className={classNames('space-y-10', highlight ? 'highlight-pulse' : null, className)}>
+      <div className="space-y-8">
+        <h3 className="text-sm font-semibold text-white/80">Title</h3>
+        <div className="grid gap-16 sm:grid-cols-2">
+          <TextInput
+            ref={titleRef}
+            label="Title text"
+            value={settings.title}
+            onChange={(value) => update('title', value)}
+            placeholder="Untitled chart"
+          />
+          <ColorField
+            label="Title color"
+            value={settings.titleColor}
+            onChange={(value) => update('titleColor', value)}
+          />
+        </div>
 
       <div className="flex flex-wrap items-center gap-8">
         <FontPicker
-          label="Font"
+          label="Title font"
           className="w-[12rem] flex-1"
           value={settings.titleFontFamily || DEFAULT_FONT_STACK}
           onChange={(value) => update('titleFontFamily', value)}
@@ -110,13 +131,13 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
           />
         </div>
         <TextStyleControls
-          label="Style"
+          label="Title style"
           value={{
             bold: settings.titleIsBold,
             italic: settings.titleIsItalic,
             underline: settings.titleIsUnderline,
           }}
-          onChange={handleStyleChange}
+          onChange={handleTitleStyleChange}
         />
       </div>
 
@@ -141,6 +162,79 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
           onChange={(value) => update('titleOffsetX', value)}
           suffix="px"
         />
+      </div>
+      </div>
+
+      <div className="space-y-8 border-t border-white/10 pt-8">
+        <h3 className="text-sm font-semibold text-white/80">Subtitle</h3>
+        <div className="grid gap-16 sm:grid-cols-2">
+          <TextInput
+            ref={subtitleRef}
+            label="Subtitle text"
+            value={settings.subtitle}
+            onChange={(value) => update('subtitle', value)}
+            placeholder="Add a subtitle"
+          />
+          <ColorField
+            label="Subtitle color"
+            value={settings.subtitleColor}
+            onChange={(value) => update('subtitleColor', value)}
+          />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-8">
+          <FontPicker
+            label="Subtitle font"
+            className="w-[12rem] flex-1"
+            value={settings.subtitleFontFamily || DEFAULT_FONT_STACK}
+            onChange={(value) => update('subtitleFontFamily', value)}
+            options={DEFAULT_FONT_OPTIONS}
+          />
+          <div className="min-w-[12rem] flex-1 sm:flex-none">
+            <NumericInput
+              title="Size"
+              value={settings.subtitleFontSize}
+              min={8}
+              max={72}
+              step={1}
+              precision={0}
+              onChange={(value) => update('subtitleFontSize', value)}
+              suffix="px"
+            />
+          </div>
+          <TextStyleControls
+            label="Subtitle style"
+            value={{
+              bold: settings.subtitleIsBold,
+              italic: settings.subtitleIsItalic,
+              underline: settings.subtitleIsUnderline,
+            }}
+            onChange={handleSubtitleStyleChange}
+          />
+        </div>
+
+        <div className="grid gap-16 sm:grid-cols-2">
+          <NumericInput
+            title="Vertical offset"
+            value={settings.subtitleOffsetY}
+            min={-200}
+            max={200}
+            step={1}
+            precision={0}
+            onChange={(value) => update('subtitleOffsetY', value)}
+            suffix="px"
+          />
+          <NumericInput
+            title="Horizontal offset"
+            value={settings.subtitleOffsetX}
+            min={-400}
+            max={400}
+            step={1}
+            precision={0}
+            onChange={(value) => update('subtitleOffsetX', value)}
+            suffix="px"
+          />
+        </div>
       </div>
     </section>
   )

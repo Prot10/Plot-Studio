@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ChartPageBlock, ChartPageLayout } from '../../shared/components/ChartPageLayout';
+import { TitleSettingsPanel } from '../../shared/components/TitleSettingsPanel';
 import { useHighlightEffect } from '../../shared/hooks/useHighlightEffect';
 import type { HighlightKey } from '../../types/base';
 import type { ScatterPlotSettings } from '../../types/scatter';
@@ -61,6 +62,7 @@ export function ScatterPlotPage({ onBack }: ScatterPlotPageProps) {
     };
 
     const basicsHighlight = useHighlightEffect(highlightSignals.chartBasics);
+    const titleHighlight = useHighlightEffect(highlightSignals?.title);
 
     return (
         <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
@@ -94,6 +96,14 @@ export function ScatterPlotPage({ onBack }: ScatterPlotPageProps) {
                                     Scatter plot basics panel will go here
                                 </p>
                             </div>
+                        </ChartPageBlock>
+                        <ChartPageBlock title="Title & Subtitle" highlighted={titleHighlight}>
+                            <TitleSettingsPanel
+                                settings={settings}
+                                onChange={handleSettingsChange}
+                                focusRequest={null}
+                                highlightSignal={highlightSignals?.title}
+                            />
                         </ChartPageBlock>
                         <ChartPageBlock title="Data">
                             <div className="space-y-3 text-white">

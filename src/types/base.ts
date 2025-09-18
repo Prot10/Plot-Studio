@@ -16,6 +16,7 @@ export type HighlightKey =
 
 export type FocusTarget =
   | { type: "chartTitle" }
+  | { type: "chartSubtitle" }
   | { type: "dataLabel"; dataId: string }
   | { type: "dataValue"; dataId: string }
   | { type: "barLabel"; barId: string } // Legacy compatibility
@@ -54,6 +55,15 @@ export type BaseChartSettings = {
   titleIsBold: boolean;
   titleIsItalic: boolean;
   titleIsUnderline: boolean;
+  subtitle: string;
+  subtitleFontSize: number;
+  subtitleOffsetY: number;
+  subtitleOffsetX: number;
+  subtitleColor: string;
+  subtitleFontFamily: string;
+  subtitleIsBold: boolean;
+  subtitleIsItalic: boolean;
+  subtitleIsUnderline: boolean;
   axisTitleFontSize: number;
   axisTickFontSize: number;
   aspectRatio: number;

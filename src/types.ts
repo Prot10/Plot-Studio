@@ -47,6 +47,15 @@ export type ChartSettings = {
   title: string
   titleFontSize: number
   titleOffsetY: number
+  subtitle: string
+  subtitleFontSize: number
+  subtitleOffsetY: number
+  subtitleOffsetX: number
+  subtitleColor: string
+  subtitleFontFamily: string
+  subtitleIsBold: boolean
+  subtitleIsItalic: boolean
+  subtitleIsUnderline: boolean
   axisTitleFontSize: number
   axisTickFontSize: number
   valueLabelFontSize: number
@@ -86,6 +95,7 @@ export type HighlightKey =
 
 export type FocusTarget =
   | { type: 'chartTitle' }
+  | { type: 'chartSubtitle' }
   | { type: 'barLabel'; barId: string }
   | { type: 'barValue'; barId: string }
   | { type: 'xAxisTitle' }

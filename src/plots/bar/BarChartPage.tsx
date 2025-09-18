@@ -69,6 +69,17 @@ function mergeStoredSettings(stored?: Partial<BarChartSettings>): BarChartSettin
     const titleIsItalic = typeof stored.titleIsItalic === 'boolean' ? stored.titleIsItalic : defaults.titleIsItalic;
     const titleIsUnderline = typeof stored.titleIsUnderline === 'boolean' ? stored.titleIsUnderline : defaults.titleIsUnderline;
     const titleOffsetX = typeof stored.titleOffsetX === 'number' ? stored.titleOffsetX : defaults.titleOffsetX;
+    const subtitle = typeof stored.subtitle === 'string' ? stored.subtitle : defaults.subtitle;
+    const subtitleColor = typeof stored.subtitleColor === 'string' ? stored.subtitleColor : defaults.subtitleColor;
+    const subtitleFontFamily = stored.subtitleFontFamily ?? defaults.subtitleFontFamily;
+    const subtitleFontSize = typeof stored.subtitleFontSize === 'number' ? stored.subtitleFontSize : defaults.subtitleFontSize;
+    const subtitleIsBold = typeof stored.subtitleIsBold === 'boolean' ? stored.subtitleIsBold : defaults.subtitleIsBold;
+    const subtitleIsItalic = typeof stored.subtitleIsItalic === 'boolean' ? stored.subtitleIsItalic : defaults.subtitleIsItalic;
+    const subtitleIsUnderline = typeof stored.subtitleIsUnderline === 'boolean'
+        ? stored.subtitleIsUnderline
+        : defaults.subtitleIsUnderline;
+    const subtitleOffsetX = typeof stored.subtitleOffsetX === 'number' ? stored.subtitleOffsetX : defaults.subtitleOffsetX;
+    const subtitleOffsetY = typeof stored.subtitleOffsetY === 'number' ? stored.subtitleOffsetY : defaults.subtitleOffsetY;
 
     return {
         ...defaults,
@@ -83,6 +94,15 @@ function mergeStoredSettings(stored?: Partial<BarChartSettings>): BarChartSettin
         titleIsItalic,
         titleIsUnderline,
         titleOffsetX,
+        subtitle,
+        subtitleColor,
+        subtitleFontFamily,
+        subtitleFontSize,
+        subtitleIsBold,
+        subtitleIsItalic,
+        subtitleIsUnderline,
+        subtitleOffsetX,
+        subtitleOffsetY,
     };
 }
 
@@ -353,7 +373,7 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                                 highlightSignals={highlightSignals}
                             />
                         </ChartPageBlock>
-                        <ChartPageBlock title="Title" highlighted={titleHighlight}>
+                        <ChartPageBlock title="Title & Subtitle" highlighted={titleHighlight}>
                             <TitleSettingsPanel
                                 settings={activeSettings}
                                 onChange={handleSettingsChange}
