@@ -22,6 +22,7 @@ export type AxisSettings = {
   axisLineColor: string
   axisLineWidth: number
   tickLabelColor: string
+  tickLabelOrientation: number
   gridLineColor: string
   gridLineStyle: 'solid' | 'dashed' | 'dotted'
   gridLineOpacity: number

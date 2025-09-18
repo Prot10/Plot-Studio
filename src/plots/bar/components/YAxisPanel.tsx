@@ -36,11 +36,11 @@ type AutoNumericInputProps = {
 function SyncIcon({ active = false }: { active?: boolean }) {
     return (
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={active ? 2.5 : 2} 
-                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" 
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={active ? 2.5 : 2}
+                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
             />
         </svg>
     )
@@ -75,7 +75,7 @@ function AutoNumericInput({
 }: AutoNumericInputProps) {
     const [isEditing, setIsEditing] = useState(false)
     const [editValue, setEditValue] = useState('')
-    
+
     const isAuto = value === null
     const displayValue = isAuto ? autoValue ?? 0 : value
     const isLocked = isAuto
@@ -142,11 +142,10 @@ function AutoNumericInput({
                 <button
                     type="button"
                     onClick={handleLockToggle}
-                    className={`flex-none p-1 rounded transition-colors ${
-                        isLocked 
-                            ? 'text-orange-400 hover:text-orange-300' 
-                            : 'text-sky-400 hover:text-sky-300'
-                    }`}
+                    className={`flex-none p-1 rounded transition-colors ${isLocked
+                        ? 'text-orange-400 hover:text-orange-300'
+                        : 'text-sky-400 hover:text-sky-300'
+                        }`}
                     title={isLocked ? 'Auto mode - click to unlock' : 'Manual mode - click to lock'}
                 >
                     <LockIcon locked={isLocked} />
@@ -264,25 +263,49 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
     }
 
     const [syncActive, setSyncActive] = useState(false)
+    const [tickSyncActive, setTickSyncActive] = useState(false)
 
     const updateAxisField = <K extends keyof AxisSettings>(key: K, value: AxisSettings[K]) => {
         updateAxis({ ...settings.yAxis, [key]: value })
     }
 
     const handleSyncWithXAxis = () => {
-        updateAxis({
-            ...settings.yAxis,
-            axisLineWidth: settings.xAxis.axisLineWidth,
-            axisLineColor: settings.xAxis.axisLineColor,
-            gridLineStyle: settings.xAxis.gridLineStyle,
-            gridLineOpacity: settings.xAxis.gridLineOpacity,
-            gridLineColor: settings.xAxis.gridLineColor,
-            gridLineWidth: settings.xAxis.gridLineWidth
+        // Copy Y-axis values TO X-axis
+        const updatedXAxis = {
+            ...settings.xAxis,
+            axisLineWidth: settings.yAxis.axisLineWidth,
+            axisLineColor: settings.yAxis.axisLineColor,
+            gridLineStyle: settings.yAxis.gridLineStyle,
+            gridLineOpacity: settings.yAxis.gridLineOpacity,
+            gridLineColor: settings.yAxis.gridLineColor,
+            gridLineWidth: settings.yAxis.gridLineWidth
+        }
+
+        onChange({
+            ...settings,
+            xAxis: updatedXAxis
         })
-        
-        // Show active state for 1 second
-        setSyncActive(true)
-        setTimeout(() => setSyncActive(false), 1000)
+
+        // Toggle active state permanently
+        setSyncActive(!syncActive)
+    }
+
+    const handleSyncTickLabelsWithXAxis = () => {
+        // Copy Y-axis tick label values TO X-axis
+        const updatedXAxis = {
+            ...settings.xAxis,
+            tickLabelColor: settings.yAxis.tickLabelColor,
+            tickLabelOrientation: settings.yAxis.tickLabelOrientation
+        }
+
+        onChange({
+            ...settings,
+            xAxis: updatedXAxis,
+            axisTickFontSize: settings.axisTickFontSize
+        })
+
+        // Toggle active state permanently
+        setTickSyncActive(!tickSyncActive)
     }
 
     const yAxisTitleRef = useRef<HTMLInputElement | null>(null)
@@ -313,13 +336,66 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
 
     return (
         <section className={classNames('space-y-10', highlight ? 'highlight-pulse' : null)}>
+            <div className="space-y-8 border-t border-white/10 pt-8">
+                <h3 className="text-sm font-semibold text-white/80">Title</h3>
+
+                {/* All title settings in one responsive row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <div className="flex flex-col gap-1 text-sm text-white">
+                            <span className="text-xs uppercase tracking-wide text-white/50">Axis title</span>
+                            <input
+                                ref={yAxisTitleRef}
+                                type="text"
+                                value={settings.yAxis.title}
+                                onChange={(event) => updateAxisField('title', event.target.value)}
+                                className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60"
+                                placeholder="Y-axis title"
+                            />
+                        </div>
+                    </div>
+
+                    <div className={classNames(
+                        "transition-opacity",
+                        !settings.yAxis.title.trim() && "opacity-50 pointer-events-none"
+                    )}>
+                        <NumericInput
+                            title="Title font size"
+                            value={settings.axisTitleFontSize}
+                            min={8}
+                            max={72}
+                            step={1}
+                            precision={0}
+                            onChange={(value) => update('axisTitleFontSize', value)}
+                            suffix="px"
+                        />
+                    </div>
+
+                    <div className={classNames(
+                        "transition-opacity",
+                        !settings.yAxis.title.trim() && "opacity-50 pointer-events-none"
+                    )}>
+                        <NumericInput
+                            title="Title offset"
+                            value={settings.yAxisTitleOffsetX}
+                            min={-200}
+                            max={200}
+                            step={1}
+                            precision={0}
+                            onChange={(value) => update('yAxisTitleOffsetX', value)}
+                            suffix="px"
+                        />
+                    </div>
+                </div>
+            </div>
+
             <div className="space-y-8">
                 <div className="flex items-center justify-between">
                     <h3 className="text-sm font-semibold text-white/80">Appearance</h3>
                     <button
                         onClick={handleSyncWithXAxis}
                         className={classNames(
-                            "p-1.5 rounded transition-all duration-200",
+                            "flex items-center gap-2 px-3 py-1.5 rounded transition-all duration-200 text-xs",
                             syncActive
                                 ? "text-sky-400 bg-sky-400/20 shadow-sm"
                                 : "text-white/40 hover:text-white/70 hover:bg-white/10"
@@ -327,9 +403,10 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                         title="Sync with X-axis appearance"
                     >
                         <SyncIcon active={syncActive} />
+                        <span>Sync with X-axis</span>
                     </button>
                 </div>
-                
+
                 {/* Visibility, Line Width, and Line Color in one row */}
                 <div className="grid grid-cols-3 gap-4">
                     <div>
@@ -339,7 +416,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                             onChange={(value) => updateAxisField('showAxisLines', value)}
                         />
                     </div>
-                    
+
                     <div className={classNames(
                         "transition-opacity",
                         !isAxisVisible && "opacity-50 pointer-events-none"
@@ -354,7 +431,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                             onChange={(value) => updateAxisField('axisLineWidth', value)}
                         />
                     </div>
-                    
+
                     <div className={classNames(
                         "transition-opacity",
                         !isAxisVisible && "opacity-50 pointer-events-none"
@@ -377,7 +454,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                                 onChange={(value) => updateAxisField('showGridLines', value)}
                             />
                         </div>
-                        
+
                         <div className={classNames(
                             "transition-opacity",
                             !settings.yAxis.showGridLines && "opacity-50 pointer-events-none"
@@ -394,7 +471,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                                 placeholder="Select style"
                             />
                         </div>
-                        
+
                         <div className={classNames(
                             "transition-opacity",
                             !settings.yAxis.showGridLines && "opacity-50 pointer-events-none"
@@ -410,7 +487,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                             />
                         </div>
                     </div>
-                    
+
                     {/* Opacity and color on second row */}
                     <div className={classNames(
                         "grid grid-cols-1 sm:grid-cols-2 gap-4 transition-opacity",
@@ -427,7 +504,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                                 precision={1}
                             />
                         </div>
-                        
+
                         <div>
                             <ColorField
                                 label="Grid line color"
@@ -440,62 +517,82 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
             </div>
 
             <div className="space-y-8 border-t border-white/10 pt-8">
-                <h3 className="text-sm font-semibold text-white/80">Title</h3>
-                
-                {/* All title settings in one responsive row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-semibold text-white/80">Ticks</h3>
+                    <button
+                        onClick={handleSyncTickLabelsWithXAxis}
+                        className={classNames(
+                            "flex items-center gap-2 px-3 py-1.5 rounded transition-all duration-200 text-xs",
+                            tickSyncActive
+                                ? "text-sky-400 bg-sky-400/20 shadow-sm"
+                                : "text-white/40 hover:text-white/70 hover:bg-white/10"
+                        )}
+                        title="Sync tick labels with X-axis"
+                    >
+                        <SyncIcon active={tickSyncActive} />
+                        <span>Sync with X-axis</span>
+                    </button>
+                </div>
+
+                {/* First row: Tick labels toggle and orientation */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <div className="flex flex-col gap-1 text-sm text-white">
-                            <span className="text-xs uppercase tracking-wide text-white/50">Axis title</span>
-                            <input
-                                ref={yAxisTitleRef}
-                                type="text"
-                                value={settings.yAxis.title}
-                                onChange={(event) => updateAxisField('title', event.target.value)}
-                                className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60"
-                                placeholder="Y-axis title"
-                            />
-                        </div>
-                    </div>
-                    
-                    <div className={classNames(
-                        "transition-opacity",
-                        !settings.yAxis.title.trim() && "opacity-50 pointer-events-none"
-                    )}>
-                        <NumericInput
-                            title="Title font size"
-                            value={settings.axisTitleFontSize}
-                            min={8}
-                            max={72}
-                            step={1}
-                            precision={0}
-                            onChange={(value) => update('axisTitleFontSize', value)}
-                            suffix="px"
+                        <Toggle
+                            title="Tick labels"
+                            value={settings.yAxis.showTickLabels}
+                            onChange={(value) => updateAxisField('showTickLabels', value)}
                         />
                     </div>
-                    
+
                     <div className={classNames(
                         "transition-opacity",
-                        !settings.yAxis.title.trim() && "opacity-50 pointer-events-none"
+                        !settings.yAxis.showTickLabels && "opacity-50 pointer-events-none"
                     )}>
                         <NumericInput
-                            title="Title offset"
-                            value={settings.yAxisTitleOffsetX}
-                            min={-200}
-                            max={200}
-                            step={1}
+                            title="Label orientation"
+                            value={settings.yAxis.tickLabelOrientation}
+                            onChange={(value) => updateAxisField('tickLabelOrientation', value)}
+                            min={0}
+                            max={360}
+                            step={15}
                             precision={0}
-                            onChange={(value) => update('yAxisTitleOffsetX', value)}
-                            suffix="px"
+                            suffix="°"
                         />
                     </div>
                 </div>
-            </div>
 
-            <div className="space-y-8 border-t border-white/10 pt-8">
-                <h3 className="text-sm font-semibold text-white/80">Ticks</h3>
-                
-                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {/* Second row: Label font size and color */}
+                <div className={classNames(
+                    "grid grid-cols-1 sm:grid-cols-2 gap-4 transition-opacity",
+                    !settings.yAxis.showTickLabels && "opacity-50 pointer-events-none"
+                )}>
+                    <div>
+                        <NumericInput
+                            title="Label font size"
+                            value={settings.axisTickFontSize}
+                            min={6}
+                            max={48}
+                            step={1}
+                            precision={0}
+                            onChange={(value) => update('axisTickFontSize', value)}
+                            suffix="px"
+                        />
+                    </div>
+
+                    <div>
+                        <ColorField
+                            label="Label color"
+                            value={settings.yAxis.tickLabelColor}
+                            onChange={(value) => updateAxisField('tickLabelColor', value)}
+                        />
+                    </div>
+                </div>
+
+                {/* Third row: Range controls - disabled when tick labels are off */}
+                <div className={classNames(
+                    "grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 transition-opacity",
+                    !settings.yAxis.showTickLabels && "opacity-50 pointer-events-none"
+                )}>
                     <AutoNumericInput
                         title="Y min"
                         value={settings.yAxisMin}
@@ -528,32 +625,6 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                         precision={3}
                         autoValue={10} // You can compute this from the actual data
                         placeholder="auto"
-                    />
-                </div>
-
-                <div className="grid gap-16 sm:grid-cols-2">
-                    <Toggle
-                        title="Tick labels"
-                        value={settings.yAxis.showTickLabels}
-                        onChange={(value) => updateAxisField('showTickLabels', value)}
-                    />
-                    <ColorField
-                        label="Tick label color"
-                        value={settings.yAxis.tickLabelColor}
-                        onChange={(value) => updateAxisField('tickLabelColor', value)}
-                    />
-                </div>
-
-                <div className="grid gap-16 sm:grid-cols-1">
-                    <NumericInput
-                        title="Tick label font size"
-                        value={settings.axisTickFontSize}
-                        min={6}
-                        max={48}
-                        step={1}
-                        precision={0}
-                        onChange={(value) => update('axisTickFontSize', value)}
-                        suffix="px"
                     />
                 </div>
             </div>

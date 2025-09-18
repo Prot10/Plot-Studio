@@ -37,6 +37,7 @@ export type AxisSettings = {
   axisLineColor: string;
   axisLineWidth: number;
   tickLabelColor: string;
+  tickLabelOrientation: number; // Rotation angle in degrees
   gridLineColor: string;
   gridLineStyle: 'solid' | 'dashed' | 'dotted';
   gridLineOpacity: number;

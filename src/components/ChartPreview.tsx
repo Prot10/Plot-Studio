@@ -519,7 +519,7 @@ export function ChartPreview({
           >
             <title>{settings.title || 'Bar plot'}</title>
             <defs>
-          <style>{`*{font-family:${defaultFontFamily};}`}</style>
+              <style>{`*{font-family:${defaultFontFamily};}`}</style>
             </defs>
             <rect
               data-role="background"
@@ -707,7 +707,7 @@ export function ChartPreview({
             {axisStyles.y.showGridLines
               ? ticks.map((tick) => {
                 const y = margin.top + scaleY(tick)
-                
+
                 // Create stroke dash array based on line style
                 let strokeDasharray = 'none'
                 switch (axisStyles.y.gridLineStyle) {
@@ -722,7 +722,7 @@ export function ChartPreview({
                     strokeDasharray = 'none'
                     break
                 }
-                
+
                 return (
                   <line
                     key={`grid-${tick}`}
@@ -803,7 +803,7 @@ export function ChartPreview({
                       y={valueLabelY}
                       textAnchor="middle"
                       fill={settings.textColor}
-          fontFamily={defaultFontFamily}
+                      fontFamily={defaultFontFamily}
                       fontSize={settings.valueLabelFontSize}
                       fontWeight={500}
                       onDoubleClick={(event) => {
@@ -914,15 +914,17 @@ export function ChartPreview({
             {axisStyles.y.showTickLabels
               ? ticks.map((tick) => {
                 const y = margin.top + scaleY(tick)
+                const x = margin.left - 10
                 return (
                   <text
                     key={`ytick-${tick}`}
-                    x={margin.left - 10}
+                    x={x}
                     y={y + settings.axisTickFontSize / 3}
                     textAnchor="end"
                     fill={axisStyles.y.tickLabelColor}
                     fontFamily={defaultFontFamily}
                     fontSize={settings.axisTickFontSize}
+                    transform={axisStyles.y.tickLabelOrientation !== 0 ? `rotate(${axisStyles.y.tickLabelOrientation}, ${x}, ${y + settings.axisTickFontSize / 3})` : undefined}
                     onDoubleClick={(event) => sendHighlight(['yAxis'], event)}
                   >
                     {tick.toLocaleString(undefined, { maximumFractionDigits: 2 })}
@@ -939,8 +941,9 @@ export function ChartPreview({
                   y={xTickBaseY}
                   textAnchor="middle"
                   fill={axisStyles.x.tickLabelColor}
-                    fontFamily={defaultFontFamily}
+                  fontFamily={defaultFontFamily}
                   fontSize={settings.axisTickFontSize}
+                  transform={axisStyles.x.tickLabelOrientation !== 0 ? `rotate(${axisStyles.x.tickLabelOrientation}, ${center}, ${xTickBaseY})` : undefined}
                   onDoubleClick={(event) => {
                     sendHighlight(['data'], event)
                     onRequestFocus({ type: 'barLabel', barId: data.id })
