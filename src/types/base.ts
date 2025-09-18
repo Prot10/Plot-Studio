@@ -69,8 +69,10 @@ export type BaseChartSettings = {
   subtitleIsBold: boolean;
   subtitleIsItalic: boolean;
   subtitleIsUnderline: boolean;
-  axisTitleFontSize: number;
-  axisTickFontSize: number;
+  xAxisTitleFontSize: number;
+  yAxisTitleFontSize: number;
+  xAxisTickFontSize: number;
+  yAxisTickFontSize: number;
   aspectRatio: number;
   customWidth: number | null;
   customHeight: number | null;

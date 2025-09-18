@@ -177,10 +177,10 @@ export function ChartPreview({
     )
     const topExtra = hasTitle || hasSubtitle ? titleBlock + subtitleBlock + headingGap + topNegativeOffset : 16
     const bottomExtra =
-      (settings.xAxis.showTickLabels ? settings.axisTickFontSize + 24 : 16) +
+      (settings.xAxis.showTickLabels ? settings.xAxisTickFontSize + 24 : 16) +
       Math.max(settings.xAxisTitleOffsetY, 0)
     const leftExtra =
-      (settings.yAxis.showTickLabels ? settings.axisTickFontSize + 28 : 16) +
+      (settings.yAxis.showTickLabels ? settings.yAxisTickFontSize + 28 : 16) +
       Math.max(-settings.yAxisTitleOffsetX, 0)
     const labelExtra = settings.valueLabelOffsetY < 0 ? Math.abs(settings.valueLabelOffsetY) : 0
 
@@ -197,7 +197,8 @@ export function ChartPreview({
     headingGap,
     measuredHeight,
     measuredWidth,
-    settings.axisTickFontSize,
+    settings.xAxisTickFontSize,
+    settings.yAxisTickFontSize,
     settings.subtitleFontSize,
     settings.subtitleOffsetY,
     settings.valueLabelOffsetY,
@@ -359,12 +360,12 @@ export function ChartPreview({
     margin.left,
     measuredWidth - margin.right,
   )
-  const baseXAxisTitleY = chartAreaBottom + settings.axisTitleFontSize + 12 + settings.xAxisTitleOffsetY
-  const xAxisTitleY = clamp(baseXAxisTitleY, settings.axisTitleFontSize, measuredHeight - 8)
+  const baseXAxisTitleY = chartAreaBottom + settings.xAxisTitleFontSize + 12 + settings.xAxisTitleOffsetY
+  const xAxisTitleY = clamp(baseXAxisTitleY, settings.xAxisTitleFontSize, measuredHeight - 8)
   const baseYAxisTitleX = Math.max(Math.min(margin.left - 24, 80), 16)
   const yAxisTitleX = clamp(baseYAxisTitleX + settings.yAxisTitleOffsetX, 8, margin.left + 160)
   const yAxisTitleY = chartAreaTop + chartBounds.height / 2
-  const xTickBaseY = Math.min(chartAreaBottom + settings.axisTickFontSize + 6, measuredHeight - 4)
+  const xTickBaseY = Math.min(chartAreaBottom + settings.xAxisTickFontSize + 6, measuredHeight - 4)
 
   const download = async (options: ExportOptions) => {
     if (!svgRef.current) return
@@ -898,7 +899,7 @@ export function ChartPreview({
                 textAnchor="middle"
                 fill={axisStyles.x.axisLineColor}
                 fontFamily={globalFontFamily}
-                fontSize={settings.axisTitleFontSize}
+                fontSize={settings.xAxisTitleFontSize}
                 fontWeight={500}
                 onDoubleClick={(event) => {
                   sendHighlight(['xAxis'], event)
@@ -915,7 +916,7 @@ export function ChartPreview({
                 textAnchor="middle"
                 fill={axisStyles.y.axisLineColor}
                 fontFamily={globalFontFamily}
-                fontSize={settings.axisTitleFontSize}
+                fontSize={settings.yAxisTitleFontSize}
                 fontWeight={500}
                 transform={`rotate(-90 ${yAxisTitleX} ${yAxisTitleY})`}
                 onDoubleClick={(event) => {
@@ -936,12 +937,12 @@ export function ChartPreview({
                   <text
                     key={`ytick-${tick}`}
                     x={x}
-                    y={y + settings.axisTickFontSize / 3}
+                    y={y + settings.yAxisTickFontSize / 3}
                     textAnchor="end"
                     fill={axisStyles.y.tickLabelColor}
                     fontFamily={globalFontFamily}
-                    fontSize={settings.axisTickFontSize}
-                    transform={axisStyles.y.tickLabelOrientation !== 0 ? `rotate(${axisStyles.y.tickLabelOrientation}, ${x}, ${y + settings.axisTickFontSize / 3})` : undefined}
+                    fontSize={settings.yAxisTickFontSize}
+                    transform={axisStyles.y.tickLabelOrientation !== 0 ? `rotate(${axisStyles.y.tickLabelOrientation}, ${x}, ${y + settings.yAxisTickFontSize / 3})` : undefined}
                     onDoubleClick={(event) => sendHighlight(['yAxis'], event)}
                   >
                     {tick.toLocaleString(undefined, { maximumFractionDigits: 2 })}
@@ -959,7 +960,7 @@ export function ChartPreview({
                   textAnchor="middle"
                   fill={axisStyles.x.tickLabelColor}
                   fontFamily={globalFontFamily}
-                  fontSize={settings.axisTickFontSize}
+                  fontSize={settings.xAxisTickFontSize}
                   transform={axisStyles.x.tickLabelOrientation !== 0 ? `rotate(${axisStyles.x.tickLabelOrientation}, ${center}, ${xTickBaseY})` : undefined}
                   onDoubleClick={(event) => {
                     sendHighlight(['data'], event)

@@ -61,8 +61,10 @@ export type ChartSettings = {
   subtitleIsBold: boolean
   subtitleIsItalic: boolean
   subtitleIsUnderline: boolean
-  axisTitleFontSize: number
-  axisTickFontSize: number
+  xAxisTitleFontSize: number
+  yAxisTitleFontSize: number
+  xAxisTickFontSize: number
+  yAxisTickFontSize: number
   valueLabelFontSize: number
   valueLabelOffsetY: number
   valueLabelOffsetX: number
