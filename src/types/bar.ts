@@ -36,6 +36,9 @@ export interface BarChartSettings extends PlotSettings<BarDataPoint> {
   errorBarColor: string;
   errorBarWidth: number;
   errorBarCapWidth: number;
+  // Axis synchronization settings
+  axisAppearanceSync: boolean;
+  axisTicksSync: boolean;
 }
 
 // Legacy type aliases for backward compatibility

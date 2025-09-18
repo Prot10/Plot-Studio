@@ -53,6 +53,9 @@ export const defaultBarChartSettings: BarChartSettings = {
   errorBarColor: "#f8fafc",
   errorBarWidth: 2,
   errorBarCapWidth: 12,
+  // Axis synchronization settings
+  axisAppearanceSync: false,
+  axisTicksSync: false,
   yAxisTickStep: null,
   exportScale: 2,
   exportTransparent: false,

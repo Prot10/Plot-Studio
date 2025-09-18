@@ -262,50 +262,114 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
         onChange({ ...settings, yAxis: value })
     }
 
-    const [syncActive, setSyncActive] = useState(false)
-    const [tickSyncActive, setTickSyncActive] = useState(false)
-
     const updateAxisField = <K extends keyof AxisSettings>(key: K, value: AxisSettings[K]) => {
-        updateAxis({ ...settings.yAxis, [key]: value })
+        const newYAxis = { ...settings.yAxis, [key]: value }
+        
+        // If appearance sync is active, also update X-axis for appearance properties
+        if (settings.axisAppearanceSync && isAppearanceProperty(key)) {
+            const newXAxis = { ...settings.xAxis, [key]: value }
+            onChange({
+                ...settings,
+                yAxis: newYAxis,
+                xAxis: newXAxis
+            })
+        }
+        // If ticks sync is active, also update X-axis for tick properties
+        else if (settings.axisTicksSync && isTickProperty(key)) {
+            const newXAxis = { ...settings.xAxis, [key]: value }
+            onChange({
+                ...settings,
+                yAxis: newYAxis,
+                xAxis: newXAxis
+            })
+        }
+        // Otherwise, just update Y-axis
+        else {
+            updateAxis(newYAxis)
+        }
     }
 
-    const handleSyncWithXAxis = () => {
-        // Copy Y-axis values TO X-axis
-        const updatedXAxis = {
-            ...settings.xAxis,
-            axisLineWidth: settings.yAxis.axisLineWidth,
-            axisLineColor: settings.yAxis.axisLineColor,
-            gridLineStyle: settings.yAxis.gridLineStyle,
-            gridLineOpacity: settings.yAxis.gridLineOpacity,
-            gridLineColor: settings.yAxis.gridLineColor,
-            gridLineWidth: settings.yAxis.gridLineWidth
-        }
-
-        onChange({
-            ...settings,
-            xAxis: updatedXAxis
-        })
-
-        // Toggle active state permanently
-        setSyncActive(!syncActive)
+    // Helper function to identify appearance properties
+    const isAppearanceProperty = (key: keyof AxisSettings): boolean => {
+        return [
+            'showAxisLines',
+            'axisLineWidth', 
+            'axisLineColor',
+            'showGridLines',
+            'gridLineStyle',
+            'gridLineOpacity',
+            'gridLineColor',
+            'gridLineWidth'
+        ].includes(key as string)
     }
 
-    const handleSyncTickLabelsWithXAxis = () => {
-        // Copy Y-axis tick label values TO X-axis
-        const updatedXAxis = {
-            ...settings.xAxis,
-            tickLabelColor: settings.yAxis.tickLabelColor,
-            tickLabelOrientation: settings.yAxis.tickLabelOrientation
+    // Helper function to identify tick properties
+    const isTickProperty = (key: keyof AxisSettings): boolean => {
+        return [
+            'showTickLabels',
+            'tickLabelColor',
+            'tickLabelOrientation'
+        ].includes(key as string)
+    }
+
+    const handleToggleAppearanceSync = () => {
+        const newSyncState = !settings.axisAppearanceSync
+        
+        if (newSyncState) {
+            // When enabling sync, copy Y-axis appearance values to X-axis
+            const updatedXAxis = {
+                ...settings.xAxis,
+                showAxisLines: settings.yAxis.showAxisLines,
+                axisLineWidth: settings.yAxis.axisLineWidth,
+                axisLineColor: settings.yAxis.axisLineColor,
+                showGridLines: settings.yAxis.showGridLines,
+                gridLineStyle: settings.yAxis.gridLineStyle,
+                gridLineOpacity: settings.yAxis.gridLineOpacity,
+                gridLineColor: settings.yAxis.gridLineColor,
+                gridLineWidth: settings.yAxis.gridLineWidth
+            }
+
+            onChange({
+                ...settings,
+                axisAppearanceSync: newSyncState,
+                xAxis: updatedXAxis
+            })
+        } else {
+            // When disabling sync, just update the sync state
+            update('axisAppearanceSync', newSyncState)
         }
+    }
 
-        onChange({
-            ...settings,
-            xAxis: updatedXAxis,
-            axisTickFontSize: settings.axisTickFontSize
-        })
+    const handleToggleTicksSync = () => {
+        const newSyncState = !settings.axisTicksSync
+        
+        if (newSyncState) {
+            // When enabling sync, copy Y-axis tick values to X-axis
+            const updatedXAxis = {
+                ...settings.xAxis,
+                showTickLabels: settings.yAxis.showTickLabels,
+                tickLabelColor: settings.yAxis.tickLabelColor,
+                tickLabelOrientation: settings.yAxis.tickLabelOrientation
+            }
 
-        // Toggle active state permanently
-        setTickSyncActive(!tickSyncActive)
+            onChange({
+                ...settings,
+                axisTicksSync: newSyncState,
+                xAxis: updatedXAxis
+            })
+        } else {
+            // When disabling sync, just update the sync state
+            update('axisTicksSync', newSyncState)
+        }
+    }
+
+    const handleTickFontSizeChange = (value: number) => {
+        // Tick font size affects both axes when either sync is active
+        if (settings.axisTicksSync) {
+            update('axisTickFontSize', value)
+        } else {
+            update('axisTickFontSize', value)
+        }
     }
 
     const yAxisTitleRef = useRef<HTMLInputElement | null>(null)
@@ -393,16 +457,16 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                 <div className="flex items-center justify-between">
                     <h3 className="text-sm font-semibold text-white/80">Appearance</h3>
                     <button
-                        onClick={handleSyncWithXAxis}
+                        onClick={handleToggleAppearanceSync}
                         className={classNames(
                             "flex items-center gap-2 px-3 py-1.5 rounded transition-all duration-200 text-xs",
-                            syncActive
+                            settings.axisAppearanceSync
                                 ? "text-sky-400 bg-sky-400/20 shadow-sm"
                                 : "text-white/40 hover:text-white/70 hover:bg-white/10"
                         )}
                         title="Sync with X-axis appearance"
                     >
-                        <SyncIcon active={syncActive} />
+                        <SyncIcon active={settings.axisAppearanceSync} />
                         <span>Sync with X-axis</span>
                     </button>
                 </div>
@@ -520,16 +584,16 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                 <div className="flex items-center justify-between">
                     <h3 className="text-sm font-semibold text-white/80">Ticks</h3>
                     <button
-                        onClick={handleSyncTickLabelsWithXAxis}
+                        onClick={handleToggleTicksSync}
                         className={classNames(
                             "flex items-center gap-2 px-3 py-1.5 rounded transition-all duration-200 text-xs",
-                            tickSyncActive
+                            settings.axisTicksSync
                                 ? "text-sky-400 bg-sky-400/20 shadow-sm"
                                 : "text-white/40 hover:text-white/70 hover:bg-white/10"
                         )}
                         title="Sync tick labels with X-axis"
                     >
-                        <SyncIcon active={tickSyncActive} />
+                        <SyncIcon active={settings.axisTicksSync} />
                         <span>Sync with X-axis</span>
                     </button>
                 </div>
@@ -574,7 +638,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                             max={48}
                             step={1}
                             precision={0}
-                            onChange={(value) => update('axisTickFontSize', value)}
+                            onChange={handleTickFontSizeChange}
                             suffix="px"
                         />
                     </div>
