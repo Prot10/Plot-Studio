@@ -110,14 +110,12 @@ function AxisSection({
     onChange({ ...settings, [key]: value })
   }
 
-  const disabled = !settings.showAxisLines
   const highlight = useHighlightEffect(highlightSignal)
 
   return (
     <ChartPageBlock
       title={`${label} axis`}
       highlighted={highlight}
-      className={disabled ? 'opacity-80' : undefined}
       bodyClassName="flex flex-col gap-3"
     >
       <div className="flex items-center justify-between">
@@ -134,8 +132,7 @@ function AxisSection({
           type="text"
           value={settings.title}
           onChange={(event) => update('title', event.target.value)}
-          className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60 disabled:cursor-not-allowed disabled:bg-white/10"
-          disabled={disabled}
+          className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60"
           ref={titleRef}
         />
       </label>
@@ -148,19 +145,16 @@ function AxisSection({
           step={0.5}
           precision={1}
           onChange={(value) => update('axisLineWidth', value)}
-          disabled={disabled}
         />
         <ColorField
           label="Line color"
           value={settings.axisLineColor}
           onChange={(value) => update('axisLineColor', value)}
-          disabled={disabled}
         />
         <Toggle
           label={settings.showTickLabels ? 'Ticks visible' : 'Ticks hidden'}
           value={settings.showTickLabels}
           onChange={(value) => update('showTickLabels', value)}
-          disabled={disabled}
         />
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -168,13 +162,11 @@ function AxisSection({
           label="Tick color"
           value={settings.tickLabelColor}
           onChange={(value) => update('tickLabelColor', value)}
-          disabled={disabled}
         />
         <Toggle
           label={settings.showGridLines ? 'Grid visible' : 'Grid hidden'}
           value={settings.showGridLines}
           onChange={(value) => update('showGridLines', value)}
-          disabled={disabled}
         />
       </div>
       {settings.showGridLines ? (
@@ -182,7 +174,6 @@ function AxisSection({
           label="Grid color"
           value={settings.gridLineColor}
           onChange={(value) => update('gridLineColor', value)}
-          disabled={disabled}
         />
       ) : null}
     </ChartPageBlock>
@@ -202,7 +193,6 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
   const typographyHighlight = useHighlightEffect(highlightSignals?.valueLabels)
   const errorHighlight = useHighlightEffect(highlightSignals?.errorBars)
   const xAxisTitleRef = useRef<HTMLInputElement | null>(null)
-  const yAxisTitleRef = useRef<HTMLInputElement | null>(null)
   const handledFocusRef = useRef(0)
 
   const focusInput = (input: HTMLInputElement | null | undefined) => {
@@ -225,13 +215,6 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
 
     if (focusRequest.target.type === 'xAxisTitle') {
       if (focusInput(xAxisTitleRef.current)) {
-        handledFocusRef.current = focusRequest.requestId
-      }
-      return
-    }
-
-    if (focusRequest.target.type === 'yAxisTitle') {
-      if (focusInput(yAxisTitleRef.current)) {
         handledFocusRef.current = focusRequest.requestId
       }
     }
@@ -313,15 +296,13 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
           <div
             className={`${errorHighlight ? 'highlight-pulse ' : ''}grid grid-cols-1 gap-3 sm:grid-cols-3`}
           >
-            <label className="flex flex-col gap-1 text-sm text-white">
-              <span className="text-xs uppercase tracking-wide text-white/50">Color mode</span>
-              <SelectField<BarChartSettings['errorBarMode']>
-                value={settings.errorBarMode}
-                onChange={(value) => update('errorBarMode', value)}
-                options={errorBarModeOptions}
-                placeholder="Select mode"
-              />
-            </label>
+            <SelectField<BarChartSettings['errorBarMode']>
+              label="Color mode"
+              value={settings.errorBarMode}
+              onChange={(value) => update('errorBarMode', value)}
+              options={errorBarModeOptions}
+              placeholder="Select mode"
+            />
             {settings.errorBarMode === 'global' ? (
               <ColorField
                 label="Error bar color"
@@ -373,7 +354,7 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
           suffix="px"
         />
         <NumericInput
-          title="Value label offset"
+          title="Value label Y offset"
           value={settings.valueLabelOffsetY}
           min={-200}
           max={200}
@@ -393,43 +374,13 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
           suffix="px"
         />
         <NumericInput
-          title="Axis titles"
-          value={settings.axisTitleFontSize}
-          min={8}
-          max={72}
-          step={1}
-          precision={0}
-          onChange={(value) => update('axisTitleFontSize', value)}
-          suffix="px"
-        />
-        <NumericInput
-          title="X label offset"
+          title="X title offset"
           value={settings.xAxisTitleOffsetY}
           min={-200}
           max={200}
           step={1}
           precision={0}
           onChange={(value) => update('xAxisTitleOffsetY', value)}
-          suffix="px"
-        />
-        <NumericInput
-          title="Axis ticks"
-          value={settings.axisTickFontSize}
-          min={6}
-          max={48}
-          step={1}
-          precision={0}
-          onChange={(value) => update('axisTickFontSize', value)}
-          suffix="px"
-        />
-        <NumericInput
-          title="Y label offset"
-          value={settings.yAxisTitleOffsetX}
-          min={-200}
-          max={200}
-          step={1}
-          precision={0}
-          onChange={(value) => update('yAxisTitleOffsetX', value)}
           suffix="px"
         />
       </ChartPageBlock>
@@ -440,13 +391,6 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
         onChange={(config) => updateAxis('xAxis', config)}
         highlightSignal={highlightSignals?.xAxis}
         titleRef={xAxisTitleRef}
-      />
-      <AxisSection
-        label="Y"
-        settings={settings.yAxis}
-        onChange={(config) => updateAxis('yAxis', config)}
-        highlightSignal={highlightSignals?.yAxis}
-        titleRef={yAxisTitleRef}
       />
     </>
   )

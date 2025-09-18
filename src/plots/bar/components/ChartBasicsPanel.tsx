@@ -20,7 +20,6 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
   }
 
   const panelHighlight = useHighlightEffect(highlightSignals?.chartBasics)
-  const yAxisHighlight = useHighlightEffect(highlightSignals?.yAxis)
 
   const handlePaletteChange = (nextPalette: PaletteKey) => {
     const palette = palettes[nextPalette]
@@ -120,57 +119,6 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
             step={0.02}
             precision={2}
           />
-        </div>
-      </div>
-
-      <div className={classNames('space-y-8 border-t border-white/10 pt-8', yAxisHighlight ? 'highlight-pulse' : null)}>
-        <h3 className="text-sm font-semibold text-white/80">Y-Axis Range</h3>
-
-        <div className="grid gap-16 sm:grid-cols-2">
-          <div className="flex flex-col gap-1 text-sm text-white">
-            <span className="text-xs uppercase tracking-wide text-white/50">Y min</span>
-            <input
-              type="number"
-              value={settings.yAxisMin ?? ''}
-              onChange={(event) => {
-                const val = event.target.value
-                update('yAxisMin', val === '' ? null : Number.parseFloat(val))
-              }}
-              placeholder="auto"
-              className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
-            />
-          </div>
-          <div className="flex flex-col gap-1 text-sm text-white">
-            <span className="text-xs uppercase tracking-wide text-white/50">Y max</span>
-            <input
-              type="number"
-              value={settings.yAxisMax ?? ''}
-              onChange={(event) => {
-                const val = event.target.value
-                update('yAxisMax', val === '' ? null : Number.parseFloat(val))
-              }}
-              placeholder="auto"
-              className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
-            />
-          </div>
-        </div>
-
-        <div className="grid gap-16 sm:grid-cols-1">
-          <div className="flex flex-col gap-1 text-sm text-white">
-            <span className="text-xs uppercase tracking-wide text-white/50">Tick step</span>
-            <input
-              type="number"
-              value={settings.yAxisTickStep ?? ''}
-              onChange={(event) => {
-                const val = event.target.value
-                update('yAxisTickStep', val === '' ? null : Number.parseFloat(val))
-              }}
-              min={0}
-              step={0.001}
-              placeholder="auto"
-              className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
-            />
-          </div>
         </div>
       </div>
     </section>

@@ -11,6 +11,7 @@ import { BarDataEditor } from './components/BarDataEditor';
 import { ChartBasicsPanel } from './components/ChartBasicsPanel';
 import { ChartControlsPanel } from './components/ChartControlsPanel';
 import { ChartPreview } from './components/ChartPreview';
+import { YAxisPanel } from './components/YAxisPanel';
 import { defaultBarChartSettings } from './defaultSettings';
 
 const STORAGE_KEY = 'barplot-studio-state-v1';
@@ -379,6 +380,14 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                                 onChange={handleSettingsChange}
                                 focusRequest={focusRequest}
                                 highlightSignal={highlightSignals?.title}
+                            />
+                        </ChartPageBlock>
+                        <ChartPageBlock title="Y-Axis" highlighted={useHighlightEffect(highlightSignals?.yAxis)}>
+                            <YAxisPanel
+                                settings={activeSettings}
+                                onChange={handleSettingsChange}
+                                highlightSignals={highlightSignals}
+                                focusRequest={focusRequest}
                             />
                         </ChartPageBlock>
                         <ChartPageBlock title="Data" highlighted={dataHighlight}>
