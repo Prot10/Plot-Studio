@@ -362,7 +362,7 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
             <ChartPageLayout
                 left={
                     <>
-                        <ChartPageBlock title="Chart basics" highlighted={basicsHighlight}>
+                        <ChartPageBlock title="General Settings" highlighted={basicsHighlight}>
                             <ChartBasicsPanel
                                 settings={activeSettings}
                                 bars={activeSettings.data}
