@@ -221,11 +221,11 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
     const toggleTheme = useCallback(() => {
         const newIsDarkTheme = !isDarkTheme;
         setIsDarkTheme(newIsDarkTheme);
-        
+
         // Apply theme to both plots
         setPlots((currentPlots) => {
             return currentPlots.map((plot) => {
-                const themeSettings = newIsDarkTheme 
+                const themeSettings = newIsDarkTheme
                     ? {
                         // Dark theme (current default)
                         backgroundColor: '#0f172a',
@@ -266,7 +266,7 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                         },
                         errorBarColor: '#475569',
                     };
-                
+
                 return {
                     ...plot,
                     ...themeSettings,

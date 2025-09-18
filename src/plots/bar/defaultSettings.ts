@@ -63,6 +63,10 @@ export const defaultBarChartSettings: BarChartSettings = {
   exportTransparent: false,
   exportFileName: "barplot",
   paletteName: defaultPaletteName,
+  // Plot box border settings
+  showPlotBox: false,
+  plotBoxLineWidth: 1.5,
+  plotBoxColor: "#e2e8f0",
   xAxis: {
     showAxisLines: true,
     showTickLabels: true,

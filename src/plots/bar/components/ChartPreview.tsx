@@ -975,6 +975,20 @@ export function ChartPreview({
                 </text>
               ))
               : null}
+
+            {/* Plot box border */}
+            {settings.showPlotBox ? (
+              <rect
+                x={margin.left}
+                y={margin.top}
+                width={chartBounds.width}
+                height={chartBounds.height}
+                fill="none"
+                stroke={settings.plotBoxColor}
+                strokeWidth={settings.plotBoxLineWidth}
+                onDoubleClick={(event) => sendHighlight(['chartBasics'], event)}
+              />
+            ) : null}
           </svg>
         </div>
       </div>

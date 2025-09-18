@@ -501,6 +501,41 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
               />
             </div>
           </div>
+
+          <div className="space-y-8 border-t border-white/10 pt-8">
+            <h3 className="text-sm font-semibold text-white/80">Plot Box</h3>
+
+            {/* Plot box controls - toggle, line width, and color */}
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Toggle
+                  title="Show plot box"
+                  value={settings.showPlotBox}
+                  onChange={(value) => update('showPlotBox', value)}
+                />
+              </div>
+
+              <div className={`transition-opacity ${!settings.showPlotBox ? 'opacity-50 pointer-events-none' : ''}`}>
+                <NumericInput
+                  title="Line width"
+                  value={settings.plotBoxLineWidth}
+                  min={0.5}
+                  max={8}
+                  step={0.5}
+                  precision={1}
+                  onChange={(value) => update('plotBoxLineWidth', value)}
+                />
+              </div>
+
+              <div className={`transition-opacity ${!settings.showPlotBox ? 'opacity-50 pointer-events-none' : ''}`}>
+                <ColorField
+                  label="Line color"
+                  value={settings.plotBoxColor}
+                  onChange={(value) => update('plotBoxColor', value)}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </ChartPageBlock>
 
