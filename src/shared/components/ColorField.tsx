@@ -38,7 +38,7 @@ export function ColorField({ label, value, onChange, disabled, inputProps }: Col
     <label className={`flex flex-col gap-1 text-sm text-white ${disabled ? 'opacity-60' : ''}`}>
       <span className="text-xs uppercase tracking-wide text-white/50">{label}</span>
       <div className="flex items-center gap-2">
-        <div className="relative h-10 w-10 flex-none">
+        <div className="relative h-9 w-9 flex-none">
           <span
             aria-hidden="true"
             className="block h-full w-full rounded-md border border-white/10"
@@ -61,7 +61,7 @@ export function ColorField({ label, value, onChange, disabled, inputProps }: Col
           onChange={handleTextChange}
           placeholder="#000000"
           maxLength={7}
-          className="flex-1 rounded-md border border-white/10 bg-black/20 px-3 py-2 font-mono text-xs uppercase tracking-wide text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40 disabled:cursor-not-allowed disabled:bg-white/10"
+          className="flex-1 min-w-0 h-9 rounded-md border border-white/10 bg-white/10 px-3 py-2 font-mono text-xs uppercase tracking-wide text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40 disabled:cursor-not-allowed disabled:bg-white/10"
           {...inputProps}
         />
       </div>
