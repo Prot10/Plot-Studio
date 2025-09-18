@@ -707,6 +707,22 @@ export function ChartPreview({
             {axisStyles.y.showGridLines
               ? ticks.map((tick) => {
                 const y = margin.top + scaleY(tick)
+                
+                // Create stroke dash array based on line style
+                let strokeDasharray = 'none'
+                switch (axisStyles.y.gridLineStyle) {
+                  case 'dashed':
+                    strokeDasharray = '8 4'
+                    break
+                  case 'dotted':
+                    strokeDasharray = '2 2'
+                    break
+                  case 'solid':
+                  default:
+                    strokeDasharray = 'none'
+                    break
+                }
+                
                 return (
                   <line
                     key={`grid-${tick}`}
@@ -715,8 +731,9 @@ export function ChartPreview({
                     y1={y}
                     y2={y}
                     stroke={axisStyles.y.gridLineColor}
-                    strokeWidth={1}
-                    strokeDasharray="2 4"
+                    strokeWidth={axisStyles.y.gridLineWidth}
+                    strokeDasharray={strokeDasharray}
+                    strokeOpacity={axisStyles.y.gridLineOpacity}
                   />
                 )
               })

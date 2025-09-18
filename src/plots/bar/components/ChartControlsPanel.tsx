@@ -15,39 +15,35 @@ type ChartControlsPanelProps = {
 }
 
 type ToggleProps = {
-  label: string
+  title: string
   value: boolean
   onChange: (value: boolean) => void
-  description?: string
   disabled?: boolean
 }
 
-function Toggle({ label, description, value, onChange, disabled }: ToggleProps) {
+function Toggle({ title, value, onChange, disabled }: ToggleProps) {
   const handleClick = () => {
     if (disabled) return
     onChange(!value)
   }
 
   return (
-    <div
-      className={`flex items-start justify-between gap-3 rounded-lg border border-white/10 px-3 py-2 ${disabled ? 'bg-white/5 opacity-60' : 'bg-white/5'}`}
-    >
-      <div>
-        <span className="text-sm font-medium text-white">{label}</span>
-        {description ? <p className="text-xs text-white/60">{description}</p> : null}
+    <div className={`flex flex-col gap-1 text-sm text-white ${disabled ? 'opacity-60' : ''}`}>
+      <span className="text-xs uppercase tracking-wide text-white/50">{title}</span>
+      <div className="h-9 rounded-md border border-white/10 bg-white/10 px-3 flex items-center justify-start">
+        <button
+          type="button"
+          onClick={handleClick}
+          className={`relative inline-flex h-5 w-9 flex-none items-center rounded-full transition ${value ? 'bg-sky-400' : 'bg-white/20'} ${disabled ? 'cursor-not-allowed opacity-60' : ''}`}
+          role="switch"
+          aria-checked={value}
+          aria-disabled={disabled}
+        >
+          <span
+            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${value ? 'translate-x-4' : 'translate-x-0.5'}`}
+          />
+        </button>
       </div>
-      <button
-        type="button"
-        onClick={handleClick}
-        className={`relative inline-flex h-6 w-11 flex-none items-center rounded-full transition ${value ? 'bg-sky-400' : 'bg-white/20'} ${disabled ? 'cursor-not-allowed opacity-60' : ''}`}
-        role="switch"
-        aria-checked={value}
-        aria-disabled={disabled}
-      >
-        <span
-          className={`inline-block h-5 w-5 transform rounded-full bg-white transition ${value ? 'translate-x-5' : 'translate-x-1'}`}
-        />
-      </button>
     </div>
   )
 }
@@ -118,14 +114,11 @@ function AxisSection({
       highlighted={highlight}
       bodyClassName="flex flex-col gap-3"
     >
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold text-white">Visibility</span>
-        <Toggle
-          label={settings.showAxisLines ? 'Visible' : 'Hidden'}
-          value={settings.showAxisLines}
-          onChange={(value) => update('showAxisLines', value)}
-        />
-      </div>
+      <Toggle
+        title="Visibility"
+        value={settings.showAxisLines}
+        onChange={(value) => update('showAxisLines', value)}
+      />
       <label className="flex flex-col gap-1 text-sm text-white">
         <span className="text-xs uppercase tracking-wide text-white/50">Title</span>
         <input
@@ -152,7 +145,7 @@ function AxisSection({
           onChange={(value) => update('axisLineColor', value)}
         />
         <Toggle
-          label={settings.showTickLabels ? 'Ticks visible' : 'Ticks hidden'}
+          title="Tick labels"
           value={settings.showTickLabels}
           onChange={(value) => update('showTickLabels', value)}
         />
@@ -164,7 +157,7 @@ function AxisSection({
           onChange={(value) => update('tickLabelColor', value)}
         />
         <Toggle
-          label={settings.showGridLines ? 'Grid visible' : 'Grid hidden'}
+          title="Grid lines"
           value={settings.showGridLines}
           onChange={(value) => update('showGridLines', value)}
         />
@@ -281,14 +274,12 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
           </div>
         </div>
         <Toggle
-          label={settings.showValueLabels ? 'Value labels visible' : 'Value labels hidden'}
-          description="Toggle values on top of bars"
+          title="Value labels"
           value={settings.showValueLabels}
           onChange={(value) => update('showValueLabels', value)}
         />
         <Toggle
-          label={settings.showErrorBars ? 'Error bars visible' : 'Error bars hidden'}
-          description="Show indecision bars on top of each bar"
+          title="Error bars"
           value={settings.showErrorBars}
           onChange={(value) => update('showErrorBars', value)}
         />

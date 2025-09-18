@@ -310,6 +310,7 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
             <label className="flex flex-col gap-1 text-sm text-white">
               <span className="text-xs uppercase tracking-wide text-white/50">Color mode</span>
               <SelectField<ChartSettings['errorBarMode']>
+                label="Color mode"
                 value={settings.errorBarMode}
                 onChange={(value) => update('errorBarMode', value)}
                 options={errorBarModeOptions}

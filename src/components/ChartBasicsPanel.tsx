@@ -40,6 +40,7 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
       <label className="flex flex-col gap-1 text-sm text-white">
         <span className="text-xs uppercase tracking-wide text-white/50">Palette</span>
         <SelectField<PaletteKey>
+          label="Palette"
           value={settings.paletteName}
           onChange={(nextPalette) => handlePaletteChange(nextPalette)}
           options={paletteOptions}

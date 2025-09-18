@@ -38,6 +38,9 @@ export type AxisSettings = {
   axisLineWidth: number;
   tickLabelColor: string;
   gridLineColor: string;
+  gridLineStyle: 'solid' | 'dashed' | 'dotted';
+  gridLineOpacity: number;
+  gridLineWidth: number;
   title: string;
 };
 

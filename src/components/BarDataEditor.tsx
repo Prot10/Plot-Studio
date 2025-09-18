@@ -270,6 +270,7 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
                 <label className="flex flex-col gap-1">
                   <span className="text-xs uppercase tracking-wide text-white/50">Pattern</span>
                   <SelectField<BarDatum['pattern']>
+                    label="Pattern"
                     value={bar.pattern ?? 'solid'}
                     onChange={(value) => handleFieldChange(bar.id, 'pattern', value)}
                     options={patternOptions}

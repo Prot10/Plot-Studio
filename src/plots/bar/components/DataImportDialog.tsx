@@ -360,6 +360,7 @@ export function DataImportDialog({ isOpen, paletteName, onCancel, onConfirm }: D
                             <label className="flex flex-col gap-2">
                                 <span className="text-xs font-medium text-white/60">Column separator</span>
                                 <SelectField<string>
+                                    label="Column separator"
                                     value={delimiterPreset}
                                     onChange={(value) => setDelimiterPreset(value)}
                                     options={delimiterPresets}
@@ -378,6 +379,7 @@ export function DataImportDialog({ isOpen, paletteName, onCancel, onConfirm }: D
                             <label className="flex flex-col gap-2">
                                 <span className="text-xs font-medium text-white/60">Decimal separator</span>
                                 <SelectField<'.' | ','>
+                                    label="Decimal separator"
                                     value={decimalSeparator}
                                     onChange={(value) => setDecimalSeparator(value)}
                                     options={decimalOptions}
@@ -729,6 +731,7 @@ function ColumnSelect({ label, description, column, mapping, columns, onChange }
         <label className="flex flex-col gap-1 rounded-xl border border-white/10 bg-white/5 p-3">
             <span className="text-sm font-medium text-white/80">{label}</span>
             <SelectField<string>
+                label={label}
                 value={currentValue !== null ? String(currentValue) : ''}
                 onChange={(value) => onChange(column, value)}
                 options={options}

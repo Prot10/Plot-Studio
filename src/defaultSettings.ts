@@ -66,6 +66,9 @@ export const defaultSettings: ChartSettings = {
     axisLineWidth: 1.5,
     tickLabelColor: "#e2e8f0",
     gridLineColor: "#475569",
+    gridLineStyle: "solid" as const,
+    gridLineOpacity: 0.6,
+    gridLineWidth: 1,
     title: "Categories",
   },
   yAxis: {
@@ -76,6 +79,9 @@ export const defaultSettings: ChartSettings = {
     axisLineWidth: 1.5,
     tickLabelColor: "#e2e8f0",
     gridLineColor: "#334155",
+    gridLineStyle: "solid" as const,
+    gridLineOpacity: 0.6,
+    gridLineWidth: 1,
     title: "Values",
   },
 };
