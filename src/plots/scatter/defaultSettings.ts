@@ -1,7 +1,5 @@
-import type {
-  ScatterDataPoint,
-  ScatterPlotSettings,
-} from "../../types/scatter";
+import type { ScatterDataPoint, ScatterPlotSettings } from "../../types/scatter";
+import { DEFAULT_FONT_STACK } from "../../shared/constants/fonts";
 
 function randomId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -67,6 +65,11 @@ export const defaultScatterPlotSettings: ScatterPlotSettings = {
   backgroundColor: "#0f172a",
   canvasPadding: 48,
   textColor: "#f8fafc",
+  titleColor: "#f8fafc",
+  titleFontFamily: DEFAULT_FONT_STACK,
+  titleIsBold: true,
+  titleIsItalic: false,
+  titleIsUnderline: false,
   title: "Custom scatter plot",
   titleFontSize: 20,
   titleOffsetY: 0,

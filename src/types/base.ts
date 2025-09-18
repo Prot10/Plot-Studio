@@ -8,6 +8,7 @@ export type HighlightKey =
   | "yAxis"
   | "xAxis"
   | "data"
+  | "title"
   | "design"
   | "barDesign" // Legacy compatibility
   | "valueLabels"
@@ -47,6 +48,11 @@ export type BaseChartSettings = {
   title: string;
   titleFontSize: number;
   titleOffsetY: number;
+  titleColor: string;
+  titleFontFamily: string;
+  titleIsBold: boolean;
+  titleIsItalic: boolean;
+  titleIsUnderline: boolean;
   axisTitleFontSize: number;
   axisTickFontSize: number;
   aspectRatio: number;

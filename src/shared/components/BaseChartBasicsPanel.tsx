@@ -1,5 +1,4 @@
-import { useEffect, useRef } from 'react';
-import type { BaseChartSettings, FocusRequest, HighlightKey, PaletteKey } from '../../types/base';
+import type { BaseChartSettings, HighlightKey, PaletteKey } from '../../types/base';
 import { useHighlightEffect } from '../hooks/useHighlightEffect';
 import { paletteOptions } from '../utils/palettes';
 import { ColorField } from './ColorField';
@@ -9,7 +8,6 @@ interface BaseChartBasicsPanelProps<TSettings extends BaseChartSettings> {
     settings: TSettings;
     onChange: (settings: TSettings) => void;
     highlightSignals?: Partial<Record<HighlightKey, number>>;
-    focusRequest?: FocusRequest | null;
     onPaletteChange?: (nextPalette: PaletteKey) => void;
     children?: React.ReactNode; // For plot-specific controls
 }
@@ -18,7 +16,6 @@ export function BaseChartBasicsPanel<TSettings extends BaseChartSettings>({
     settings,
     onChange,
     highlightSignals,
-    focusRequest,
     onPaletteChange,
     children,
 }: BaseChartBasicsPanelProps<TSettings>) {
@@ -28,28 +25,6 @@ export function BaseChartBasicsPanel<TSettings extends BaseChartSettings>({
 
     const panelHighlight = useHighlightEffect(highlightSignals?.chartBasics);
     const yAxisHighlight = useHighlightEffect(highlightSignals?.yAxis);
-    const titleInputRef = useRef<HTMLInputElement | null>(null);
-    const handledFocusRef = useRef(0);
-
-    useEffect(() => {
-        if (!focusRequest) return;
-        if (focusRequest.requestId === handledFocusRef.current) return;
-        if (focusRequest.target.type !== 'chartTitle') return;
-
-        const input = titleInputRef.current;
-        if (!input) return;
-
-        handledFocusRef.current = focusRequest.requestId;
-        try {
-            input.focus({ preventScroll: true });
-        } catch {
-            input.focus();
-        }
-        input.select();
-        if (typeof input.scrollIntoView === 'function') {
-            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }, [focusRequest]);
 
     const handlePaletteChange = (nextPalette: PaletteKey) => {
         update('paletteName', nextPalette);
@@ -59,17 +34,6 @@ export function BaseChartBasicsPanel<TSettings extends BaseChartSettings>({
     return (
         <section className={`space-y-3 ${panelHighlight ? 'highlight-pulse' : ''}`}>
             <h2 className="text-lg font-semibold text-white">Chart</h2>
-            <label className="flex flex-col gap-1 text-sm text-white">
-                <span className="text-xs uppercase tracking-wide text-white/50">Title</span>
-                <input
-                    type="text"
-                    value={settings.title}
-                    onChange={(event) => update('title', event.target.value)}
-                    ref={titleInputRef}
-                    className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60"
-                    placeholder="Untitled chart"
-                />
-            </label>
             <label className="flex flex-col gap-1 text-sm text-white">
                 <span className="text-xs uppercase tracking-wide text-white/50">Palette</span>
                 <SelectField<PaletteKey>
@@ -98,7 +62,7 @@ export function BaseChartBasicsPanel<TSettings extends BaseChartSettings>({
                 onChange={(value) => update('backgroundColor', value)}
             />
             <ColorField
-                label="Text color"
+                label="Value label color"
                 value={settings.textColor}
                 onChange={(value) => update('textColor', value)}
             />

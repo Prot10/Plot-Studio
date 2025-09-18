@@ -38,6 +38,11 @@ export type ChartSettings = {
   backgroundColor: string
   canvasPadding: number
   textColor: string
+  titleColor: string
+  titleFontFamily: string
+  titleIsBold: boolean
+  titleIsItalic: boolean
+  titleIsUnderline: boolean
   title: string
   titleFontSize: number
   titleOffsetY: number
@@ -73,6 +78,7 @@ export type HighlightKey =
   | 'yAxis'
   | 'xAxis'
   | 'data'
+  | 'title'
   | 'barDesign'
   | 'valueLabels'
   | 'errorBars'

@@ -364,26 +364,6 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
         bodyClassName="grid grid-cols-1 gap-3 sm:grid-cols-2"
       >
         <NumericInput
-          title="Chart title"
-          value={settings.titleFontSize}
-          min={10}
-          max={96}
-          step={1}
-          precision={0}
-          onChange={(value) => update('titleFontSize', value)}
-          suffix="px"
-        />
-        <NumericInput
-          title="Title offset"
-          value={settings.titleOffsetY}
-          min={-200}
-          max={200}
-          step={1}
-          precision={0}
-          onChange={(value) => update('titleOffsetY', value)}
-          suffix="px"
-        />
-        <NumericInput
           title="Value labels"
           value={settings.valueLabelFontSize}
           min={8}

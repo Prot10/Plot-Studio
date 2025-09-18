@@ -19,6 +19,7 @@ export function ScatterPlotPage({ onBack }: ScatterPlotPageProps) {
         yAxis: 0,
         xAxis: 0,
         data: 0,
+        title: 0,
         design: 0,
         barDesign: 0,
         valueLabels: 0,

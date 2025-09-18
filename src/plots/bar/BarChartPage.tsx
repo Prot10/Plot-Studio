@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Database, Download, Settings, Sparkles, UploadCloud } from 'lucide-react';
 import { ChartActionMenu } from '../../shared/components/ChartActionMenu';
 import { ChartPageBlock, ChartPageLayout } from '../../shared/components/ChartPageLayout';
+import { TitleSettingsPanel } from '../../shared/components/TitleSettingsPanel';
 import { useHighlightEffect } from '../../shared/hooks/useHighlightEffect';
 import { createBar } from '../../shared/utils/barFactory';
 import type { BarChartSettings, BarDataPoint } from '../../types/bar';
@@ -62,6 +63,12 @@ function mergeStoredSettings(stored?: Partial<BarChartSettings>): BarChartSettin
     const xAxis = { ...defaultBarChartSettings.xAxis, ...stored.xAxis };
     const yAxis = { ...defaultBarChartSettings.yAxis, ...stored.yAxis };
 
+    const titleColor = typeof stored.titleColor === 'string' ? stored.titleColor : defaults.titleColor;
+    const titleFontFamily = stored.titleFontFamily ?? defaults.titleFontFamily;
+    const titleIsBold = typeof stored.titleIsBold === 'boolean' ? stored.titleIsBold : defaults.titleIsBold;
+    const titleIsItalic = typeof stored.titleIsItalic === 'boolean' ? stored.titleIsItalic : defaults.titleIsItalic;
+    const titleIsUnderline = typeof stored.titleIsUnderline === 'boolean' ? stored.titleIsUnderline : defaults.titleIsUnderline;
+
     return {
         ...defaults,
         ...stored,
@@ -69,6 +76,11 @@ function mergeStoredSettings(stored?: Partial<BarChartSettings>): BarChartSettin
         data: mergedData,
         xAxis,
         yAxis,
+        titleColor,
+        titleFontFamily,
+        titleIsBold,
+        titleIsItalic,
+        titleIsUnderline,
     };
 }
 
@@ -91,6 +103,7 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
         yAxis: 0,
         xAxis: 0,
         data: 0,
+        title: 0,
         design: 0,
         barDesign: 0,
         valueLabels: 0,
@@ -181,7 +194,8 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
         setFocusRequest({ target, requestId: focusRequestIdRef.current });
     }, []);
 
-    const basicsHighlight = useHighlightEffect(highlightSignals.chartBasics);
+    const basicsHighlight = useHighlightEffect(highlightSignals?.chartBasics);
+    const titleHighlight = useHighlightEffect(highlightSignals?.title);
     const dataHighlight = useHighlightEffect(highlightSignals.data);
     const controlsHighlightSignal =
         (highlightSignals.design ?? 0) +
@@ -335,7 +349,14 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                                     setPlot(activePlot, (current) => ({ ...current, data: bars }))
                                 }
                                 highlightSignals={highlightSignals}
+                            />
+                        </ChartPageBlock>
+                        <ChartPageBlock title="Title" highlighted={titleHighlight}>
+                            <TitleSettingsPanel
+                                settings={activeSettings}
+                                onChange={handleSettingsChange}
                                 focusRequest={focusRequest}
+                                highlightSignal={highlightSignals?.title}
                             />
                         </ChartPageBlock>
                         <ChartPageBlock title="Data" highlighted={dataHighlight}>

@@ -1,4 +1,5 @@
 import { createBar } from "./shared/utils/barFactory";
+import { DEFAULT_FONT_STACK } from "./shared/constants/fonts";
 import type { ChartSettings } from "./types";
 
 const defaultPaletteName = "vibrant";
@@ -18,6 +19,11 @@ export const defaultSettings: ChartSettings = {
   backgroundColor: "#0f172a",
   canvasPadding: 48,
   textColor: "#f8fafc",
+  titleColor: "#f8fafc",
+  titleFontFamily: DEFAULT_FONT_STACK,
+  titleIsBold: true,
+  titleIsItalic: false,
+  titleIsUnderline: false,
   title: "Custom bar chart",
   titleFontSize: 20,
   titleOffsetY: 0,

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
+import { DEFAULT_FONT_STACK } from '../../../shared/constants/fonts'
 import useElementSize from '../../../shared/hooks/useElementSize'
 import type { BarChartSettings, BarDataPoint } from '../../../types/bar'
 import type { FocusTarget, HighlightKey } from '../../../types/base'
@@ -315,7 +316,13 @@ export function ChartPreview({
     { value: 'pdf', label: 'PDF', description: 'Printable document' },
   ]
 
-  const fontFamily = 'Inter, "Segoe UI", system-ui, -apple-system, sans-serif'
+  const defaultFontFamily = DEFAULT_FONT_STACK
+  const titleColor = settings.titleColor ?? settings.textColor
+  const titleFontFamily = settings.titleFontFamily || defaultFontFamily
+  const titleFontWeight = settings.titleIsBold ? 700 : 500
+  const titleFontStyle = settings.titleIsItalic ? 'italic' : 'normal'
+  const titleTextDecoration = settings.titleIsUnderline ? 'underline' : 'none'
+
   const chartAreaTop = margin.top
   const chartAreaBottom = margin.top + chartBounds.height
   const chartTitleOffset = clamp(settings.titleFontSize * 0.75, 12, Math.max(margin.top - 8, 12))
@@ -498,7 +505,7 @@ export function ChartPreview({
           >
             <title>{settings.title || 'Bar plot'}</title>
             <defs>
-              <style>{`*{font-family:${fontFamily};}`}</style>
+          <style>{`*{font-family:${defaultFontFamily};}`}</style>
             </defs>
             <rect
               data-role="background"
@@ -514,12 +521,16 @@ export function ChartPreview({
                 x={measuredWidth / 2}
                 y={chartTitleY}
                 textAnchor="middle"
-                fill={settings.textColor}
-                fontFamily={fontFamily}
+                fill={titleColor}
                 fontSize={settings.titleFontSize}
-                fontWeight={600}
+                style={{
+                  fontFamily: titleFontFamily,
+                  fontWeight: titleFontWeight,
+                  fontStyle: titleFontStyle,
+                  textDecoration: titleTextDecoration,
+                }}
                 onDoubleClick={(event) => {
-                  sendHighlight(['chartBasics'], event)
+                  sendHighlight(['title'], event)
                   onRequestFocus({ type: 'chartTitle' })
                 }}
               >
@@ -740,7 +751,7 @@ export function ChartPreview({
                       y={valueLabelY}
                       textAnchor="middle"
                       fill={settings.textColor}
-                      fontFamily={fontFamily}
+          fontFamily={defaultFontFamily}
                       fontSize={settings.valueLabelFontSize}
                       fontWeight={500}
                       onDoubleClick={(event) => {
@@ -817,7 +828,7 @@ export function ChartPreview({
                 y={xAxisTitleY}
                 textAnchor="middle"
                 fill={axisStyles.x.axisLineColor}
-                fontFamily={fontFamily}
+                      fontFamily={defaultFontFamily}
                 fontSize={settings.axisTitleFontSize}
                 fontWeight={500}
                 onDoubleClick={(event) => {
@@ -834,7 +845,7 @@ export function ChartPreview({
                 y={yAxisTitleY}
                 textAnchor="middle"
                 fill={axisStyles.y.axisLineColor}
-                fontFamily={fontFamily}
+                fontFamily={defaultFontFamily}
                 fontSize={settings.axisTitleFontSize}
                 fontWeight={500}
                 transform={`rotate(-90 ${yAxisTitleX} ${yAxisTitleY})`}
@@ -858,7 +869,7 @@ export function ChartPreview({
                     y={y + settings.axisTickFontSize / 3}
                     textAnchor="end"
                     fill={axisStyles.y.tickLabelColor}
-                    fontFamily={fontFamily}
+                    fontFamily={defaultFontFamily}
                     fontSize={settings.axisTickFontSize}
                     onDoubleClick={(event) => sendHighlight(['yAxis'], event)}
                   >
@@ -876,7 +887,7 @@ export function ChartPreview({
                   y={xTickBaseY}
                   textAnchor="middle"
                   fill={axisStyles.x.tickLabelColor}
-                  fontFamily={fontFamily}
+                  fontFamily={defaultFontFamily}
                   fontSize={settings.axisTickFontSize}
                   onDoubleClick={(event) => {
                     sendHighlight(['data'], event)

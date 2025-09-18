@@ -1,11 +1,10 @@
-import { useEffect, useRef } from 'react'
 import { ColorField } from '../../../shared/components/ColorField'
 import { NumericInput } from '../../../shared/components/NumericInput'
 import { SelectField } from '../../../shared/components/SelectField'
 import { useHighlightEffect } from '../../../shared/hooks/useHighlightEffect'
 import { paletteOptions, palettes } from '../../../shared/utils/palettes'
 import type { BarChartSettings, BarDataPoint } from '../../../types/bar'
-import type { FocusRequest, HighlightKey, PaletteKey } from '../../../types/base'
+import type { HighlightKey, PaletteKey } from '../../../types/base'
 
 type ChartBasicsPanelProps = {
   settings: BarChartSettings
@@ -13,38 +12,15 @@ type ChartBasicsPanelProps = {
   onChange: (settings: BarChartSettings) => void
   onBarsChange: (bars: BarDataPoint[]) => void
   highlightSignals?: Partial<Record<HighlightKey, number>>
-  focusRequest?: FocusRequest | null
 }
 
-export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highlightSignals, focusRequest }: ChartBasicsPanelProps) {
+export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highlightSignals }: ChartBasicsPanelProps) {
   const update = <K extends keyof BarChartSettings>(key: K, value: BarChartSettings[K]) => {
     onChange({ ...settings, [key]: value })
   }
 
   const panelHighlight = useHighlightEffect(highlightSignals?.chartBasics)
   const yAxisHighlight = useHighlightEffect(highlightSignals?.yAxis)
-  const titleInputRef = useRef<HTMLInputElement | null>(null)
-  const handledFocusRef = useRef(0)
-
-  useEffect(() => {
-    if (!focusRequest) return
-    if (focusRequest.requestId === handledFocusRef.current) return
-    if (focusRequest.target.type !== 'chartTitle') return
-
-    const input = titleInputRef.current
-    if (!input) return
-
-    handledFocusRef.current = focusRequest.requestId
-    try {
-      input.focus({ preventScroll: true })
-    } catch {
-      input.focus()
-    }
-    input.select()
-    if (typeof input.scrollIntoView === 'function') {
-      input.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
-  }, [focusRequest])
 
   const handlePaletteChange = (nextPalette: PaletteKey) => {
     const palette = palettes[nextPalette]
@@ -62,17 +38,6 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
   return (
     <section className={`space-y-3 ${panelHighlight ? 'highlight-pulse' : ''}`}>
       <h2 className="text-lg font-semibold text-white">Chart</h2>
-      <label className="flex flex-col gap-1 text-sm text-white">
-        <span className="text-xs uppercase tracking-wide text-white/50">Title</span>
-        <input
-          type="text"
-          value={settings.title}
-          onChange={(event) => update('title', event.target.value)}
-          ref={titleInputRef}
-          className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60"
-          placeholder="Untitled chart"
-        />
-      </label>
       <label className="flex flex-col gap-1 text-sm text-white">
         <span className="text-xs uppercase tracking-wide text-white/50">Palette</span>
         <SelectField<PaletteKey>
@@ -99,7 +64,7 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
         onChange={(value) => update('backgroundColor', value)}
       />
       <ColorField
-        label="Text color"
+        label="Value label color"
         value={settings.textColor}
         onChange={(value) => update('textColor', value)}
       />
