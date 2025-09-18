@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Database, Download, Settings, Sparkles, UploadCloud } from 'lucide-react';
+import { Database, Download, Moon, Settings, Sparkles, Sun, UploadCloud } from 'lucide-react';
 import { ChartActionMenu } from '../../shared/components/ChartActionMenu';
 import { ChartPageLayout } from '../../shared/components/ChartPageLayout';
 import { createBar } from '../../shared/utils/barFactory';
@@ -121,6 +121,7 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
     const [comparisonEnabled, setComparisonEnabled] = useState(false);
     const [previewAction, setPreviewAction] = useState<PreviewAction | null>(null);
     const [isHydrated, setIsHydrated] = useState(false);
+    const [isDarkTheme, setIsDarkTheme] = useState(true);
     const [highlightSignals, setHighlightSignals] = useState<Record<HighlightKey, number>>({
         chartBasics: 0,
         yAxis: 0,
@@ -217,6 +218,63 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
         setFocusRequest({ target, requestId: focusRequestIdRef.current });
     }, []);
 
+    const toggleTheme = useCallback(() => {
+        const newIsDarkTheme = !isDarkTheme;
+        setIsDarkTheme(newIsDarkTheme);
+        
+        // Apply theme to both plots
+        setPlots((currentPlots) => {
+            return currentPlots.map((plot) => {
+                const themeSettings = newIsDarkTheme 
+                    ? {
+                        // Dark theme (current default)
+                        backgroundColor: '#0f172a',
+                        titleColor: '#f8fafc',
+                        subtitleColor: '#cbd5f5',
+                        textColor: '#f8fafc',
+                        xAxis: {
+                            ...plot.xAxis,
+                            axisLineColor: '#e2e8f0',
+                            tickLabelColor: '#e2e8f0',
+                            gridLineColor: '#334155',
+                        },
+                        yAxis: {
+                            ...plot.yAxis,
+                            axisLineColor: '#e2e8f0',
+                            tickLabelColor: '#e2e8f0',
+                            gridLineColor: '#334155',
+                        },
+                        errorBarColor: '#f8fafc',
+                    }
+                    : {
+                        // Light theme
+                        backgroundColor: '#ffffff',
+                        titleColor: '#1e293b',
+                        subtitleColor: '#475569',
+                        textColor: '#1e293b',
+                        xAxis: {
+                            ...plot.xAxis,
+                            axisLineColor: '#475569',
+                            tickLabelColor: '#475569',
+                            gridLineColor: '#e2e8f0',
+                        },
+                        yAxis: {
+                            ...plot.yAxis,
+                            axisLineColor: '#475569',
+                            tickLabelColor: '#475569',
+                            gridLineColor: '#e2e8f0',
+                        },
+                        errorBarColor: '#475569',
+                    };
+                
+                return {
+                    ...plot,
+                    ...themeSettings,
+                };
+            }) as PlotTuple;
+        });
+    }, [isDarkTheme]);
+
     const activeSettings = plots[activePlot];
 
     const handleSettingsChange = useCallback(
@@ -302,12 +360,13 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
     const actionMenuItems = useMemo(
         () => [
             { id: 'upload', label: 'Upload data', icon: UploadCloud, onClick: handleRequestImport },
+            { id: 'theme-toggle', label: isDarkTheme ? 'Light theme' : 'Dark theme', icon: isDarkTheme ? Sun : Moon, onClick: toggleTheme },
             { id: 'clean-studio', label: 'Clean Studio', icon: Sparkles, onClick: handleResetStudio },
             { id: 'clean-data', label: 'Clean Data', icon: Database, onClick: handleResetData },
             { id: 'clean-settings', label: 'Clean Settings', icon: Settings, onClick: handleResetSettings },
             { id: 'export', label: 'Export chart', icon: Download, onClick: handleRequestExport },
         ],
-        [handleRequestImport, handleResetStudio, handleResetData, handleResetSettings, handleRequestExport],
+        [handleRequestImport, isDarkTheme, toggleTheme, handleResetStudio, handleResetData, handleResetSettings, handleRequestExport],
     );
 
     const previewIndices = comparisonEnabled ? [0, 1] : [activePlot];

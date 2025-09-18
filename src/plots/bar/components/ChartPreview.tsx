@@ -525,11 +525,11 @@ export function ChartPreview({
           ref={wrapperRef}
           className={classNames(
             'relative flex min-h-[420px] flex-1 items-center justify-center transition',
-            comparisonEnabled 
+            comparisonEnabled
               ? classNames(
-                  'border border-white/10',
-                  isActive ? 'ring-2 ring-sky-400/70 border-sky-400/60' : 'border-white/10'
-                )
+                'border border-white/10',
+                isActive ? 'ring-2 ring-sky-400/70 border-sky-400/60' : 'border-white/10'
+              )
               : 'rounded-2xl'
           )}
           style={{ backgroundColor: settings.backgroundColor, minHeight: `${minContainerHeight}px` }}

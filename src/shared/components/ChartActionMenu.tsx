@@ -22,6 +22,7 @@ type ChartActionMenuProps = {
 
 export function ChartActionMenu({ actions, className, comparison }: ChartActionMenuProps) {
   const uploadAction = actions.find((action) => action.id === 'upload')
+  const themeAction = actions.find((action) => action.id === 'theme-toggle')
   const exportAction = actions.find((action) => action.id === 'export')
   const cleanActions = actions.filter((action) => action.id.startsWith('clean-'))
 
@@ -43,6 +44,7 @@ export function ChartActionMenu({ actions, className, comparison }: ChartActionM
               onSelectPlot={comparison.onSelectPlot}
             />
           ) : null}
+          {themeAction ? <IconOnlyButton key={themeAction.id} action={themeAction} /> : null}
           {cleanActions.length ? <CleanGroup actions={cleanActions} /> : null}
           {exportAction ? <IconButton key={exportAction.id} action={exportAction} /> : null}
         </div>
@@ -60,10 +62,26 @@ function IconButton({ action }: { action: ChartAction }) {
       aria-label={label}
       onClick={onClick}
       disabled={disabled}
-      className="group flex h-12 flex-1 min-w-[8rem] items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 text-sm font-medium text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 disabled:cursor-not-allowed disabled:opacity-50"
+      className="group flex h-12 flex-1 min-w-[8rem] items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 text-sm font-medium text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 disabled:cursor-not-allowed disabled:opacity-50"
     >
       <Icon className="h-5 w-5 transition-transform group-hover:scale-105" />
       <span>{label}</span>
+    </button>
+  )
+}
+
+function IconOnlyButton({ action }: { action: ChartAction }) {
+  const { label, icon: Icon, onClick, disabled } = action
+  return (
+    <button
+      type="button"
+      title={label}
+      aria-label={label}
+      onClick={onClick}
+      disabled={disabled}
+      className="group flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      <Icon className="h-5 w-5 transition-transform group-hover:scale-105" />
     </button>
   )
 }
