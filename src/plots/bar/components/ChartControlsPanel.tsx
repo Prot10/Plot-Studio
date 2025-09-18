@@ -1,17 +1,15 @@
-import { useEffect, useRef, type MutableRefObject } from 'react'
 import { ChartPageBlock } from '../../../shared/components/ChartPageLayout'
 import { ColorField } from '../../../shared/components/ColorField'
 import { NumericInput } from '../../../shared/components/NumericInput'
 import { SelectField } from '../../../shared/components/SelectField'
 import { useHighlightEffect } from '../../../shared/hooks/useHighlightEffect'
 import type { BarChartSettings } from '../../../types/bar'
-import type { AxisSettings, FocusRequest, HighlightKey } from '../../../types/base'
+import type { HighlightKey } from '../../../types/base'
 
 type ChartControlsPanelProps = {
   settings: BarChartSettings
   onChange: (settings: BarChartSettings) => void
   highlightSignals?: Partial<Record<HighlightKey, number>>
-  focusRequest?: FocusRequest | null
 }
 
 type ToggleProps = {
@@ -89,129 +87,14 @@ function CornerStyleSelector({
   )
 }
 
-function AxisSection({
-  label,
-  settings,
-  onChange,
-  highlightSignal,
-  titleRef,
-}: {
-  label: string
-  settings: AxisSettings
-  onChange: (settings: AxisSettings) => void
-  highlightSignal?: number
-  titleRef?: MutableRefObject<HTMLInputElement | null>
-}) {
-  const update = <K extends keyof AxisSettings>(key: K, value: AxisSettings[K]) => {
-    onChange({ ...settings, [key]: value })
-  }
-
-  const highlight = useHighlightEffect(highlightSignal)
-
-  return (
-    <ChartPageBlock
-      title={`${label} axis`}
-      highlighted={highlight}
-      bodyClassName="flex flex-col gap-3"
-    >
-      <Toggle
-        title="Visibility"
-        value={settings.showAxisLines}
-        onChange={(value) => update('showAxisLines', value)}
-      />
-      <label className="flex flex-col gap-1 text-sm text-white">
-        <span className="text-xs uppercase tracking-wide text-white/50">Title</span>
-        <input
-          type="text"
-          value={settings.title}
-          onChange={(event) => update('title', event.target.value)}
-          className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60"
-          ref={titleRef}
-        />
-      </label>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <NumericInput
-          title="Line width"
-          value={settings.axisLineWidth}
-          min={0}
-          max={8}
-          step={0.5}
-          precision={1}
-          onChange={(value) => update('axisLineWidth', value)}
-        />
-        <ColorField
-          label="Line color"
-          value={settings.axisLineColor}
-          onChange={(value) => update('axisLineColor', value)}
-        />
-        <Toggle
-          title="Tick labels"
-          value={settings.showTickLabels}
-          onChange={(value) => update('showTickLabels', value)}
-        />
-      </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <ColorField
-          label="Tick color"
-          value={settings.tickLabelColor}
-          onChange={(value) => update('tickLabelColor', value)}
-        />
-        <Toggle
-          title="Grid lines"
-          value={settings.showGridLines}
-          onChange={(value) => update('showGridLines', value)}
-        />
-      </div>
-      {settings.showGridLines ? (
-        <ColorField
-          label="Grid color"
-          value={settings.gridLineColor}
-          onChange={(value) => update('gridLineColor', value)}
-        />
-      ) : null}
-    </ChartPageBlock>
-  )
-}
-
-export function ChartControlsPanel({ settings, onChange, highlightSignals, focusRequest }: ChartControlsPanelProps) {
+export function ChartControlsPanel({ settings, onChange, highlightSignals }: ChartControlsPanelProps) {
   const update = <K extends keyof BarChartSettings>(key: K, value: BarChartSettings[K]) => {
-    onChange({ ...settings, [key]: value })
-  }
-
-  const updateAxis = (key: 'xAxis' | 'yAxis', value: AxisSettings) => {
     onChange({ ...settings, [key]: value })
   }
 
   const barDesignHighlight = useHighlightEffect(highlightSignals?.design)
   const typographyHighlight = useHighlightEffect(highlightSignals?.valueLabels)
   const errorHighlight = useHighlightEffect(highlightSignals?.errorBars)
-  const xAxisTitleRef = useRef<HTMLInputElement | null>(null)
-  const handledFocusRef = useRef(0)
-
-  const focusInput = (input: HTMLInputElement | null | undefined) => {
-    if (!input) return false
-    try {
-      input.focus({ preventScroll: true })
-    } catch {
-      input.focus()
-    }
-    input.select()
-    if (typeof input.scrollIntoView === 'function') {
-      input.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
-    return true
-  }
-
-  useEffect(() => {
-    if (!focusRequest) return
-    if (focusRequest.requestId === handledFocusRef.current) return
-
-    if (focusRequest.target.type === 'xAxisTitle') {
-      if (focusInput(xAxisTitleRef.current)) {
-        handledFocusRef.current = focusRequest.requestId
-      }
-    }
-  }, [focusRequest])
 
   return (
     <>
@@ -375,14 +258,6 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
           suffix="px"
         />
       </ChartPageBlock>
-
-      <AxisSection
-        label="X"
-        settings={settings.xAxis}
-        onChange={(config) => updateAxis('xAxis', config)}
-        highlightSignal={highlightSignals?.xAxis}
-        titleRef={xAxisTitleRef}
-      />
     </>
   )
 }

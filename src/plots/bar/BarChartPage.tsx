@@ -11,6 +11,7 @@ import { BarDataEditor } from './components/BarDataEditor';
 import { ChartBasicsPanel } from './components/ChartBasicsPanel';
 import { ChartControlsPanel } from './components/ChartControlsPanel';
 import { ChartPreview } from './components/ChartPreview';
+import { XAxisPanel } from './components/XAxisPanel';
 import { YAxisPanel } from './components/YAxisPanel';
 import { defaultBarChartSettings } from './defaultSettings';
 
@@ -390,6 +391,14 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                                 focusRequest={focusRequest}
                             />
                         </ChartPageBlock>
+                        <ChartPageBlock title="X-Axis" highlighted={useHighlightEffect(highlightSignals?.xAxis)}>
+                            <XAxisPanel
+                                settings={activeSettings}
+                                onChange={handleSettingsChange}
+                                highlightSignals={highlightSignals}
+                                focusRequest={focusRequest}
+                            />
+                        </ChartPageBlock>
                         <ChartPageBlock title="Data" highlighted={dataHighlight}>
                             <BarDataEditor
                                 bars={activeSettings.data}
@@ -443,7 +452,6 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                             settings={activeSettings}
                             onChange={handleSettingsChange}
                             highlightSignals={highlightSignals}
-                            focusRequest={focusRequest}
                         />
                     </div>
                 }
