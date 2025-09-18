@@ -1,5 +1,5 @@
 import { GripVertical, Plus, Trash2 } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { createBar } from '../../../shared/utils/barFactory';
 import type { BarDataPoint } from '../../../types/bar';
 import type { PaletteKey } from '../../../types/base';
@@ -12,8 +12,8 @@ interface DataTableProps {
 }
 
 export function DataTable({ data, paletteName, onChange, className = '' }: DataTableProps) {
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);    const handleCellEdit = useCallback((rowIndex: number, column: string, value: string) => {
+    const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+    const [dragOverIndex, setDragOverIndex] = useState<number | null>(null); const handleCellEdit = useCallback((rowIndex: number, column: string, value: string) => {
         const updatedData = [...data];
         const row = { ...updatedData[rowIndex] };
 
@@ -129,7 +129,7 @@ export function DataTable({ data, paletteName, onChange, className = '' }: DataT
 
     const renderCell = useCallback((row: BarDataPoint, rowIndex: number, column: string, label: string) => {
         const value = getCellValue(row, column);
-        
+
         const handleKeyDown = (e: React.KeyboardEvent<HTMLSpanElement>) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
