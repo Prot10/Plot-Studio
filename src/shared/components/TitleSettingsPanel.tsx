@@ -103,6 +103,7 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
           />
         </div>
         <TextStyleControls
+          label="Style"
           value={{
             bold: settings.titleIsBold,
             italic: settings.titleIsItalic,

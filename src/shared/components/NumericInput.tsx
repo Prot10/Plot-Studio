@@ -86,7 +86,7 @@ export function NumericInput({
     }
 
     return (
-        <div className={`space-y-3 ${disabled ? 'opacity-60' : ''}`}>
+        <div className={`flex flex-col gap-1 text-sm text-white ${disabled ? 'opacity-60' : ''}`}>
             {/* Title */}
             <span className="text-xs uppercase tracking-wide text-white/50">{title}</span>
 
