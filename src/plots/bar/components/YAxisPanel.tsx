@@ -442,39 +442,53 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
             <div className="space-y-8 border-t border-white/10 pt-8">
                 <h3 className="text-sm font-semibold text-white/80">Title</h3>
                 
-                <div className="flex flex-col gap-1 text-sm text-white">
-                    <span className="text-xs uppercase tracking-wide text-white/50">Axis title</span>
-                    <input
-                        ref={yAxisTitleRef}
-                        type="text"
-                        value={settings.yAxis.title}
-                        onChange={(event) => updateAxisField('title', event.target.value)}
-                        className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60"
-                        placeholder="Y-axis title"
-                    />
-                </div>
-
-                <div className="grid gap-16 sm:grid-cols-2">
-                    <NumericInput
-                        title="Title font size"
-                        value={settings.axisTitleFontSize}
-                        min={8}
-                        max={72}
-                        step={1}
-                        precision={0}
-                        onChange={(value) => update('axisTitleFontSize', value)}
-                        suffix="px"
-                    />
-                    <NumericInput
-                        title="Title offset"
-                        value={settings.yAxisTitleOffsetX}
-                        min={-200}
-                        max={200}
-                        step={1}
-                        precision={0}
-                        onChange={(value) => update('yAxisTitleOffsetX', value)}
-                        suffix="px"
-                    />
+                {/* All title settings in one responsive row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <div className="flex flex-col gap-1 text-sm text-white">
+                            <span className="text-xs uppercase tracking-wide text-white/50">Axis title</span>
+                            <input
+                                ref={yAxisTitleRef}
+                                type="text"
+                                value={settings.yAxis.title}
+                                onChange={(event) => updateAxisField('title', event.target.value)}
+                                className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60"
+                                placeholder="Y-axis title"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className={classNames(
+                        "transition-opacity",
+                        !settings.yAxis.title.trim() && "opacity-50 pointer-events-none"
+                    )}>
+                        <NumericInput
+                            title="Title font size"
+                            value={settings.axisTitleFontSize}
+                            min={8}
+                            max={72}
+                            step={1}
+                            precision={0}
+                            onChange={(value) => update('axisTitleFontSize', value)}
+                            suffix="px"
+                        />
+                    </div>
+                    
+                    <div className={classNames(
+                        "transition-opacity",
+                        !settings.yAxis.title.trim() && "opacity-50 pointer-events-none"
+                    )}>
+                        <NumericInput
+                            title="Title offset"
+                            value={settings.yAxisTitleOffsetX}
+                            min={-200}
+                            max={200}
+                            step={1}
+                            precision={0}
+                            onChange={(value) => update('yAxisTitleOffsetX', value)}
+                            suffix="px"
+                        />
+                    </div>
                 </div>
             </div>
 
