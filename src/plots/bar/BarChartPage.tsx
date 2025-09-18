@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Database, Download, Moon, Settings, Sparkles, Sun, UploadCloud } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ChartActionMenu } from '../../shared/components/ChartActionMenu';
 import { ChartPageLayout } from '../../shared/components/ChartPageLayout';
 import { createBar } from '../../shared/utils/barFactory';
 import type { BarChartSettings, BarDataPoint } from '../../types/bar';
 import type { FocusRequest, FocusTarget, HighlightKey, PaletteKey } from '../../types/base';
+import { ChartPreview } from './components/ChartPreview';
+import { DataTable } from './components/DataTable';
 import { LeftPanel } from './components/LeftPanel';
 import { RightPanel } from './components/RightPanel';
-import { ChartPreview } from './components/ChartPreview';
 import { defaultBarChartSettings } from './defaultSettings';
 
 const STORAGE_KEY = 'barplot-studio-state-v1';
@@ -431,7 +432,7 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                             }}
                             actions={actionMenuItems}
                         />
-                        <section className="rounded-3xl border border-white/10 bg-black/50 p-6 shadow-2xl backdrop-blur">
+                        <section className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-xl backdrop-blur">
                             <div className={previewIndices.length > 1 ? 'space-y-6' : undefined}>
                                 {previewIndices.map((index) => {
                                     const plotIndex = index as 0 | 1;
@@ -452,6 +453,13 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                                     );
                                 })}
                             </div>
+                        </section>
+                        <section className="rounded-2xl border border-white/10 bg-black/30 shadow-xl backdrop-blur mt-6">
+                            <DataTable
+                                data={activeSettings.data}
+                                paletteName={activeSettings.paletteName}
+                                onChange={(newData) => setPlot(activePlot, (current) => ({ ...current, data: newData }))}
+                            />
                         </section>
                     </>
                 }
