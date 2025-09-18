@@ -36,17 +36,6 @@ function mergeStoredSettings(stored?: Partial<BarChartSettings>): BarChartSettin
         return buildDefaultSettings();
     }
 
-    const storedRecord = stored as Record<string, unknown>;
-    const {
-        axisTitleFontSize: legacyAxisTitleFontSizeRaw,
-        axisTickFontSize: legacyAxisTickFontSizeRaw,
-        ...restStored
-    } = storedRecord;
-    const storedSettings = restStored as Partial<BarChartSettings>;
-
-    const legacyAxisTitleFontSize = typeof legacyAxisTitleFontSizeRaw === 'number' ? legacyAxisTitleFontSizeRaw : undefined;
-    const legacyAxisTickFontSize = typeof legacyAxisTickFontSizeRaw === 'number' ? legacyAxisTickFontSizeRaw : undefined;
-
     const paletteName = stored.paletteName ?? defaultBarChartSettings.paletteName;
     const storedData = Array.isArray(stored.data) ? stored.data : defaultBarChartSettings.data;
     const defaults = buildDefaultSettings(paletteName, Math.max(storedData.length, DEFAULT_DATA_LENGTH));

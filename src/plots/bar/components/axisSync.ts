@@ -7,8 +7,10 @@ export const SYNCED_AXIS_FIELDS = [
   'showTickLabels',
   'tickLabelColor',
   'tickLabelOrientation',
-] as const satisfies ReadonlyArray<keyof AxisSettings>
+] as const
 
-export function shouldSyncAxisField(field: keyof AxisSettings): boolean {
-  return SYNCED_AXIS_FIELDS.includes(field)
+export type SyncedAxisField = typeof SYNCED_AXIS_FIELDS[number]
+
+export function shouldSyncAxisField(field: keyof AxisSettings): field is SyncedAxisField {
+  return SYNCED_AXIS_FIELDS.includes(field as SyncedAxisField)
 }
