@@ -517,9 +517,6 @@ export function ChartPreview({
       <div className="flex h-full flex-col gap-4" style={{ color: settings.textColor }}>
         <div className="text-center">
           <h2 className="text-xl font-semibold text-white">{heading ?? 'Live preview'}</h2>
-          <p className="text-sm text-white/60">
-            Import data, fine-tune the design, and export the chart once it looks right.
-          </p>
         </div>
         <div
           ref={wrapperRef}
