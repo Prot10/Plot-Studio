@@ -54,7 +54,7 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
           />
         </div>
 
-        <div className="grid gap-16 sm:grid-cols-2">
+        <div className="grid gap-16 sm:grid-cols-1">
           <NumericInput
             title="Inner padding"
             value={settings.canvasPadding}
@@ -64,11 +64,6 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
             precision={0}
             onChange={(value) => update('canvasPadding', value)}
             suffix="px"
-          />
-          <ColorField
-            label="Value label color"
-            value={settings.textColor}
-            onChange={(value) => update('textColor', value)}
           />
         </div>
       </div>

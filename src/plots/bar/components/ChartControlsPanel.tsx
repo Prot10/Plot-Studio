@@ -157,11 +157,6 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals }: Cha
           </div>
         </div>
         <Toggle
-          title="Value labels"
-          value={settings.showValueLabels}
-          onChange={(value) => update('showValueLabels', value)}
-        />
-        <Toggle
           title="Error bars"
           value={settings.showErrorBars}
           onChange={(value) => update('showErrorBars', value)}
@@ -213,50 +208,70 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals }: Cha
       </ChartPageBlock>
 
       <ChartPageBlock
-        title="Typography"
+        title="Value Labels"
         highlighted={typographyHighlight}
-        bodyClassName="grid grid-cols-1 gap-3 sm:grid-cols-2"
+        bodyClassName="space-y-4"
       >
-        <NumericInput
-          title="Value labels"
-          value={settings.valueLabelFontSize}
-          min={8}
-          max={64}
-          step={1}
-          precision={0}
-          onChange={(value) => update('valueLabelFontSize', value)}
-          suffix="px"
-        />
-        <NumericInput
-          title="Value label Y offset"
-          value={settings.valueLabelOffsetY}
-          min={-200}
-          max={200}
-          step={1}
-          precision={0}
-          onChange={(value) => update('valueLabelOffsetY', value)}
-          suffix="px"
-        />
-        <NumericInput
-          title="Value label X offset"
-          value={settings.valueLabelOffsetX}
-          min={-200}
-          max={200}
-          step={1}
-          precision={0}
-          onChange={(value) => update('valueLabelOffsetX', value)}
-          suffix="px"
-        />
-        <NumericInput
-          title="X title offset"
-          value={settings.xAxisTitleOffsetY}
-          min={-200}
-          max={200}
-          step={1}
-          precision={0}
-          onChange={(value) => update('xAxisTitleOffsetY', value)}
-          suffix="px"
-        />
+        {/* First row: Toggle to show value labels and font size */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <Toggle
+              title="Show value labels"
+              value={settings.showValueLabels}
+              onChange={(value) => update('showValueLabels', value)}
+            />
+          </div>
+
+          <div className={`transition-opacity ${!settings.showValueLabels ? 'opacity-50 pointer-events-none' : ''}`}>
+            <NumericInput
+              title="Font size"
+              value={settings.valueLabelFontSize}
+              min={6}
+              max={48}
+              step={1}
+              precision={0}
+              onChange={(value) => update('valueLabelFontSize', value)}
+              suffix="px"
+            />
+          </div>
+        </div>
+
+        {/* Second row: Color, X offset, Y offset */}
+        <div className={`grid grid-cols-1 sm:grid-cols-3 gap-4 transition-opacity ${!settings.showValueLabels ? 'opacity-50 pointer-events-none' : ''}`}>
+          <div>
+            <ColorField
+              label="Label color"
+              value={settings.textColor}
+              onChange={(value) => update('textColor', value)}
+            />
+          </div>
+
+          <div>
+            <NumericInput
+              title="X offset"
+              value={settings.valueLabelOffsetX}
+              min={-100}
+              max={100}
+              step={1}
+              precision={0}
+              onChange={(value) => update('valueLabelOffsetX', value)}
+              suffix="px"
+            />
+          </div>
+
+          <div>
+            <NumericInput
+              title="Y offset"
+              value={settings.valueLabelOffsetY}
+              min={-100}
+              max={100}
+              step={1}
+              precision={0}
+              onChange={(value) => update('valueLabelOffsetY', value)}
+              suffix="px"
+            />
+          </div>
+        </div>
       </ChartPageBlock>
     </>
   )

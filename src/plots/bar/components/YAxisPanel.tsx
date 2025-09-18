@@ -264,7 +264,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
 
     const updateAxisField = <K extends keyof AxisSettings>(key: K, value: AxisSettings[K]) => {
         const newYAxis = { ...settings.yAxis, [key]: value }
-        
+
         // If appearance sync is active, also update X-axis for appearance properties
         if (settings.axisAppearanceSync && isAppearanceProperty(key)) {
             const newXAxis = { ...settings.xAxis, [key]: value }
@@ -293,7 +293,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
     const isAppearanceProperty = (key: keyof AxisSettings): boolean => {
         return [
             'showAxisLines',
-            'axisLineWidth', 
+            'axisLineWidth',
             'axisLineColor',
             'showGridLines',
             'gridLineStyle',
@@ -314,7 +314,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
 
     const handleToggleAppearanceSync = () => {
         const newSyncState = !settings.axisAppearanceSync
-        
+
         if (newSyncState) {
             // When enabling sync, copy Y-axis appearance values to X-axis
             const updatedXAxis = {
@@ -342,7 +342,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
 
     const handleToggleTicksSync = () => {
         const newSyncState = !settings.axisTicksSync
-        
+
         if (newSyncState) {
             // When enabling sync, copy Y-axis tick values to X-axis
             const updatedXAxis = {
