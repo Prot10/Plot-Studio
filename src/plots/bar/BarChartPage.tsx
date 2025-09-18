@@ -388,6 +388,7 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                                             heading={previewHeading(plotIndex)}
                                             isActive={activePlot === plotIndex}
                                             onActivate={() => handleSelectPlot(plotIndex)}
+                                            comparisonEnabled={comparisonEnabled}
                                         />
                                     );
                                 })}

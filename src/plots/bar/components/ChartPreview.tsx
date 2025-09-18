@@ -17,6 +17,7 @@ type ChartPreviewProps = {
   heading?: string
   isActive?: boolean
   onActivate?: () => void
+  comparisonEnabled?: boolean
 }
 
 type ExportFormat = 'png' | 'svg' | 'pdf'
@@ -121,6 +122,7 @@ export function ChartPreview({
   heading,
   isActive = true,
   onActivate,
+  comparisonEnabled = false,
 }: ChartPreviewProps) {
   const [wrapperRef, size] = useElementSize<HTMLDivElement>()
   const svgRef = useRef<SVGSVGElement | null>(null)
@@ -522,8 +524,13 @@ export function ChartPreview({
         <div
           ref={wrapperRef}
           className={classNames(
-            'relative flex min-h-[420px] flex-1 items-center justify-center rounded-2xl border border-white/10 transition',
-            isActive ? 'ring-2 ring-sky-400/70 border-sky-400/60' : 'border-white/10',
+            'relative flex min-h-[420px] flex-1 items-center justify-center transition',
+            comparisonEnabled 
+              ? classNames(
+                  'border border-white/10',
+                  isActive ? 'ring-2 ring-sky-400/70 border-sky-400/60' : 'border-white/10'
+                )
+              : 'rounded-2xl'
           )}
           style={{ backgroundColor: settings.backgroundColor, minHeight: `${minContainerHeight}px` }}
           onClick={onActivate}
