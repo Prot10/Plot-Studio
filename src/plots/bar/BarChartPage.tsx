@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Download, Eraser, SlidersHorizontal, Sparkles, UploadCloud } from 'lucide-react';
+import { Database, Download, Settings, Sparkles, UploadCloud } from 'lucide-react';
 import { ChartActionMenu } from '../../shared/components/ChartActionMenu';
 import { ChartPageBlock, ChartPageLayout } from '../../shared/components/ChartPageLayout';
 import { useHighlightEffect } from '../../shared/hooks/useHighlightEffect';
@@ -278,8 +278,8 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
         () => [
             { id: 'upload', label: 'Upload data', icon: UploadCloud, onClick: handleRequestImport },
             { id: 'clean-studio', label: 'Clean Studio', icon: Sparkles, onClick: handleResetStudio },
-            { id: 'clean-data', label: 'Clean Data', icon: Eraser, onClick: handleResetData },
-            { id: 'clean-settings', label: 'Clean Settings', icon: SlidersHorizontal, onClick: handleResetSettings },
+            { id: 'clean-data', label: 'Clean Data', icon: Database, onClick: handleResetData },
+            { id: 'clean-settings', label: 'Clean Settings', icon: Settings, onClick: handleResetSettings },
             { id: 'export', label: 'Export chart', icon: Download, onClick: handleRequestExport },
         ],
         [handleRequestImport, handleResetStudio, handleResetData, handleResetSettings, handleRequestExport],
