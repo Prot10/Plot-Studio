@@ -73,20 +73,27 @@ function CornerStyleSelector({
   onChange: (value: BarChartSettings['barCornerStyle']) => void
 }) {
   return (
-    <div className="flex gap-2">
-      {cornerOptions.map((option) => {
-        const isActive = option.value === value
-        return (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => onChange(option.value)}
-            className={`rounded-md border px-3 py-1.5 text-sm transition ${isActive ? 'border-sky-400 bg-sky-400/20 text-white' : 'border-white/10 bg-white/5 text-white/70 hover:text-white'}`}
-          >
-            {option.label}
-          </button>
-        )
-      })}
+    <div className="flex flex-col gap-1 text-sm text-white">
+      <span className="text-xs uppercase tracking-wide text-white/50">Rounded</span>
+      <div className="flex overflow-hidden rounded-md border border-white/10 bg-white/10 text-white shadow-sm h-9">
+        {cornerOptions.map((option, index) => {
+          const isActive = option.value === value
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onChange(option.value)}
+              className={`flex flex-1 items-center justify-center px-3 text-xs font-medium transition focus:outline-none ${isActive
+                  ? 'bg-sky-500/20 text-white'
+                  : 'bg-transparent text-white/70 hover:bg-white/10 hover:text-white'
+                } ${index < cornerOptions.length - 1 ? 'border-r border-white/10' : ''
+                }`}
+            >
+              {option.label}
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -105,110 +112,111 @@ export function RightPanel({ settings, bars, onChange, onBarsChange, highlightSi
       <ChartPageBlock
         title="Bar design"
         highlighted={barDesignHighlight}
-        bodyClassName="space-y-4"
       >
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <NumericInput
-            title="Default opacity"
-            value={settings.barOpacity}
-            min={0}
-            max={1}
-            step={0.05}
-            precision={2}
-            onChange={(value) => update('barOpacity', value)}
-          />
-          <NumericInput
-            title="Default border width"
-            value={settings.barBorderWidth}
-            min={0}
-            max={20}
-            step={0.5}
-            precision={1}
-            onChange={(value) => update('barBorderWidth', value)}
-            suffix="px"
-          />
-          <label className="flex flex-col gap-1 text-sm text-white">
-            <span className="text-xs uppercase tracking-wide text-white/50">Bar spacing</span>
-            <input
-              type="range"
+        <div className="space-y-8">
+          <div className="grid gap-8 sm:grid-cols-3">
+            <NumericInput
+              title="Default opacity"
+              value={settings.barOpacity}
+              min={0}
+              max={1}
+              step={0.05}
+              precision={2}
+              onChange={(value) => update('barOpacity', value)}
+            />
+            <NumericInput
+              title="Default border width"
+              value={settings.barBorderWidth}
+              min={0}
+              max={20}
+              step={0.5}
+              precision={1}
+              onChange={(value) => update('barBorderWidth', value)}
+              suffix="px"
+            />
+            <NumericInput
+              title="Bar spacing"
+              value={settings.barGap}
               min={0}
               max={0.6}
               step={0.02}
-              value={settings.barGap}
-              onChange={(event) => update('barGap', Number.parseFloat(event.target.value))}
-              className="accent-sky-400"
+              precision={2}
+              onChange={(value) => update('barGap', value)}
             />
-            <span className="text-xs text-white/40">{settings.barGap.toFixed(2)}</span>
-          </label>
-        </div>
-        <div className="space-y-2">
-          <span className="text-xs uppercase tracking-wide text-white/50">Corner radius</span>
-          <input
-            type="range"
-            min={0}
-            max={96}
-            step={2}
-            value={settings.barCornerRadius}
-            onChange={(event) => update('barCornerRadius', Number.parseFloat(event.target.value))}
-            className="accent-sky-400"
-          />
-          <div className="flex items-center justify-between text-xs text-white/50">
-            <span>{settings.barCornerRadius.toFixed(0)} px</span>
+          </div>
+
+          <div className="grid gap-8 sm:grid-cols-2">
+            <NumericInput
+              title="Corner radius"
+              value={settings.barCornerRadius}
+              min={0}
+              max={96}
+              step={2}
+              precision={0}
+              onChange={(value) => update('barCornerRadius', value)}
+              suffix="px"
+            />
             <CornerStyleSelector
               value={settings.barCornerStyle}
               onChange={(value) => update('barCornerStyle', value)}
             />
           </div>
-        </div>
-        <Toggle
-          title="Error bars"
-          value={settings.showErrorBars}
-          onChange={(value) => update('showErrorBars', value)}
-        />
-        {settings.showErrorBars ? (
-          <div
-            className={`${errorHighlight ? 'highlight-pulse ' : ''}grid grid-cols-1 gap-3 sm:grid-cols-3`}
-          >
-            <SelectField<BarChartSettings['errorBarMode']>
-              label="Color mode"
-              value={settings.errorBarMode}
-              onChange={(value) => update('errorBarMode', value)}
-              options={errorBarModeOptions}
-              placeholder="Select mode"
+
+          <div className="space-y-8 border-t border-white/10 pt-8">
+            <h3 className="text-sm font-semibold text-white/80">Error Bars</h3>
+
+            <Toggle
+              title="Show error bars"
+              value={settings.showErrorBars}
+              onChange={(value) => update('showErrorBars', value)}
             />
-            {settings.errorBarMode === 'global' ? (
+
+            <div
+              className={`${errorHighlight ? 'highlight-pulse ' : ''}grid gap-8 sm:grid-cols-3 transition-opacity ${settings.showErrorBars ? 'opacity-100' : 'opacity-50 pointer-events-none'
+                }`}
+            >
+              <SelectField<BarChartSettings['errorBarMode']>
+                label="Color mode"
+                value={settings.errorBarMode}
+                onChange={(value) => update('errorBarMode', value)}
+                options={errorBarModeOptions}
+                placeholder="Select mode"
+                disabled={!settings.showErrorBars}
+              />
               <ColorField
                 label="Error bar color"
                 value={settings.errorBarColor}
                 onChange={(value) => update('errorBarColor', value)}
+                disabled={!settings.showErrorBars || settings.errorBarMode !== 'global'}
               />
-            ) : (
-              <div className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/60">
-                Using each bar border color
-              </div>
-            )}
-            <NumericInput
-              title="Line width"
-              value={settings.errorBarWidth}
-              min={0}
-              max={12}
-              step={0.5}
-              precision={1}
-              onChange={(value) => update('errorBarWidth', value)}
-              suffix="px"
-            />
-            <NumericInput
-              title="Cap width"
-              value={settings.errorBarCapWidth}
-              min={0}
-              max={96}
-              step={2}
-              precision={0}
-              onChange={(value) => update('errorBarCapWidth', value)}
-              suffix="px"
-            />
+              <NumericInput
+                title="Line width"
+                value={settings.errorBarWidth}
+                min={0}
+                max={12}
+                step={0.5}
+                precision={1}
+                onChange={(value) => update('errorBarWidth', value)}
+                suffix="px"
+                disabled={!settings.showErrorBars}
+              />
+            </div>
+
+            <div className="grid gap-8 sm:grid-cols-3">
+              <NumericInput
+                title="Cap width"
+                value={settings.errorBarCapWidth}
+                min={0}
+                max={96}
+                step={2}
+                precision={0}
+                onChange={(value) => update('errorBarCapWidth', value)}
+                suffix="px"
+                disabled={!settings.showErrorBars}
+              />
+            </div>
           </div>
-        ) : null}
+        </div>
       </ChartPageBlock>
 
       <ChartPageBlock title="Data" highlighted={dataHighlight}>
