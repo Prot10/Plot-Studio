@@ -93,7 +93,7 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
     <section className={classNames('space-y-10', highlight ? 'highlight-pulse' : null, className)}>
       <div className="space-y-8">
         <h3 className="text-sm font-semibold text-white/80">Title</h3>
-        <div className="grid gap-16 sm:grid-cols-2">
+        <div className="grid gap-8 sm:grid-cols-3">
           <TextInput
             ref={titleRef}
             label="Title text"
@@ -106,9 +106,18 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
             value={settings.titleColor}
             onChange={(value) => update('titleColor', value)}
           />
+          <TextStyleControls
+            label="Title style"
+            value={{
+              bold: settings.titleIsBold,
+              italic: settings.titleIsItalic,
+              underline: settings.titleIsUnderline,
+            }}
+            onChange={handleTitleStyleChange}
+          />
         </div>
 
-        <div className="flex flex-wrap items-center gap-8">
+        <div className="grid gap-8 sm:grid-cols-3">
           <div className="min-w-[12rem] flex-1 sm:flex-none">
             <NumericInput
               title="Size"
@@ -121,18 +130,6 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
               suffix="px"
             />
           </div>
-          <TextStyleControls
-            label="Title style"
-            value={{
-              bold: settings.titleIsBold,
-              italic: settings.titleIsItalic,
-              underline: settings.titleIsUnderline,
-            }}
-            onChange={handleTitleStyleChange}
-          />
-        </div>
-
-        <div className="grid gap-16 sm:grid-cols-2">
           <NumericInput
             title="Vertical offset"
             value={settings.titleOffsetY}
@@ -158,7 +155,7 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
 
       <div className="space-y-8 border-t border-white/10 pt-8">
         <h3 className="text-sm font-semibold text-white/80">Subtitle</h3>
-        <div className="grid gap-16 sm:grid-cols-2">
+        <div className="grid gap-8 sm:grid-cols-3">
           <TextInput
             ref={subtitleRef}
             label="Subtitle text"
@@ -171,9 +168,18 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
             value={settings.subtitleColor}
             onChange={(value) => update('subtitleColor', value)}
           />
+          <TextStyleControls
+            label="Subtitle style"
+            value={{
+              bold: settings.subtitleIsBold,
+              italic: settings.subtitleIsItalic,
+              underline: settings.subtitleIsUnderline,
+            }}
+            onChange={handleSubtitleStyleChange}
+          />
         </div>
 
-        <div className="flex flex-wrap items-center gap-8">
+        <div className="grid gap-8 sm:grid-cols-3">
           <div className="min-w-[12rem] flex-1 sm:flex-none">
             <NumericInput
               title="Size"
@@ -186,18 +192,6 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
               suffix="px"
             />
           </div>
-          <TextStyleControls
-            label="Subtitle style"
-            value={{
-              bold: settings.subtitleIsBold,
-              italic: settings.subtitleIsItalic,
-              underline: settings.subtitleIsUnderline,
-            }}
-            onChange={handleSubtitleStyleChange}
-          />
-        </div>
-
-        <div className="grid gap-16 sm:grid-cols-2">
           <NumericInput
             title="Vertical offset"
             value={settings.subtitleOffsetY}

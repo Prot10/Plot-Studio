@@ -29,7 +29,7 @@ export function TextStyleControls({ value, onChange, label, className }: TextSty
     <div className={`flex flex-col gap-1 text-sm text-white ${className || ''}`}>
       <span className="text-xs uppercase tracking-wide text-white/50">{label}</span>
       <div
-        className="inline-flex overflow-hidden rounded-md border border-white/10 bg-white/10 text-white shadow-sm h-9"
+        className="flex overflow-hidden rounded-md border border-white/10 bg-white/10 text-white shadow-sm h-9"
       >
         {toggles.map(({ key, label, icon: Icon }, index) => {
           const active = value[key]
@@ -41,7 +41,7 @@ export function TextStyleControls({ value, onChange, label, className }: TextSty
               aria-pressed={active}
               title={label}
               className={classNames(
-                'flex w-12 items-center justify-center border-r border-white/10 text-white transition focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60',
+                'flex flex-1 items-center justify-center border-r border-white/10 text-white transition focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60',
                 active ? 'bg-sky-500/20 text-white' : 'bg-transparent text-white/70 hover:bg-white/10 hover:text-white',
                 index === toggles.length - 1 ? 'border-r-0' : null,
               )}
