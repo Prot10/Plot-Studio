@@ -13,18 +13,62 @@ import { ChartPreview } from './components/ChartPreview';
 import { defaultBarChartSettings } from './defaultSettings';
 
 const STORAGE_KEY = 'barplot-studio-state-v1';
+const STORAGE_VERSION = 2;
 const DEFAULT_DATA_LENGTH = defaultBarChartSettings.data.length;
 
-function buildDefaultData(paletteName: PaletteKey) {
-    return Array.from({ length: DEFAULT_DATA_LENGTH }, (_, index) => createBar(index, paletteName));
+function buildDefaultData(paletteName: PaletteKey, length = DEFAULT_DATA_LENGTH) {
+    return Array.from({ length }, (_, index) => createBar(index, paletteName));
 }
 
-function buildDefaultSettings(): BarChartSettings {
+function buildDefaultSettings(
+    paletteName: PaletteKey = defaultBarChartSettings.paletteName,
+    length = DEFAULT_DATA_LENGTH,
+): BarChartSettings {
     return {
         ...defaultBarChartSettings,
-        data: buildDefaultData(defaultBarChartSettings.paletteName),
+        paletteName,
+        data: buildDefaultData(paletteName, length),
         xAxis: { ...defaultBarChartSettings.xAxis },
         yAxis: { ...defaultBarChartSettings.yAxis },
+    };
+}
+
+function mergeStoredSettings(stored?: Partial<BarChartSettings>): BarChartSettings {
+    if (!stored || typeof stored !== 'object') {
+        return buildDefaultSettings();
+    }
+
+    const paletteName = stored.paletteName ?? defaultBarChartSettings.paletteName;
+    const storedData = Array.isArray(stored.data) ? stored.data : defaultBarChartSettings.data;
+    const defaults = buildDefaultSettings(paletteName, Math.max(storedData.length, DEFAULT_DATA_LENGTH));
+
+    const mergedData = storedData.map((bar, index) => {
+        const template = createBar(index, paletteName);
+        return {
+            ...template,
+            ...bar,
+            fillColor: bar?.fillColor ?? template.fillColor,
+            borderColor: bar?.borderColor ?? template.borderColor,
+            borderWidth: typeof bar?.borderWidth === 'number' ? bar.borderWidth : template.borderWidth,
+            opacity: typeof bar?.opacity === 'number' ? bar.opacity : template.opacity,
+            error: typeof bar?.error === 'number' ? bar.error : template.error,
+            pattern: (bar?.pattern as BarDataPoint['pattern']) ?? template.pattern,
+            patternColor: typeof bar?.patternColor === 'string' ? bar.patternColor : template.patternColor,
+            patternOpacity: typeof bar?.patternOpacity === 'number' ? bar.patternOpacity : template.patternOpacity,
+            patternSize: typeof bar?.patternSize === 'number' ? bar.patternSize : template.patternSize,
+        };
+    });
+
+    const xAxis = { ...defaultBarChartSettings.xAxis, ...stored.xAxis };
+    const yAxis = { ...defaultBarChartSettings.yAxis, ...stored.yAxis };
+
+    return {
+        ...defaults,
+        ...stored,
+        paletteName,
+        data: mergedData,
+        xAxis,
+        yAxis,
     };
 }
 
@@ -32,8 +76,15 @@ interface BarChartPageProps {
     onBack: () => void;
 }
 
+type PreviewAction = { type: 'importData' | 'exportChart'; target: 0 | 1 };
+
+type PlotTuple = [BarChartSettings, BarChartSettings];
+
 export function BarChartPage({ onBack }: BarChartPageProps) {
-    const [settings, setSettings] = useState<BarChartSettings>(defaultBarChartSettings);
+    const [plots, setPlots] = useState<PlotTuple>(() => [buildDefaultSettings(), buildDefaultSettings()]);
+    const [activePlot, setActivePlot] = useState<0 | 1>(0);
+    const [comparisonEnabled, setComparisonEnabled] = useState(false);
+    const [previewAction, setPreviewAction] = useState<PreviewAction | null>(null);
     const [isHydrated, setIsHydrated] = useState(false);
     const [highlightSignals, setHighlightSignals] = useState<Record<HighlightKey, number>>({
         chartBasics: 0,
@@ -47,59 +98,36 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
     });
     const focusRequestIdRef = useRef(0);
     const [focusRequest, setFocusRequest] = useState<FocusRequest | null>(null);
-    const [previewAction, setPreviewAction] = useState<'importData' | 'exportChart' | null>(null);
 
     useEffect(() => {
         if (typeof window === 'undefined' || isHydrated) return;
 
         try {
-            const stored = window.localStorage.getItem(STORAGE_KEY);
-            if (!stored) {
+            const storedRaw = window.localStorage.getItem(STORAGE_KEY);
+            if (!storedRaw) {
                 setIsHydrated(true);
                 return;
             }
 
-            const parsed = JSON.parse(stored);
-            const storedSettings: Partial<BarChartSettings> | undefined =
-                parsed?.settings ?? parsed;
+            const parsed = JSON.parse(storedRaw);
 
-            if (!storedSettings || typeof storedSettings !== 'object') {
-                setIsHydrated(true);
-                return;
+            if (parsed && Array.isArray(parsed.plots)) {
+                const storedPlots = parsed.plots as Array<Partial<BarChartSettings> | undefined>;
+                const nextPlots: PlotTuple = [
+                    mergeStoredSettings(storedPlots[0]),
+                    mergeStoredSettings(storedPlots[1]),
+                ];
+                setPlots(nextPlots);
+                setActivePlot(parsed.activePlot === 1 ? 1 : 0);
+                setComparisonEnabled(Boolean(parsed.comparisonEnabled));
+            } else if (parsed?.settings) {
+                const merged = mergeStoredSettings(parsed.settings as Partial<BarChartSettings>);
+                setPlots([merged, buildDefaultSettings()]);
+                setActivePlot(0);
+                setComparisonEnabled(false);
+            } else {
+                setPlots([buildDefaultSettings(), buildDefaultSettings()]);
             }
-
-            const mergedPalette = storedSettings.paletteName ?? defaultBarChartSettings.paletteName;
-
-            const mergedDataSource = Array.isArray(storedSettings.data)
-                ? storedSettings.data
-                : defaultBarChartSettings.data;
-
-            const mergedData = mergedDataSource.map((bar, index) => {
-                const defaults = createBar(index, mergedPalette);
-                return {
-                    ...defaults,
-                    ...bar,
-                    fillColor: bar?.fillColor ?? defaults.fillColor,
-                    borderColor: bar?.borderColor ?? defaults.borderColor,
-                    borderWidth: typeof bar?.borderWidth === 'number' ? bar.borderWidth : defaults.borderWidth,
-                    opacity: typeof bar?.opacity === 'number' ? bar.opacity : defaults.opacity,
-                    error: typeof bar?.error === 'number' ? bar.error : defaults.error,
-                    pattern: (bar?.pattern as BarDataPoint['pattern']) ?? defaults.pattern,
-                    patternColor: typeof bar?.patternColor === 'string' ? bar.patternColor : defaults.patternColor,
-                    patternOpacity:
-                        typeof bar?.patternOpacity === 'number' ? bar.patternOpacity : defaults.patternOpacity,
-                    patternSize: typeof bar?.patternSize === 'number' ? bar.patternSize : defaults.patternSize,
-                };
-            });
-
-            const mergedSettings: BarChartSettings = {
-                ...defaultBarChartSettings,
-                ...storedSettings,
-                paletteName: mergedPalette,
-                data: mergedData,
-            };
-
-            setSettings(mergedSettings);
         } catch (error) {
             console.warn('Failed to load saved chart state', error);
         } finally {
@@ -109,12 +137,33 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
 
     useEffect(() => {
         if (!isHydrated || typeof window === 'undefined') return;
+
         try {
-            window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ settings }));
+            const payload = {
+                version: STORAGE_VERSION,
+                plots,
+                activePlot,
+                comparisonEnabled,
+            };
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
         } catch (error) {
             console.warn('Failed to save chart state', error);
         }
-    }, [settings, isHydrated]);
+    }, [plots, activePlot, comparisonEnabled, isHydrated]);
+
+    const setPlot = useCallback(
+        (index: 0 | 1, updater: BarChartSettings | ((prev: BarChartSettings) => BarChartSettings)) => {
+            setPlots((current) => {
+                const next = current.slice() as PlotTuple;
+                const previous = current[index];
+                next[index] = typeof updater === 'function'
+                    ? (updater as (prev: BarChartSettings) => BarChartSettings)(previous)
+                    : updater;
+                return next;
+            });
+        },
+        [],
+    );
 
     const triggerHighlight = useCallback((keys: HighlightKey[]) => {
         if (!keys.length) return;
@@ -143,29 +192,32 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
     const controlsSignalValue = controlsHighlightSignal === 0 ? undefined : controlsHighlightSignal;
     const controlsHighlight = useHighlightEffect(controlsSignalValue);
 
-    const handleDataChange = (data: BarDataPoint[]) => {
-        setSettings((current) => ({ ...current, data }));
-    };
+    const activeSettings = plots[activePlot];
 
-    const handleSettingsChange = (nextSettings: BarChartSettings) => {
-        setSettings(nextSettings);
-    };
+    const handleSettingsChange = useCallback(
+        (nextSettings: BarChartSettings) => {
+            setPlot(activePlot, nextSettings);
+        },
+        [activePlot, setPlot],
+    );
 
     const handlePreviewActionHandled = useCallback(() => {
         setPreviewAction(null);
     }, []);
 
     const handleRequestImport = useCallback(() => {
-        setPreviewAction('importData');
-    }, []);
+        setPreviewAction({ type: 'importData', target: activePlot });
+    }, [activePlot]);
 
     const handleRequestExport = useCallback(() => {
-        setPreviewAction('exportChart');
-    }, []);
+        setPreviewAction({ type: 'exportChart', target: activePlot });
+    }, [activePlot]);
 
     const handleResetStudio = useCallback(() => {
-        const defaults = buildDefaultSettings();
-        setSettings(defaults);
+        setPlots([buildDefaultSettings(), buildDefaultSettings()]);
+        setActivePlot(0);
+        setComparisonEnabled(false);
+        setPreviewAction(null);
         setFocusRequest(null);
         triggerHighlight(['chartBasics', 'data']);
         if (typeof window !== 'undefined') {
@@ -178,19 +230,18 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
     }, [triggerHighlight]);
 
     const handleResetData = useCallback(() => {
-        setSettings((current) => ({
+        setPlot(activePlot, (current) => ({
             ...current,
-            data: buildDefaultData(current.paletteName),
+            data: buildDefaultData(current.paletteName, Math.max(current.data.length, 1)),
         }));
         triggerHighlight(['data']);
-    }, [triggerHighlight]);
+    }, [activePlot, setPlot, triggerHighlight]);
 
     const handleResetSettings = useCallback(() => {
-        setSettings((current) => {
-            const defaults = buildDefaultSettings();
-            const paletteTemplate = defaults.data;
+        setPlot(activePlot, (current) => {
+            const defaults = buildDefaultSettings(current.paletteName, Math.max(current.data.length, DEFAULT_DATA_LENGTH));
             const nextData = current.data.map((bar, index) => {
-                const template = paletteTemplate[index % paletteTemplate.length];
+                const template = createBar(index, current.paletteName);
                 return {
                     ...bar,
                     fillColor: template.fillColor,
@@ -203,7 +254,25 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
             };
         });
         triggerHighlight(['chartBasics']);
-    }, [triggerHighlight]);
+    }, [activePlot, setPlot, triggerHighlight]);
+
+    const handleToggleComparison = useCallback((enabled: boolean) => {
+        setComparisonEnabled(enabled);
+    }, []);
+
+    const handleSelectPlot = useCallback((index: 0 | 1) => {
+        setActivePlot(index);
+    }, []);
+
+    const handlePreviewFocus = useCallback(
+        (index: 0 | 1, target: FocusTarget) => {
+            if (activePlot !== index) {
+                setActivePlot(index);
+            }
+            requestFocus(target);
+        },
+        [activePlot, requestFocus],
+    );
 
     const actionMenuItems = useMemo(
         () => [
@@ -216,6 +285,21 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
         [handleRequestImport, handleResetStudio, handleResetData, handleResetSettings, handleRequestExport],
     );
 
+    const previewIndices = comparisonEnabled ? [0, 1] : [activePlot];
+
+    const previewHeading = useCallback(
+        (index: 0 | 1) => {
+            if (comparisonEnabled) {
+                return `Live preview · Plot ${index + 1}`;
+            }
+            if (index === 0 && activePlot === 0) {
+                return 'Live preview';
+            }
+            return `Live preview · Plot ${index + 1}`;
+        },
+        [comparisonEnabled, activePlot],
+    );
+
     return (
         <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
             <header className="border-b border-white/10 bg-black/20 backdrop-blur">
@@ -223,14 +307,14 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                     <div className="flex items-center gap-4">
                         <button
                             onClick={onBack}
-                            className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white hover:bg-white/20 transition-colors"
+                            className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white transition-colors hover:bg-white/20"
                         >
                             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                             </svg>
                             Back
                         </button>
-                        <div className="text-center text-white flex-1">
+                        <div className="flex-1 text-center text-white">
                             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Bar Chart Studio</h1>
                             <p className="mt-2 text-base text-white/60 sm:text-lg">
                                 Build expressive bar charts with precise control over every detail.
@@ -244,19 +328,23 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                     <>
                         <ChartPageBlock title="Chart basics" highlighted={basicsHighlight}>
                             <ChartBasicsPanel
-                                settings={settings}
-                                bars={settings.data}
+                                settings={activeSettings}
+                                bars={activeSettings.data}
                                 onChange={handleSettingsChange}
-                                onBarsChange={handleDataChange}
+                                onBarsChange={(bars) =>
+                                    setPlot(activePlot, (current) => ({ ...current, data: bars }))
+                                }
                                 highlightSignals={highlightSignals}
                                 focusRequest={focusRequest}
                             />
                         </ChartPageBlock>
                         <ChartPageBlock title="Data" highlighted={dataHighlight}>
                             <BarDataEditor
-                                bars={settings.data}
-                                paletteName={settings.paletteName}
-                                onChange={handleDataChange}
+                                bars={activeSettings.data}
+                                paletteName={activeSettings.paletteName}
+                                onChange={(bars) =>
+                                    setPlot(activePlot, (current) => ({ ...current, data: bars }))
+                                }
                                 highlightSignal={highlightSignals.data}
                                 focusRequest={focusRequest}
                             />
@@ -265,23 +353,42 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                 }
                 center={
                     <>
-                        <ChartActionMenu actions={actionMenuItems} />
+                        <ChartActionMenu
+                            comparison={{
+                                comparisonEnabled,
+                                activePlot,
+                                onToggleComparison: handleToggleComparison,
+                                onSelectPlot: handleSelectPlot,
+                            }}
+                            actions={actionMenuItems}
+                        />
                         <section className="rounded-3xl border border-white/10 bg-black/50 p-6 shadow-2xl backdrop-blur">
-                            <ChartPreview
-                                settings={settings}
-                                onUpdateSettings={setSettings}
-                                onHighlight={triggerHighlight}
-                                onRequestFocus={requestFocus}
-                                actionRequest={previewAction}
-                                onActionHandled={handlePreviewActionHandled}
-                            />
+                            <div className={previewIndices.length > 1 ? 'space-y-6' : undefined}>
+                                {previewIndices.map((index) => {
+                                    const plotIndex = index as 0 | 1;
+                                    return (
+                                        <ChartPreview
+                                            key={`preview-${plotIndex}`}
+                                            settings={plots[plotIndex]}
+                                            onUpdateSettings={(next) => setPlot(plotIndex, next)}
+                                            onHighlight={triggerHighlight}
+                                            onRequestFocus={(target) => handlePreviewFocus(plotIndex, target)}
+                                            actionRequest={previewAction?.target === plotIndex ? previewAction.type : null}
+                                            onActionHandled={handlePreviewActionHandled}
+                                            heading={previewHeading(plotIndex)}
+                                            isActive={activePlot === plotIndex}
+                                            onActivate={() => handleSelectPlot(plotIndex)}
+                                        />
+                                    );
+                                })}
+                            </div>
                         </section>
                     </>
                 }
                 right={
                     <div className={`flex flex-col gap-6 ${controlsHighlight ? 'highlight-pulse' : ''}`}>
                         <ChartControlsPanel
-                            settings={settings}
+                            settings={activeSettings}
                             onChange={handleSettingsChange}
                             highlightSignals={highlightSignals}
                             focusRequest={focusRequest}

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import useElementSize from '../shared/hooks/useElementSize'
 import type { ChartSettings, FocusTarget, HighlightKey } from '../types'
 
-type ChartPreviewAction = 'importData' | 'exportChart'
+type ChartPreviewAction = 'exportChart'
 
 type ChartPreviewProps = {
   settings: ChartSettings
@@ -11,6 +11,9 @@ type ChartPreviewProps = {
   onRequestFocus: (target: FocusTarget) => void
   actionRequest?: ChartPreviewAction | null
   onActionHandled?: () => void
+  heading?: string
+  isActive?: boolean
+  onActivate?: () => void
 }
 
 type ExportFormat = 'png' | 'svg' | 'pdf'
@@ -112,6 +115,9 @@ export function ChartPreview({
   onRequestFocus,
   actionRequest,
   onActionHandled,
+  heading,
+  isActive = true,
+  onActivate,
 }: ChartPreviewProps) {
   const [wrapperRef, size] = useElementSize<HTMLDivElement>()
   const svgRef = useRef<SVGSVGElement | null>(null)
@@ -450,15 +456,19 @@ export function ChartPreview({
     <>
       <div className="flex h-full flex-col gap-4" style={{ color: settings.textColor }}>
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-white">Live preview</h2>
+          <h2 className="text-xl font-semibold text-white">{heading ?? 'Live preview'}</h2>
           <p className="text-sm text-white/60">
             Adjust the controls and export the chart once it looks right.
           </p>
         </div>
         <div
           ref={wrapperRef}
-          className="relative flex min-h-[420px] flex-1 items-center justify-center rounded-2xl border border-white/10"
+          className={classNames(
+            'relative flex min-h-[420px] flex-1 items-center justify-center rounded-2xl border border-white/10 transition',
+            isActive ? 'ring-2 ring-sky-400/70 border-sky-400/60' : 'border-white/10',
+          )}
           style={{ backgroundColor: settings.backgroundColor, minHeight: `${minContainerHeight}px` }}
+          onClick={onActivate}
         >
           <svg
             ref={svgRef}
@@ -968,6 +978,10 @@ export function ChartPreview({
       ) : null}
     </>
   )
+}
+
+function classNames(...values: Array<string | false | null | undefined>) {
+  return values.filter(Boolean).join(' ')
 }
 
 export default ChartPreview
