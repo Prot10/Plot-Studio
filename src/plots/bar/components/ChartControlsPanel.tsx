@@ -253,7 +253,6 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
             step={0.05}
             precision={2}
             onChange={(value) => update('barOpacity', value)}
-            description="0 → transparent, 1 → solid"
           />
           <NumericInput
             title="Default border width"
@@ -381,7 +380,6 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
           step={1}
           precision={0}
           onChange={(value) => update('valueLabelOffsetY', value)}
-          description="Positive moves down"
           suffix="px"
         />
         <NumericInput
@@ -392,7 +390,6 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
           step={1}
           precision={0}
           onChange={(value) => update('valueLabelOffsetX', value)}
-          description="Positive moves right"
           suffix="px"
         />
         <NumericInput

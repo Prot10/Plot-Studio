@@ -55,7 +55,6 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
         step={4}
         precision={0}
         onChange={(value) => update('canvasPadding', value)}
-        description="Space around the plot"
         suffix="px"
       />
       <ColorField
@@ -151,7 +150,6 @@ export function ChartBasicsPanel({ settings, bars, onChange, onBarsChange, highl
         max={1.2}
         step={0.02}
         precision={2}
-        description="Height = width × aspect ratio"
       />
     </section>
   )

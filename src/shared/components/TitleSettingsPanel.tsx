@@ -128,7 +128,6 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
           precision={0}
           onChange={(value) => update('titleOffsetY', value)}
           suffix="px"
-          description="Positive moves down"
         />
         <NumericInput
           title="Horizontal offset"
@@ -139,7 +138,6 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
           precision={0}
           onChange={(value) => update('titleOffsetX', value)}
           suffix="px"
-          description="Positive moves right"
         />
       </div>
     </section>

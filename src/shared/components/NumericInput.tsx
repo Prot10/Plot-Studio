@@ -32,7 +32,6 @@ export function NumericInput({
     step,
     precision = 2,
     suffix = '',
-    description,
     disabled = false,
 }: NumericInputProps) {
     const [isEditing, setIsEditing] = useState(false)
@@ -89,17 +88,12 @@ export function NumericInput({
     return (
         <div className={`space-y-3 ${disabled ? 'opacity-60' : ''}`}>
             {/* Title */}
-            <div>
-                <h4 className="text-sm font-medium text-white">{title}</h4>
-                {description && (
-                    <p className="mt-1 text-xs text-white/60">{description}</p>
-                )}
-            </div>
+            <span className="text-xs uppercase tracking-wide text-white/50">{title}</span>
 
             {/* Controls Row */}
-            <div className="flex items-center gap-4">
+            <div className="h-9 rounded-md border border-white/10 bg-white/10 px-3 flex items-center gap-4">
                 {/* Slider */}
-                <div className="flex-1">
+                <div className="flex-1 flex items-center">
                     <input
                         type="range"
                         min={min}
@@ -163,10 +157,12 @@ export function NumericInput({
                             step={step}
                             autoFocus
                             className="
-                w-20 px-3 py-2 text-sm text-white text-center
-                bg-black/40 border border-sky-400/50 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-sky-400/40
-                focus:border-sky-400
+                w-16 px-1 py-1 text-sm text-white text-center
+                bg-transparent border-b border-sky-400/50 rounded-none
+                focus:outline-none focus:border-sky-400
+                [&::-webkit-outer-spin-button]:appearance-none
+                [&::-webkit-inner-spin-button]:appearance-none
+                [-moz-appearance:textfield]
               "
                         />
                     ) : (
@@ -175,37 +171,21 @@ export function NumericInput({
                             onClick={handleValueClick}
                             disabled={disabled}
                             className={`
-                group relative px-4 py-2 min-w-[5rem] text-sm font-medium text-center
-                border border-white/20 rounded-lg
-                transition-all duration-200 ease-out
+                text-sm font-medium text-center min-w-[3rem]
+                transition-colors duration-200
                 ${disabled
-                                    ? 'cursor-not-allowed'
-                                    : 'hover:border-white/30 cursor-pointer'
+                                    ? 'cursor-not-allowed text-white/50'
+                                    : 'hover:text-sky-300 cursor-pointer text-white'
                                 }
               `}
                         >
-                            <span className="text-white">
-                                {formatValue(clampedValue)}
-                                {suffix && <span className="text-white/60 ml-1">{suffix}</span>}
-                            </span>
-                            {!disabled && (
-                                <div className="
-                  absolute inset-0 rounded-lg opacity-0 
-                  bg-gradient-to-br from-sky-400/20 to-sky-500/20
-                  transition-opacity duration-200
-                  group-hover:opacity-100
-                " />
-                            )}
+                            {formatValue(clampedValue)}
+                            {suffix && <span className="text-white/60 ml-1">{suffix}</span>}
                         </button>
                     )}
                 </div>
             </div>
 
-            {/* Range indicator */}
-            <div className="flex justify-between text-xs text-white/50 border-t border-white/10 pt-2">
-                <span>{formatValue(min)}</span>
-                <span>{formatValue(max)}</span>
-            </div>
         </div>
     )
 }
