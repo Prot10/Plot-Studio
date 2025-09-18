@@ -3,6 +3,7 @@ import type { BaseChartSettings, FocusRequest, HighlightKey, PaletteKey } from '
 import { useHighlightEffect } from '../hooks/useHighlightEffect';
 import { paletteOptions } from '../utils/palettes';
 import { ColorField } from './ColorField';
+import { SelectField } from './SelectField';
 
 interface BaseChartBasicsPanelProps<TSettings extends BaseChartSettings> {
     settings: TSettings;
@@ -71,17 +72,12 @@ export function BaseChartBasicsPanel<TSettings extends BaseChartSettings>({
             </label>
             <label className="flex flex-col gap-1 text-sm text-white">
                 <span className="text-xs uppercase tracking-wide text-white/50">Palette</span>
-                <select
+                <SelectField<PaletteKey>
                     value={settings.paletteName}
-                    onChange={(event) => handlePaletteChange(event.target.value as PaletteKey)}
-                    className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
-                >
-                    {paletteOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
+                    onChange={(nextPalette) => handlePaletteChange(nextPalette)}
+                    options={paletteOptions}
+                    placeholder="Select a palette"
+                />
             </label>
             <label className="flex flex-col gap-1 text-sm text-white">
                 <span className="text-xs uppercase tracking-wide text-white/50">Inner padding</span>

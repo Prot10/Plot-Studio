@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { SelectField } from '../shared/components/SelectField'
 import { useHighlightEffect } from '../shared/hooks/useHighlightEffect'
 import { createBar } from '../shared/utils/barFactory'
 import type { BarDatum, FocusRequest, PaletteKey } from '../types'
@@ -29,7 +30,7 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
     if (!input) return false
     try {
       input.focus({ preventScroll: true })
-    } catch (error) {
+    } catch {
       input.focus()
     }
     input.select()
@@ -268,17 +269,12 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
                 </label>
                 <label className="flex flex-col gap-1">
                   <span className="text-xs uppercase tracking-wide text-white/50">Pattern</span>
-                  <select
+                  <SelectField<BarDatum['pattern']>
                     value={bar.pattern ?? 'solid'}
-                    onChange={(event) => handleFieldChange(bar.id, 'pattern', event.target.value)}
-                    className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
-                  >
-                    {patternOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => handleFieldChange(bar.id, 'pattern', value)}
+                    options={patternOptions}
+                    placeholder="Select a pattern"
+                  />
                 </label>
               </div>
               {bar.pattern !== 'solid' ? (

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
+import { SelectField } from '../../../shared/components/SelectField';
 import { createBar } from '../../../shared/utils/barFactory';
 import type { BarDataPoint } from '../../../types/bar';
 import type { PaletteKey } from '../../../types/base';
@@ -358,17 +359,12 @@ export function DataImportDialog({ isOpen, paletteName, onCancel, onConfirm }: D
                         <div className="grid gap-4 sm:grid-cols-2">
                             <label className="flex flex-col gap-2">
                                 <span className="text-xs font-medium text-white/60">Column separator</span>
-                                <select
+                                <SelectField<string>
                                     value={delimiterPreset}
-                                    onChange={(event) => setDelimiterPreset(event.target.value)}
-                                    className="rounded-md border border-white/10 bg-black/40 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
-                                >
-                                    {delimiterPresets.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
+                                    onChange={(value) => setDelimiterPreset(value)}
+                                    options={delimiterPresets}
+                                    placeholder="Select separator"
+                                />
                                 {delimiterPreset === 'custom' ? (
                                     <input
                                         type="text"
@@ -381,17 +377,12 @@ export function DataImportDialog({ isOpen, paletteName, onCancel, onConfirm }: D
                             </label>
                             <label className="flex flex-col gap-2">
                                 <span className="text-xs font-medium text-white/60">Decimal separator</span>
-                                <select
+                                <SelectField<'.' | ','>
                                     value={decimalSeparator}
-                                    onChange={(event) => setDecimalSeparator(event.target.value as '.' | ',')}
-                                    className="rounded-md border border-white/10 bg-black/40 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
-                                >
-                                    {decimalOptions.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
+                                    onChange={(value) => setDecimalSeparator(value)}
+                                    options={decimalOptions}
+                                    placeholder="Select decimal"
+                                />
                             </label>
                         </div>
                         <label className="flex items-center gap-2 text-xs text-white/70">
@@ -727,21 +718,22 @@ type ColumnSelectProps = {
 
 function ColumnSelect({ label, description, column, mapping, columns, onChange }: ColumnSelectProps) {
     const currentValue = mapping[column];
+    const options = useMemo(
+        () => [
+            { value: '', label: 'Ignore' },
+            ...columns.map((name, index) => ({ value: String(index), label: name })),
+        ],
+        [columns],
+    );
     return (
         <label className="flex flex-col gap-1 rounded-xl border border-white/10 bg-white/5 p-3">
             <span className="text-sm font-medium text-white/80">{label}</span>
-            <select
-                value={currentValue ?? ''}
-                onChange={(event) => onChange(column, event.target.value)}
-                className="rounded-md border border-white/10 bg-black/40 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
-            >
-                <option value="">Ignore</option>
-                {columns.map((name, index) => (
-                    <option key={index} value={index}>
-                        {name}
-                    </option>
-                ))}
-            </select>
+            <SelectField<string>
+                value={currentValue !== null ? String(currentValue) : ''}
+                onChange={(value) => onChange(column, value)}
+                options={options}
+                placeholder="Select column"
+            />
             <span className="text-xs text-white/50">{description}</span>
         </label>
     );

@@ -2,6 +2,7 @@ import { useEffect, useRef, type MutableRefObject } from 'react'
 import { ChartPageBlock } from '../../../shared/components/ChartPageLayout'
 import { ColorField } from '../../../shared/components/ColorField'
 import { NumericInput } from '../../../shared/components/NumericInput'
+import { SelectField } from '../../../shared/components/SelectField'
 import { useHighlightEffect } from '../../../shared/hooks/useHighlightEffect'
 import type { BarChartSettings } from '../../../types/bar'
 import type { AxisSettings, FocusRequest, HighlightKey } from '../../../types/base'
@@ -59,6 +60,11 @@ type CornerStyleOption = {
 const cornerOptions: CornerStyleOption[] = [
   { value: 'top', label: 'Round top only' },
   { value: 'both', label: 'Round top & bottom' },
+]
+
+const errorBarModeOptions: Array<{ value: BarChartSettings['errorBarMode']; label: string }> = [
+  { value: 'global', label: 'Use global color' },
+  { value: 'match', label: 'Match bar border color' },
 ]
 
 function CornerStyleSelector({
@@ -310,14 +316,12 @@ export function ChartControlsPanel({ settings, onChange, highlightSignals, focus
           >
             <label className="flex flex-col gap-1 text-sm text-white">
               <span className="text-xs uppercase tracking-wide text-white/50">Color mode</span>
-              <select
+              <SelectField<BarChartSettings['errorBarMode']>
                 value={settings.errorBarMode}
-                onChange={(event) => update('errorBarMode', event.target.value as BarChartSettings['errorBarMode'])}
-                className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
-              >
-                <option value="global">Use global color</option>
-                <option value="match">Match bar border color</option>
-              </select>
+                onChange={(value) => update('errorBarMode', value)}
+                options={errorBarModeOptions}
+                placeholder="Select mode"
+              />
             </label>
             {settings.errorBarMode === 'global' ? (
               <ColorField
