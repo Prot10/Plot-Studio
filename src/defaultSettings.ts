@@ -24,6 +24,7 @@ export const defaultSettings: ChartSettings = {
   titleIsBold: true,
   titleIsItalic: false,
   titleIsUnderline: false,
+  titleOffsetX: 0,
   title: "Custom bar chart",
   titleFontSize: 20,
   titleOffsetY: 0,

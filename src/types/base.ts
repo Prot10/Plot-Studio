@@ -48,6 +48,7 @@ export type BaseChartSettings = {
   title: string;
   titleFontSize: number;
   titleOffsetY: number;
+  titleOffsetX: number;
   titleColor: string;
   titleFontFamily: string;
   titleIsBold: boolean;

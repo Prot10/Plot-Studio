@@ -43,6 +43,7 @@ export type ChartSettings = {
   titleIsBold: boolean
   titleIsItalic: boolean
   titleIsUnderline: boolean
+  titleOffsetX: number
   title: string
   titleFontSize: number
   titleOffsetY: number

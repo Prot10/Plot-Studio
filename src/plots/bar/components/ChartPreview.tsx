@@ -328,6 +328,12 @@ export function ChartPreview({
   const chartTitleOffset = clamp(settings.titleFontSize * 0.75, 12, Math.max(margin.top - 8, 12))
   const baseTitleY = margin.top - chartTitleOffset
   const chartTitleY = baseTitleY + settings.titleOffsetY
+  const baseTitleX = measuredWidth / 2
+  const chartTitleX = clamp(
+    baseTitleX + (settings.titleOffsetX ?? 0),
+    margin.left,
+    measuredWidth - margin.right,
+  )
   const baseXAxisTitleY = chartAreaBottom + settings.axisTitleFontSize + 12 + settings.xAxisTitleOffsetY
   const xAxisTitleY = clamp(baseXAxisTitleY, settings.axisTitleFontSize, measuredHeight - 8)
   const baseYAxisTitleX = Math.max(Math.min(margin.left - 24, 80), 16)
@@ -518,7 +524,7 @@ export function ChartPreview({
             />
             {settings.title ? (
               <text
-                x={measuredWidth / 2}
+                x={chartTitleX}
                 y={chartTitleY}
                 textAnchor="middle"
                 fill={titleColor}

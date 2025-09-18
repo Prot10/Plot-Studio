@@ -5,12 +5,14 @@ import { NumericInput } from './NumericInput'
 import { ColorField } from './ColorField'
 import { FontPicker } from './FontPicker'
 import { TextStyleControls } from './TextStyleControls'
+import { TextInput } from './TextInput'
 import { DEFAULT_FONT_OPTIONS, DEFAULT_FONT_STACK } from '../constants/fonts'
 
 type TitleSettingsShape = {
   title: string
   titleFontSize: number
   titleOffsetY: number
+  titleOffsetX: number
   titleColor: string
   titleFontFamily: string
   titleIsBold: boolean
@@ -71,29 +73,52 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
   }, [focusRequest])
 
   return (
-    <section className={classNames('space-y-3', highlight ? 'highlight-pulse' : null, className)}>
-      <label className="flex flex-col gap-1 text-sm text-white">
-        <span className="text-xs uppercase tracking-wide text-white/50">Text</span>
-        <input
+    <section className={classNames('space-y-16', highlight ? 'highlight-pulse' : null, className)}>
+      <div className="grid gap-16 sm:grid-cols-2">
+        <TextInput
           ref={titleRef}
-          type="text"
+          label="Text"
           value={settings.title}
-          onChange={(event) => update('title', event.target.value)}
-          className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/60"
+          onChange={(value) => update('title', value)}
           placeholder="Untitled chart"
         />
-      </label>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <NumericInput
-          title="Font size"
-          value={settings.titleFontSize}
-          min={10}
-          max={96}
-          step={1}
-          precision={0}
-          onChange={(value) => update('titleFontSize', value)}
-          suffix="px"
+        <ColorField
+          label="Color"
+          value={settings.titleColor}
+          onChange={(value) => update('titleColor', value)}
         />
+      </div>
+
+      <div className="flex flex-wrap items-center gap-8">
+        <div className="min-w-[12rem] flex-1 sm:flex-none">
+          <NumericInput
+            title="Font size"
+            value={settings.titleFontSize}
+            min={10}
+            max={96}
+            step={1}
+            precision={0}
+            onChange={(value) => update('titleFontSize', value)}
+            suffix="px"
+          />
+        </div>
+        <TextStyleControls
+          value={{
+            bold: settings.titleIsBold,
+            italic: settings.titleIsItalic,
+            underline: settings.titleIsUnderline,
+          }}
+          onChange={handleStyleChange}
+        />
+        <FontPicker
+          className="w-[12rem] flex-1"
+          value={settings.titleFontFamily || DEFAULT_FONT_STACK}
+          onChange={(value) => update('titleFontFamily', value)}
+          options={DEFAULT_FONT_OPTIONS}
+        />
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
         <NumericInput
           title="Vertical offset"
           value={settings.titleOffsetY}
@@ -105,28 +130,18 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
           suffix="px"
           description="Positive moves down"
         />
-      </div>
-      <div className="flex flex-wrap items-center gap-3">
-        <TextStyleControls
-          value={{
-            bold: settings.titleIsBold,
-            italic: settings.titleIsItalic,
-            underline: settings.titleIsUnderline,
-          }}
-          onChange={handleStyleChange}
-        />
-        <FontPicker
-          className="min-w-[12rem] flex-1"
-          value={settings.titleFontFamily || DEFAULT_FONT_STACK}
-          onChange={(value) => update('titleFontFamily', value)}
-          options={DEFAULT_FONT_OPTIONS}
+        <NumericInput
+          title="Horizontal offset"
+          value={settings.titleOffsetX}
+          min={-400}
+          max={400}
+          step={1}
+          precision={0}
+          onChange={(value) => update('titleOffsetX', value)}
+          suffix="px"
+          description="Positive moves right"
         />
       </div>
-      <ColorField
-        label="Title color"
-        value={settings.titleColor}
-        onChange={(value) => update('titleColor', value)}
-      />
     </section>
   )
 }

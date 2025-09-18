@@ -68,6 +68,7 @@ function mergeStoredSettings(stored?: Partial<BarChartSettings>): BarChartSettin
     const titleIsBold = typeof stored.titleIsBold === 'boolean' ? stored.titleIsBold : defaults.titleIsBold;
     const titleIsItalic = typeof stored.titleIsItalic === 'boolean' ? stored.titleIsItalic : defaults.titleIsItalic;
     const titleIsUnderline = typeof stored.titleIsUnderline === 'boolean' ? stored.titleIsUnderline : defaults.titleIsUnderline;
+    const titleOffsetX = typeof stored.titleOffsetX === 'number' ? stored.titleOffsetX : defaults.titleOffsetX;
 
     return {
         ...defaults,
@@ -81,6 +82,7 @@ function mergeStoredSettings(stored?: Partial<BarChartSettings>): BarChartSettin
         titleIsBold,
         titleIsItalic,
         titleIsUnderline,
+        titleOffsetX,
     };
 }
 

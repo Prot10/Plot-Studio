@@ -70,6 +70,7 @@ export const defaultScatterPlotSettings: ScatterPlotSettings = {
   titleIsBold: true,
   titleIsItalic: false,
   titleIsUnderline: false,
+  titleOffsetX: 0,
   title: "Custom scatter plot",
   titleFontSize: 20,
   titleOffsetY: 0,
