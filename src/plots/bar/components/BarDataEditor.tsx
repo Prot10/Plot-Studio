@@ -140,7 +140,7 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
   }
 
   return (
-    <div className={`flex flex-col gap-4 ${highlight ? 'highlight-pulse' : ''}`}>
+    <div className={`flex flex-col gap-8 ${highlight ? 'highlight-pulse' : ''}`}>
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-white">Data</h2>
         <button

@@ -91,7 +91,7 @@ export function NumericInput({
             <span className="text-xs uppercase tracking-wide text-white/50">{title}</span>
 
             {/* Controls Row */}
-            <div className="h-9 rounded-md border border-white/10 bg-white/10 px-3 flex items-center gap-4">
+            <div className="h-9 rounded-md border border-white/10 bg-white/10 px-3 flex items-center gap-8">
                 {/* Slider */}
                 <div className="flex-1 flex items-center">
                     <input

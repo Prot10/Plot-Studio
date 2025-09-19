@@ -358,7 +358,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                 <h3 className="text-sm font-semibold text-white/80">Title</h3>
 
                 {/* All title settings in one responsive row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div>
                         <div className="flex flex-col gap-1 text-sm text-white">
                             <span className="text-xs uppercase tracking-wide text-white/50">Axis title</span>
@@ -411,7 +411,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                 <h3 className="text-sm font-semibold text-white/80">Appearance</h3>
 
                 {/* Visibility, Line Width, and Line Color in one row */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-8">
                     <div>
                         <Toggle
                             title="Y-axis visibility"
@@ -449,7 +449,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
 
                 <div className="space-y-4">
                     {/* Grid line controls - toggle, style, and width on same row */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
                         <div>
                             <Toggle
                                 title="Grid lines"
@@ -493,7 +493,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
 
                     {/* Opacity and color on second row */}
                     <div className={classNames(
-                        "grid grid-cols-1 sm:grid-cols-2 gap-4 transition-opacity",
+                        "grid grid-cols-1 sm:grid-cols-2 gap-8 transition-opacity",
                         !settings.yAxis.showGridLines && "opacity-50 pointer-events-none"
                     )}>
                         <div>
@@ -523,7 +523,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                 <h3 className="text-sm font-semibold text-white/80">Ticks</h3>
 
                 {/* First row: Tick labels toggle and orientation */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
                     <div>
                         <Toggle
                             title="Tick labels"
@@ -537,25 +537,6 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                         !settings.yAxis.showTickLabels && "opacity-50 pointer-events-none"
                     )}>
                         <NumericInput
-                            title="Label orientation"
-                            value={settings.yAxis.tickLabelOrientation}
-                            onChange={(value) => updateAxisField('tickLabelOrientation', value)}
-                            min={0}
-                            max={360}
-                            step={15}
-                            precision={0}
-                            suffix="°"
-                        />
-                    </div>
-                </div>
-
-                {/* Second row: Label font size and color */}
-                <div className={classNames(
-                    "grid grid-cols-1 sm:grid-cols-2 gap-4 transition-opacity",
-                    !settings.yAxis.showTickLabels && "opacity-50 pointer-events-none"
-                )}>
-                    <div>
-                        <NumericInput
                             title="Label font size"
                             value={settings.yAxisTickFontSize}
                             min={6}
@@ -566,8 +547,10 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                             suffix="px"
                         />
                     </div>
-
-                    <div>
+                    <div className={classNames(
+                        "transition-opacity",
+                        !settings.yAxis.showTickLabels && "opacity-50 pointer-events-none"
+                    )}>
                         <ColorField
                             label="Label color"
                             value={settings.yAxis.tickLabelColor}
@@ -576,11 +559,24 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                     </div>
                 </div>
 
-                {/* Third row: X offset and Y offset for tick labels */}
+                {/* Second row: Label font size and color */}
                 <div className={classNames(
-                    "grid grid-cols-1 sm:grid-cols-2 gap-4 transition-opacity",
+                    "grid grid-cols-1 sm:grid-cols-3 gap-8 transition-opacity",
                     !settings.yAxis.showTickLabels && "opacity-50 pointer-events-none"
                 )}>
+                    <div>
+                        <NumericInput
+                            title="Label orientation"
+                            value={settings.yAxis.tickLabelOrientation}
+                            onChange={(value) => updateAxisField('tickLabelOrientation', value)}
+                            min={0}
+                            max={360}
+                            step={15}
+                            precision={0}
+                            suffix="°"
+                        />
+                    </div>
+
                     <div>
                         <NumericInput
                             title="Label X offset"
@@ -610,7 +606,7 @@ export function YAxisPanel({ settings, onChange, highlightSignals, focusRequest 
 
                 {/* Third row: Range controls - disabled when tick labels are off */}
                 <div className={classNames(
-                    "grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 transition-opacity",
+                    "grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 transition-opacity",
                     !settings.yAxis.showTickLabels && "opacity-50 pointer-events-none"
                 )}>
                     <AutoNumericInput

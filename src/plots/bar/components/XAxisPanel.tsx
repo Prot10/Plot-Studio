@@ -109,36 +109,6 @@ export function XAxisPanel({ settings, onChange, highlightSignals, focusRequest 
         })
     }
 
-    const handleTickOffsetXChange = (value: number) => {
-        if (settings.axesSynced) {
-            onChange({
-                ...settings,
-                xAxisTickOffsetX: value,
-                yAxisTickOffsetX: value,
-            })
-            return
-        }
-        onChange({
-            ...settings,
-            xAxisTickOffsetX: value,
-        })
-    }
-
-    const handleTickOffsetYChange = (value: number) => {
-        if (settings.axesSynced) {
-            onChange({
-                ...settings,
-                xAxisTickOffsetY: value,
-                yAxisTickOffsetY: value,
-            })
-            return
-        }
-        onChange({
-            ...settings,
-            xAxisTickOffsetY: value,
-        })
-    }
-
     const isAxisVisible = settings.xAxis.showAxisLines
 
     const focusInput = (input: HTMLInputElement | null | undefined) => {
@@ -174,7 +144,7 @@ export function XAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                 <h3 className="text-sm font-semibold text-white/80">Title</h3>
 
                 {/* All title settings in one responsive row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div>
                         <div className="flex flex-col gap-1 text-sm text-white">
                             <span className="text-xs uppercase tracking-wide text-white/50">Axis title</span>
@@ -227,7 +197,7 @@ export function XAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                 <h3 className="text-sm font-semibold text-white/80">Appearance</h3>
 
                 {/* Visibility, Line Width, and Line Color in one row */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-8">
                     <div>
                         <Toggle
                             title="X-axis visibility"
@@ -268,7 +238,7 @@ export function XAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                 <h3 className="text-sm font-semibold text-white/80">Ticks</h3>
 
                 {/* First row: Tick labels toggle and orientation */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
                     <div>
                         <Toggle
                             title="Tick labels"
@@ -282,25 +252,6 @@ export function XAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                         !settings.xAxis.showTickLabels && "opacity-50 pointer-events-none"
                     )}>
                         <NumericInput
-                            title="Label orientation"
-                            value={settings.xAxis.tickLabelOrientation}
-                            onChange={(value) => updateAxisField('tickLabelOrientation', value)}
-                            min={0}
-                            max={360}
-                            step={15}
-                            precision={0}
-                            suffix="°"
-                        />
-                    </div>
-                </div>
-
-                {/* Second row: Label font size and color */}
-                <div className={classNames(
-                    "grid grid-cols-1 sm:grid-cols-2 gap-4 transition-opacity",
-                    !settings.xAxis.showTickLabels && "opacity-50 pointer-events-none"
-                )}>
-                    <div>
-                        <NumericInput
                             title="Label font size"
                             value={settings.xAxisTickFontSize}
                             min={6}
@@ -312,7 +263,10 @@ export function XAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                         />
                     </div>
 
-                    <div>
+                    <div className={classNames(
+                        "transition-opacity",
+                        !settings.xAxis.showTickLabels && "opacity-50 pointer-events-none"
+                    )}>
                         <ColorField
                             label="Label color"
                             value={settings.xAxis.tickLabelColor}
@@ -321,11 +275,22 @@ export function XAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                     </div>
                 </div>
 
-                {/* Third row: X offset and Y offset for tick labels */}
+                {/* Second row: Label font size and color */}
                 <div className={classNames(
-                    "grid grid-cols-1 sm:grid-cols-2 gap-4 transition-opacity",
+                    "grid grid-cols-1 sm:grid-cols-3 gap-8 transition-opacity",
                     !settings.xAxis.showTickLabels && "opacity-50 pointer-events-none"
                 )}>
+                    <NumericInput
+                        title="Label orientation"
+                        value={settings.xAxis.tickLabelOrientation}
+                        onChange={(value) => updateAxisField('tickLabelOrientation', value)}
+                        min={0}
+                        max={360}
+                        step={15}
+                        precision={0}
+                        suffix="°"
+                    />
+
                     <div>
                         <NumericInput
                             title="Label X offset"
@@ -334,7 +299,7 @@ export function XAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                             max={200}
                             step={1}
                             precision={0}
-                            onChange={handleTickOffsetXChange}
+                            onChange={(value) => update('xAxisTickOffsetX', value)}
                             suffix="px"
                         />
                     </div>
@@ -347,7 +312,7 @@ export function XAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                             max={200}
                             step={1}
                             precision={0}
-                            onChange={handleTickOffsetYChange}
+                            onChange={(value) => update('xAxisTickOffsetY', value)}
                             suffix="px"
                         />
                     </div>

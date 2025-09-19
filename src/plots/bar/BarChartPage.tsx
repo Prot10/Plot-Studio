@@ -389,7 +389,7 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
         <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
             <header className="border-b border-white/10 bg-black/20 backdrop-blur">
                 <div className="mx-auto w-full max-w-content px-6 py-8">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-8">
                         <button
                             onClick={onBack}
                             className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white transition-colors hover:bg-white/20"

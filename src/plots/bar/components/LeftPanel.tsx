@@ -506,7 +506,7 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
             <h3 className="text-sm font-semibold text-white/80">Plot Box</h3>
 
             {/* Plot box controls - toggle, line width, and color */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-8">
               <div>
                 <Toggle
                   title="Show plot box"
@@ -580,7 +580,7 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
         bodyClassName="space-y-4"
       >
         {/* First row: Toggle to show value labels and font size */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
           <div>
             <Toggle
               title="Show value labels"
@@ -604,7 +604,7 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
         </div>
 
         {/* Second row: Color, X offset, Y offset */}
-        <div className={`grid grid-cols-1 sm:grid-cols-3 gap-4 transition-opacity ${!settings.showValueLabels ? 'opacity-50 pointer-events-none' : ''}`}>
+        <div className={`grid grid-cols-1 sm:grid-cols-3 gap-8 transition-opacity ${!settings.showValueLabels ? 'opacity-50 pointer-events-none' : ''}`}>
           <div>
             <ColorField
               label="Label color"

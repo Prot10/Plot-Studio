@@ -324,7 +324,7 @@ export function DataImportDialog({ isOpen, paletteName, onCancel, onConfirm }: D
                 className="w-full max-w-3xl rounded-2xl border border-white/10 bg-slate-950/95 p-6 text-white shadow-2xl"
                 onClick={(event) => event.stopPropagation()}
             >
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center justify-between gap-8">
                     <h3 className="text-lg font-semibold">Import data from CSV</h3>
                     <button
                         type="button"
@@ -356,7 +356,7 @@ export function DataImportDialog({ isOpen, paletteName, onCancel, onConfirm }: D
 
                     <section className="space-y-3">
                         <h4 className="text-xs uppercase tracking-wide text-white/50">2. Configure import options</h4>
-                        <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="grid gap-8 sm:grid-cols-2">
                             <label className="flex flex-col gap-2">
                                 <span className="text-xs font-medium text-white/60">Column separator</span>
                                 <SelectField<string>
