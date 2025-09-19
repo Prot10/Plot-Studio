@@ -277,7 +277,7 @@ function AxisSyncButton({ isActive, onToggle }: AxisSyncButtonProps) {
       title={isActive ? 'Axes are linked' : 'Link X and Y axes'}
     >
       <SyncIcon active={isActive} />
-      <span>{isActive ? 'Axes linked' : 'Link axes'}</span>
+      <span>{isActive ? 'Axes style linked' : 'Link axes style'}</span>
     </button>
   )
 }
@@ -300,7 +300,7 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
   const handleDimensionUpdate = (dimension: 'width' | 'height', value: number | null) => {
     if (dimension === 'width') {
       const newSettings = { ...settings, customWidth: value }
-      
+
       // If height is unlocked and width is being set, calculate height from aspect ratio
       if (value !== null && settings.customHeight !== null) {
         // Both dimensions will be set, aspect ratio becomes inactive
@@ -314,7 +314,7 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
       }
     } else {
       const newSettings = { ...settings, customHeight: value }
-      
+
       // If width is unlocked and height is being set, calculate width from aspect ratio  
       if (value !== null && settings.customWidth !== null) {
         // Both dimensions will be set, aspect ratio becomes inactive
@@ -333,7 +333,7 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
   const getComputedDimensions = () => {
     const baseWidth = 800
     const baseHeight = 600
-    
+
     if (settings.customWidth !== null && settings.customHeight === null) {
       // Width is set, calculate height from aspect ratio
       return {

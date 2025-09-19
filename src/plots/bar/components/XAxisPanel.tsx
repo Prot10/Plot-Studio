@@ -109,6 +109,36 @@ export function XAxisPanel({ settings, onChange, highlightSignals, focusRequest 
         })
     }
 
+    const handleTickOffsetXChange = (value: number) => {
+        if (settings.axesSynced) {
+            onChange({
+                ...settings,
+                xAxisTickOffsetX: value,
+                yAxisTickOffsetX: value,
+            })
+            return
+        }
+        onChange({
+            ...settings,
+            xAxisTickOffsetX: value,
+        })
+    }
+
+    const handleTickOffsetYChange = (value: number) => {
+        if (settings.axesSynced) {
+            onChange({
+                ...settings,
+                xAxisTickOffsetY: value,
+                yAxisTickOffsetY: value,
+            })
+            return
+        }
+        onChange({
+            ...settings,
+            xAxisTickOffsetY: value,
+        })
+    }
+
     const isAxisVisible = settings.xAxis.showAxisLines
 
     const focusInput = (input: HTMLInputElement | null | undefined) => {
@@ -287,6 +317,38 @@ export function XAxisPanel({ settings, onChange, highlightSignals, focusRequest 
                             label="Label color"
                             value={settings.xAxis.tickLabelColor}
                             onChange={(value) => updateAxisField('tickLabelColor', value)}
+                        />
+                    </div>
+                </div>
+
+                {/* Third row: X offset and Y offset for tick labels */}
+                <div className={classNames(
+                    "grid grid-cols-1 sm:grid-cols-2 gap-4 transition-opacity",
+                    !settings.xAxis.showTickLabels && "opacity-50 pointer-events-none"
+                )}>
+                    <div>
+                        <NumericInput
+                            title="Label X offset"
+                            value={settings.xAxisTickOffsetX}
+                            min={-200}
+                            max={200}
+                            step={1}
+                            precision={0}
+                            onChange={handleTickOffsetXChange}
+                            suffix="px"
+                        />
+                    </div>
+
+                    <div>
+                        <NumericInput
+                            title="Label Y offset"
+                            value={settings.xAxisTickOffsetY}
+                            min={-200}
+                            max={200}
+                            step={1}
+                            precision={0}
+                            onChange={handleTickOffsetYChange}
+                            suffix="px"
                         />
                     </div>
                 </div>

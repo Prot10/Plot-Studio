@@ -186,7 +186,7 @@ export function DataTable({ data, paletteName, onChange, className = '' }: DataT
                         className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-white/10 border border-white/10 rounded-md hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/20 transition-colors"
                     >
                         <Plus className="w-4 h-4" />
-                        Add Row
+                        Add Bar
                     </button>
                 </div>
             </div>

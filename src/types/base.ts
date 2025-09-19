@@ -73,6 +73,10 @@ export type BaseChartSettings = {
   yAxisTitleFontSize: number;
   xAxisTickFontSize: number;
   yAxisTickFontSize: number;
+  xAxisTickOffsetX: number;
+  xAxisTickOffsetY: number;
+  yAxisTickOffsetX: number;
+  yAxisTickOffsetY: number;
   aspectRatio: number;
   customWidth: number | null;
   customHeight: number | null;

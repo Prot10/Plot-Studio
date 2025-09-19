@@ -937,16 +937,18 @@ export function ChartPreview({
               ? ticks.map((tick) => {
                 const y = margin.top + scaleY(tick)
                 const x = margin.left - 10
+                const baseX = x + (settings.yAxisTickOffsetX ?? 0)
+                const baseY = y + settings.yAxisTickFontSize / 3 + (settings.yAxisTickOffsetY ?? 0)
                 return (
                   <text
                     key={`ytick-${tick}`}
-                    x={x}
-                    y={y + settings.yAxisTickFontSize / 3}
+                    x={baseX}
+                    y={baseY}
                     textAnchor="end"
                     fill={axisStyles.y.tickLabelColor}
                     fontFamily={globalFontFamily}
                     fontSize={settings.yAxisTickFontSize}
-                    transform={axisStyles.y.tickLabelOrientation !== 0 ? `rotate(${axisStyles.y.tickLabelOrientation}, ${x}, ${y + settings.yAxisTickFontSize / 3})` : undefined}
+                    transform={axisStyles.y.tickLabelOrientation !== 0 ? `rotate(${axisStyles.y.tickLabelOrientation}, ${baseX}, ${baseY})` : undefined}
                     onDoubleClick={(event) => sendHighlight(['yAxis'], event)}
                   >
                     {tick.toLocaleString(undefined, { maximumFractionDigits: 2 })}
@@ -956,24 +958,28 @@ export function ChartPreview({
               : null}
 
             {axisStyles.x.showTickLabels
-              ? barLayout.map(({ data, center }) => (
-                <text
-                  key={`xlabel-${data.id}`}
-                  x={center}
-                  y={xTickBaseY}
-                  textAnchor="middle"
-                  fill={axisStyles.x.tickLabelColor}
-                  fontFamily={globalFontFamily}
-                  fontSize={settings.xAxisTickFontSize}
-                  transform={axisStyles.x.tickLabelOrientation !== 0 ? `rotate(${axisStyles.x.tickLabelOrientation}, ${center}, ${xTickBaseY})` : undefined}
-                  onDoubleClick={(event) => {
-                    sendHighlight(['data'], event)
-                    onRequestFocus({ type: 'barLabel', barId: data.id })
-                  }}
-                >
-                  {data.label}
-                </text>
-              ))
+              ? barLayout.map(({ data, center }) => {
+                const baseX = center + (settings.xAxisTickOffsetX ?? 0)
+                const baseY = xTickBaseY + (settings.xAxisTickOffsetY ?? 0)
+                return (
+                  <text
+                    key={`xlabel-${data.id}`}
+                    x={baseX}
+                    y={baseY}
+                    textAnchor="middle"
+                    fill={axisStyles.x.tickLabelColor}
+                    fontFamily={globalFontFamily}
+                    fontSize={settings.xAxisTickFontSize}
+                    transform={axisStyles.x.tickLabelOrientation !== 0 ? `rotate(${axisStyles.x.tickLabelOrientation}, ${baseX}, ${baseY})` : undefined}
+                    onDoubleClick={(event) => {
+                      sendHighlight(['data'], event)
+                      onRequestFocus({ type: 'barLabel', barId: data.id })
+                    }}
+                  >
+                    {data.label}
+                  </text>
+                )
+              })
               : null}
 
             {/* Plot box border */}
