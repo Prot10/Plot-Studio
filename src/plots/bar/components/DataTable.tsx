@@ -1,6 +1,7 @@
 import { GripVertical, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { createBar } from '../../../shared/utils/barFactory';
+import { ColorField } from '../../../shared/components/ColorField';
 import type { BarDataPoint } from '../../../types/bar';
 import type { PaletteKey } from '../../../types/base';
 
@@ -36,6 +37,14 @@ export function DataTable({ data, paletteName, onChange, className = '' }: DataT
         onChange(updatedData);
     }, [data, onChange]);
 
+    const handleColorChange = useCallback((rowIndex: number, colorType: 'fillColor', value: string) => {
+        const updatedData = [...data];
+        const row = { ...updatedData[rowIndex] };
+        row[colorType] = value;
+        updatedData[rowIndex] = row;
+        onChange(updatedData);
+    }, [data, onChange]);
+
     const addRow = useCallback(() => {
         const newIndex = data.length;
         const newBar = createBar(newIndex, paletteName);
@@ -49,19 +58,14 @@ export function DataTable({ data, paletteName, onChange, className = '' }: DataT
     const deleteRow = useCallback((index: number) => {
         if (data.length > 1) {
             const updatedData = data.filter((_, i) => i !== index);
-            // Update IDs and colors to maintain consistency
-            const reindexedData = updatedData.map((bar, newIndex) => {
-                const colorTemplate = createBar(newIndex, paletteName);
-                return {
-                    ...bar,
-                    id: `bar-${newIndex}`,
-                    fillColor: colorTemplate.fillColor,
-                    borderColor: colorTemplate.borderColor,
-                };
-            });
+            // Update only IDs to maintain order, but preserve all other properties including colors
+            const reindexedData = updatedData.map((bar, newIndex) => ({
+                ...bar,
+                id: `bar-${newIndex}`,
+            }));
             onChange(reindexedData);
         }
-    }, [data, paletteName, onChange]);
+    }, [data, onChange]);
 
     const handleDragStart = useCallback((e: React.DragEvent, index: number) => {
         e.dataTransfer.effectAllowed = 'move';
@@ -96,21 +100,16 @@ export function DataTable({ data, paletteName, onChange, className = '' }: DataT
         const actualDropIndex = draggedIndex < dropIndex ? dropIndex - 1 : dropIndex;
         updatedData.splice(actualDropIndex, 0, draggedItem);
 
-        // Update IDs and colors to maintain consistency after reordering
-        const reindexedData = updatedData.map((bar, newIndex) => {
-            const colorTemplate = createBar(newIndex, paletteName);
-            return {
-                ...bar,
-                id: `bar-${newIndex}`,
-                fillColor: colorTemplate.fillColor,
-                borderColor: colorTemplate.borderColor,
-            };
-        });
+        // Update only IDs to maintain order, but preserve all other properties including colors
+        const reindexedData = updatedData.map((bar, newIndex) => ({
+            ...bar,
+            id: `bar-${newIndex}`,
+        }));
 
         onChange(reindexedData);
         setDraggedIndex(null);
         setDragOverIndex(null);
-    }, [data, draggedIndex, paletteName, onChange]);
+    }, [data, draggedIndex, onChange]);
 
     const getCellValue = useCallback((row: BarDataPoint, column: string) => {
         switch (column) {
@@ -200,7 +199,7 @@ export function DataTable({ data, paletteName, onChange, className = '' }: DataT
                                 <th scope="col" className="w-8 px-2 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                                     {/* Drag handle column */}
                                 </th>
-                                <th scope="col" className="w-12 px-3 py-3 text-center text-xs font-medium text-white/50 uppercase tracking-wider">
+                                <th scope="col" className="w-48 px-3 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                                     Color
                                 </th>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
@@ -240,16 +239,13 @@ export function DataTable({ data, paletteName, onChange, className = '' }: DataT
                                         <GripVertical className="w-4 h-4 text-white/60 cursor-grab active:cursor-grabbing" />
                                     </td>
 
-                                    {/* Color Indicator */}
+                                    {/* Fill Color Column */}
                                     <td className="px-3 py-4 whitespace-nowrap">
-                                        <div
-                                            className="w-6 h-6 rounded border-2 shadow-sm"
-                                            style={{
-                                                backgroundColor: row.fillColor,
-                                                borderColor: row.borderColor,
-                                                opacity: row.opacity
-                                            }}
-                                            title={`Fill: ${row.fillColor}`}
+                                        <ColorField
+                                            label=""
+                                            value={row.fillColor}
+                                            onChange={(value) => handleColorChange(index, 'fillColor', value)}
+                                            inputProps={{ className: "text-xs" }}
                                         />
                                     </td>
 
