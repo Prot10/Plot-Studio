@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { Palette } from 'lucide-react'
 import { ColorField } from '../../../shared/components/ColorField'
 import { SelectField } from '../../../shared/components/SelectField'
 import { useHighlightEffect } from '../../../shared/hooks/useHighlightEffect'
@@ -12,6 +13,7 @@ type BarDataEditorProps = {
   onChange: (bars: BarDataPoint[]) => void
   highlightSignal?: number
   focusRequest?: FocusRequest | null
+  onDesignBar?: (barId: string) => void
 }
 
 const patternOptions: Array<{ value: BarDataPoint['pattern']; label: string }> = [
@@ -21,7 +23,7 @@ const patternOptions: Array<{ value: BarDataPoint['pattern']; label: string }> =
   { value: 'crosshatch', label: 'Crosshatch' },
   { value: 'vertical', label: 'Vertical stripes' },
 ]
-export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, focusRequest }: BarDataEditorProps) {
+export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, focusRequest, onDesignBar }: BarDataEditorProps) {
   const highlight = useHighlightEffect(highlightSignal)
   const labelRefs = useRef<Record<string, HTMLInputElement | null>>({})
   const valueRefs = useRef<Record<string, HTMLInputElement | null>>({})
@@ -73,6 +75,7 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
         field === 'error' ||
         field === 'opacity' ||
         field === 'borderWidth' ||
+        field === 'borderOpacity' ||
         field === 'patternOpacity' ||
         field === 'patternSize'
       ) {
@@ -84,9 +87,9 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
           return { ...bar, [field]: 0 }
         }
 
-        if (field === 'opacity') {
+        if (field === 'opacity' || field === 'borderOpacity') {
           const clamped = Math.min(Math.max(numeric, 0), 1)
-          return { ...bar, opacity: clamped }
+          return { ...bar, [field]: clamped }
         }
 
         if (field === 'borderWidth') {
@@ -146,7 +149,7 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
         <button
           type="button"
           onClick={addBar}
-          className="rounded-md bg-sky-500 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition hover:bg-sky-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
+          className="rounded-md bg-sky-500 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition hover:bg-sky-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
         >
           Add bar
         </button>
@@ -175,6 +178,15 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
                 />
               </div>
               <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => onDesignBar?.(bar.id)}
+                  className="rounded-md p-1 text-white/50 transition hover:text-sky-300"
+                  aria-label="Design bar appearance"
+                  title="Edit bar design"
+                >
+                  <Palette size={14} />
+                </button>
                 <button
                   type="button"
                   onClick={() => moveBar(bar.id, -1)}
@@ -257,7 +269,7 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
                   />
                 </label>
                 <label className="flex flex-col gap-1">
-                  <span className="text-xs uppercase tracking-wide text-white/50">Opacity</span>
+                  <span className="text-xs uppercase tracking-wide text-white/50">Fill opacity</span>
                   <input
                     type="number"
                     value={bar.opacity}
@@ -268,6 +280,20 @@ export function BarDataEditor({ bars, paletteName, onChange, highlightSignal, fo
                     className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
                   />
                 </label>
+                <label className="flex flex-col gap-1">
+                  <span className="text-xs uppercase tracking-wide text-white/50">Border opacity</span>
+                  <input
+                    type="number"
+                    value={bar.borderOpacity}
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    onChange={(event) => handleFieldChange(bar.id, 'borderOpacity', event.target.value)}
+                    className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
+                  />
+                </label>
+              </div>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <label className="flex flex-col gap-1">
                   <span className="text-xs uppercase tracking-wide text-white/50">Pattern</span>
                   <SelectField<BarDataPoint['pattern']>

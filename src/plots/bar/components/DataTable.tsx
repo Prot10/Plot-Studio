@@ -1,4 +1,4 @@
-import { GripVertical, Plus, Trash2 } from 'lucide-react';
+import { GripVertical, Plus, Trash2, Palette } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { createBar } from '../../../shared/utils/barFactory';
 import { ColorField } from '../../../shared/components/ColorField';
@@ -9,10 +9,11 @@ interface DataTableProps {
     data: BarDataPoint[];
     paletteName: PaletteKey;
     onChange: (data: BarDataPoint[]) => void;
+    onDesignBar?: (barIndex: number) => void;
     className?: string;
 }
 
-export function DataTable({ data, paletteName, onChange, className = '' }: DataTableProps) {
+export function DataTable({ data, paletteName, onChange, onDesignBar, className = '' }: DataTableProps) {
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [dragOverIndex, setDragOverIndex] = useState<number | null>(null); const handleCellEdit = useCallback((rowIndex: number, column: string, value: string) => {
         const updatedData = [...data];
@@ -271,14 +272,26 @@ export function DataTable({ data, paletteName, onChange, className = '' }: DataT
 
                                     {/* Actions Column */}
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            onClick={() => deleteRow(index)}
-                                            disabled={data.length <= 1}
-                                            className="text-red-400 hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                            title={data.length <= 1 ? "Cannot delete the last row" : "Delete row"}
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
+                                        <div className="flex items-center justify-end gap-2">
+                                            {/* Design button */}
+                                            <button
+                                                onClick={() => onDesignBar?.(index)}
+                                                className="text-indigo-400 hover:text-indigo-300 transition-colors"
+                                                title="Design this bar"
+                                            >
+                                                <Palette className="w-4 h-4" />
+                                            </button>
+
+                                            {/* Delete button */}
+                                            <button
+                                                onClick={() => deleteRow(index)}
+                                                disabled={data.length <= 1}
+                                                className="text-red-400 hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                                title={data.length <= 1 ? "Cannot delete the last row" : "Delete row"}
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

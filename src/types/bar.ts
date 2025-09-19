@@ -13,6 +13,7 @@ export interface BarDataPoint extends BaseDataPoint {
   borderColor: string;
   borderWidth: number;
   opacity: number;
+  borderOpacity: number;
   error: number;
   group?: string;
   pattern: BarPattern;
@@ -24,14 +25,29 @@ export interface BarDataPoint extends BaseDataPoint {
 export interface BarChartSettings extends PlotSettings<BarDataPoint> {
   showErrorBars: boolean;
   showValueLabels: boolean;
+  // Global bar design settings
   barOpacity: number;
   barBorderWidth: number;
   barCornerRadius: number;
   barCornerStyle: "top" | "both";
   barGap: number;
+  // Global border settings
+  showBorder: boolean;
+  globalBorderWidth: number;
+  // Global bar styling (used as defaults)
+  globalFillColor: string;
+  globalFillOpacity: number;
+  globalBorderColor: string;
+  globalBorderOpacity: number;
+  globalPattern: BarPattern;
+  globalPatternColor: string;
+  globalPatternOpacity: number;
+  globalPatternSize: number;
+  // Value labels
   valueLabelFontSize: number;
   valueLabelOffsetY: number;
   valueLabelOffsetX: number;
+  // Error bars
   errorBarMode: "global" | "match";
   errorBarColor: string;
   errorBarWidth: number;

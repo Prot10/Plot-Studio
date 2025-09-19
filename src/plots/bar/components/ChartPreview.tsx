@@ -762,14 +762,18 @@ export function ChartPreview({
               : null}
 
             {/* Bars */}
-            {barLayout.map(({ data, x, y, width, height, center, opacity, borderWidth }) => {
+            {barLayout.map(({ data, x, y, width, height, center, opacity }) => {
               const patternType = data.pattern ?? 'solid'
               const barTop = y
               const barHeight = Math.max(height, 0.01)
               const cornerSetting = clamp(settings.barCornerRadius, 0, 96)
               const radius = Math.min(cornerSetting, barHeight / 2, width / 2)
               const pathD = createBarPath(x, barTop, width, barHeight, radius, settings.barCornerStyle)
-              const strokeWidth = Math.max(borderWidth, 0)
+
+              // Use global border settings if showBorder is enabled, otherwise no border
+              const actualBorderWidth = settings.showBorder ? Math.max(settings.globalBorderWidth, 0) : 0
+              const borderOpacity = settings.showBorder ? (Number.isFinite(data.borderOpacity) ? data.borderOpacity : 1.0) : 0
+
               const maxLabelY = barTop - 4
               const desiredLabelY = barTop - settings.valueLabelFontSize * 0.6 - 4
               const baseLabelY = Math.min(desiredLabelY, maxLabelY)
@@ -804,7 +808,8 @@ export function ChartPreview({
                       fill={fillValue}
                       fillOpacity={fillOpacity}
                       stroke={data.borderColor}
-                      strokeWidth={strokeWidth}
+                      strokeWidth={actualBorderWidth}
+                      strokeOpacity={borderOpacity}
                       strokeLinejoin="round"
                     />
                   ) : (
@@ -816,7 +821,8 @@ export function ChartPreview({
                       fill={fillValue}
                       fillOpacity={fillOpacity}
                       stroke={data.borderColor}
-                      strokeWidth={strokeWidth}
+                      strokeWidth={actualBorderWidth}
+                      strokeOpacity={borderOpacity}
                     />
                   )}
                   {settings.showValueLabels ? (

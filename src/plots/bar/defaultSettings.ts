@@ -11,11 +11,25 @@ export const defaultBarChartSettings: BarChartSettings = {
   data: baseBars,
   showErrorBars: false,
   showValueLabels: true,
+  // Legacy settings (kept for backward compatibility)
   barOpacity: 0.85,
   barBorderWidth: 2,
+  // Global bar design settings
   barCornerRadius: 16,
   barCornerStyle: "top",
   barGap: 0.15,
+  // Global border settings
+  showBorder: true,
+  globalBorderWidth: 2,
+  // Global bar styling defaults
+  globalFillColor: "#3b82f6",
+  globalFillOpacity: 0.85,
+  globalBorderColor: "#0f172a",
+  globalBorderOpacity: 1.0,
+  globalPattern: "solid",
+  globalPatternColor: "#ffffff",
+  globalPatternOpacity: 0.35,
+  globalPatternSize: 8,
   backgroundColor: "#0f172a",
   canvasPadding: 48,
   textColor: "#f8fafc",

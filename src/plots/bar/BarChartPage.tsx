@@ -136,6 +136,7 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
     });
     const focusRequestIdRef = useRef(0);
     const [focusRequest, setFocusRequest] = useState<FocusRequest | null>(null);
+    const [selectedBarId, setSelectedBarId] = useState<string | null>(null);
 
     useEffect(() => {
         if (typeof window === 'undefined' || isHydrated) return;
@@ -358,6 +359,22 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
         [activePlot, requestFocus],
     );
 
+    const handleDesignBar = useCallback((barIndex: number) => {
+        const barId = activeSettings.data[barIndex]?.id;
+        if (barId) {
+            setSelectedBarId(barId);
+            // Trigger highlight effect for the Bar Design block
+            triggerHighlight(['design']);
+            // Scroll to the Bar Design block
+            setTimeout(() => {
+                const barDesignSection = document.querySelector('[data-block="bar-design"]');
+                if (barDesignSection) {
+                    barDesignSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        }
+    }, [activeSettings.data, triggerHighlight]);
+
     const actionMenuItems = useMemo(
         () => [
             { id: 'upload', label: 'Upload data', icon: UploadCloud, onClick: handleRequestImport },
@@ -459,6 +476,7 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                                 data={activeSettings.data}
                                 paletteName={activeSettings.paletteName}
                                 onChange={(newData) => setPlot(activePlot, (current) => ({ ...current, data: newData }))}
+                                onDesignBar={handleDesignBar}
                             />
                         </section>
                     </>
@@ -472,7 +490,8 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                             setPlot(activePlot, (current) => ({ ...current, data: bars }))
                         }
                         highlightSignals={highlightSignals}
-                        focusRequest={focusRequest}
+                        selectedBarId={selectedBarId}
+                        onSelectBar={setSelectedBarId}
                     />
                 }
             />

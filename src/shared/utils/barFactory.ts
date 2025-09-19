@@ -33,6 +33,7 @@ export function createBar(
     borderColor: "#0f172a",
     borderWidth: 2,
     opacity: 0.85,
+    borderOpacity: 1.0,
     error: 0,
     pattern: "solid",
     patternColor: "#ffffff",
