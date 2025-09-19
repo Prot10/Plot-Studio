@@ -202,19 +202,19 @@ export function RightPanel({ settings, bars, onChange, onBarsChange, highlightSi
       // When orientation changes, swap X and Y axis configurations
       const currentOrientation = settings.orientation
       const newOrientation = value as BarOrientation
-      
+
       if (currentOrientation !== newOrientation) {
-        const swappedSettings: BarChartSettings = { 
-          ...settings, 
+        const swappedSettings: BarChartSettings = {
+          ...settings,
           [key]: value,
           // Swap axis configurations and titles appropriately
-          xAxis: { 
+          xAxis: {
             ...settings.yAxis,
             // For horizontal: X-axis shows values, Y-axis shows categories
             // For vertical: X-axis shows categories, Y-axis shows values
             title: newOrientation === 'horizontal' ? 'Values' : 'Categories',
           },
-          yAxis: { 
+          yAxis: {
             ...settings.xAxis,
             title: newOrientation === 'horizontal' ? 'Categories' : 'Values',
           },

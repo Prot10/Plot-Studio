@@ -1,7 +1,9 @@
 import { Database, Download, Moon, Settings, Sparkles, Sun, UploadCloud } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChartActionMenu } from '../../shared/components/ChartActionMenu';
 import { ChartPageLayout } from '../../shared/components/ChartPageLayout';
+import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
 import { createBar } from '../../shared/utils/barFactory';
 import type { BarChartSettings, BarDataPoint } from '../../types/bar';
 import type { FocusRequest, FocusTarget, HighlightKey, PaletteKey } from '../../types/base';
@@ -108,15 +110,14 @@ function mergeStoredSettings(stored?: Partial<BarChartSettings>): BarChartSettin
     };
 }
 
-interface BarChartPageProps {
-    onBack: () => void;
-}
-
 type PreviewAction = { type: 'importData' | 'exportChart'; target: 0 | 1 };
 
 type PlotTuple = [BarChartSettings, BarChartSettings];
 
-export function BarChartPage({ onBack }: BarChartPageProps) {
+export function BarChartPage() {
+    const navigate = useNavigate();
+    useDocumentTitle('Chart Studio | Bar Chart');
+
     const [plots, setPlots] = useState<PlotTuple>(() => [buildDefaultSettings(), buildDefaultSettings()]);
     const [activePlot, setActivePlot] = useState<0 | 1>(0);
     const [comparisonEnabled, setComparisonEnabled] = useState(false);
@@ -408,7 +409,7 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                 <div className="mx-auto w-full max-w-content px-6 py-8">
                     <div className="flex items-center gap-8">
                         <button
-                            onClick={onBack}
+                            onClick={() => navigate('/')}
                             className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white transition-colors hover:bg-white/20"
                         >
                             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -417,7 +418,10 @@ export function BarChartPage({ onBack }: BarChartPageProps) {
                             Back
                         </button>
                         <div className="flex-1 text-center text-white">
-                            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Bar Chart Studio</h1>
+                            <div className="flex items-center justify-center gap-3 mb-2">
+                                <img src="/chart-icon.svg" alt="Chart Studio" className="w-8 h-8" />
+                                <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Bar Chart Studio</h1>
+                            </div>
                             <p className="mt-2 text-base text-white/60 sm:text-lg">
                                 Build expressive bar charts with precise control over every detail.
                             </p>

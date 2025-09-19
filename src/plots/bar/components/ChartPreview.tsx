@@ -906,7 +906,7 @@ export function ChartPreview({
               const errorValue = Math.max(data.error, 0)
               let errorX1: number, errorY1: number, errorX2: number, errorY2: number
               let errorLength: number
-              
+
               if (isHorizontal) {
                 const leftX = toCanvasX(data.value - errorValue)
                 const rightX = toCanvasX(data.value + errorValue)
@@ -1129,7 +1129,7 @@ export function ChartPreview({
                     )
                   })
                   : null}
-                  
+
                 {/* Value labels on X-axis */}
                 {axisStyles.x.showTickLabels
                   ? ticks.map((tick) => {

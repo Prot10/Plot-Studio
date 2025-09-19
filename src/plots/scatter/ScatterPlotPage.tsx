@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChartPageBlock, ChartPageLayout } from '../../shared/components/ChartPageLayout';
 import { TitleSettingsPanel } from '../../shared/components/TitleSettingsPanel';
+import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
 import { useHighlightEffect } from '../../shared/hooks/useHighlightEffect';
 import type { HighlightKey } from '../../types/base';
 import type { ScatterPlotSettings } from '../../types/scatter';
@@ -8,11 +10,10 @@ import { defaultScatterPlotSettings } from './defaultSettings';
 
 const STORAGE_KEY = 'scatterplot-studio-state-v1';
 
-interface ScatterPlotPageProps {
-    onBack: () => void;
-}
+export function ScatterPlotPage() {
+    const navigate = useNavigate();
+    useDocumentTitle('Chart Studio | Scatter Plot');
 
-export function ScatterPlotPage({ onBack }: ScatterPlotPageProps) {
     const [settings, setSettings] = useState<ScatterPlotSettings>(defaultScatterPlotSettings);
     const [isHydrated, setIsHydrated] = useState(false);
     const [highlightSignals] = useState<Record<HighlightKey, number>>({
@@ -70,7 +71,7 @@ export function ScatterPlotPage({ onBack }: ScatterPlotPageProps) {
                 <div className="mx-auto w-full max-w-content px-6 py-8">
                     <div className="flex items-center gap-8">
                         <button
-                            onClick={onBack}
+                            onClick={() => navigate('/')}
                             className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white hover:bg-white/20 transition-colors"
                         >
                             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -79,7 +80,10 @@ export function ScatterPlotPage({ onBack }: ScatterPlotPageProps) {
                             Back
                         </button>
                         <div className="text-center text-white flex-1">
-                            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Scatter Plot Studio</h1>
+                            <div className="flex items-center justify-center gap-3 mb-2">
+                                <img src="/chart-icon.svg" alt="Chart Studio" className="w-8 h-8" />
+                                <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Scatter Plot Studio</h1>
+                            </div>
                             <p className="mt-2 text-base text-white/60 sm:text-lg">
                                 Visualize relationships between variables with beautiful scatter plots.
                             </p>

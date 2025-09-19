@@ -1,9 +1,7 @@
 import { BarChart3, ScatterChart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useDocumentTitle } from '../shared/hooks/useDocumentTitle';
 import type { PlotType } from '../types/base';
-
-interface PlotSelectionPageProps {
-    onSelectPlotType: (plotType: PlotType) => void;
-}
 
 interface PlotTypeOption {
     type: PlotType;
@@ -30,12 +28,22 @@ const plotTypes: PlotTypeOption[] = [
     },
 ];
 
-export function PlotSelectionPage({ onSelectPlotType }: PlotSelectionPageProps) {
+export function PlotSelectionPage() {
+    const navigate = useNavigate();
+    useDocumentTitle('Chart Studio - Professional Data Visualization Tool');
+
+    const handleSelectPlotType = (plotType: PlotType) => {
+        navigate(`/${plotType}`);
+    };
+
     return (
         <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
             <header className="border-b border-white/10 bg-black/20 backdrop-blur">
                 <div className="mx-auto w-full max-w-4xl px-6 py-8 text-center text-white">
-                    <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Plot Studio</h1>
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                        <img src="/chart-icon.svg" alt="Chart Studio" className="w-12 h-12" />
+                        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Chart Studio</h1>
+                    </div>
                     <p className="mt-4 text-xl text-white/70 sm:text-2xl">
                         Create stunning visualizations with professional precision
                     </p>
@@ -50,11 +58,39 @@ export function PlotSelectionPage({ onSelectPlotType }: PlotSelectionPageProps) 
                     <div className="grid gap-8 md:grid-cols-2">
                         {plotTypes.map((plotType) => {
                             const IconComponent = plotType.icon;
+                            const isDisabled = plotType.type === 'scatter';
+
+                            if (isDisabled) {
+                                return (
+                                    <div
+                                        key={plotType.type}
+                                        className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-8 text-left opacity-70 cursor-not-allowed"
+                                        aria-disabled={true}
+                                    >
+                                        <div className={`absolute inset-0 bg-gradient-to-br ${plotType.gradient} opacity-5`} />
+
+                                        <div className="relative z-10">
+                                            <div className={`inline-flex rounded-xl bg-gradient-to-br ${plotType.gradient} p-3 text-white/60 shadow-lg filter grayscale`}>
+                                                <IconComponent className="h-8 w-8" />
+                                            </div>
+
+                                            <h3 className="mt-6 text-2xl font-semibold text-white/70">
+                                                {plotType.title}
+                                            </h3>
+
+                                            <p className="mt-3 text-white/50 leading-relaxed">
+                                                Coming next...
+                                            </p>
+                                        </div>
+                                    </div>
+                                );
+                            }
+
                             return (
                                 <button
                                     key={plotType.type}
-                                    onClick={() => onSelectPlotType(plotType.type)}
-                                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-black/30 p-8 text-left transition-all duration-300 hover:scale-105 hover:border-white/20 hover:bg-black/40 hover:shadow-2xl backdrop-blur"
+                                    onClick={() => handleSelectPlotType(plotType.type)}
+                                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-black/30 p-8 text-left transition-all duration-300 hover:border-white/20 hover:bg-black/40 hover:shadow-2xl backdrop-blur"
                                 >
                                     <div className={`absolute inset-0 bg-gradient-to-br ${plotType.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-10`} />
 
