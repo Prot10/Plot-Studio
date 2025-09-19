@@ -9,6 +9,35 @@ export type BarPattern =
 
 export type BarOrientation = "vertical" | "horizontal";
 
+// Additional elements for text and images
+export interface AdditionalTextElement {
+  id: string;
+  text: string;
+  x: number; // X position in pixels (relative to chart area)
+  y: number; // Y position in pixels (relative to chart area)
+  fontSize: number;
+  fontFamily: string;
+  color: string;
+  isBold: boolean;
+  isItalic: boolean;
+  isUnderline: boolean;
+  opacity: number;
+  rotation: number; // Rotation in degrees
+}
+
+export interface AdditionalImageElement {
+  id: string;
+  src: string; // Base64 data URL or URL to image
+  x: number; // X position in pixels (relative to chart area)
+  y: number; // Y position in pixels (relative to chart area)
+  scale: number; // Scale factor (1.0 = original size)
+  originalWidth: number; // Original image width in pixels
+  originalHeight: number; // Original image height in pixels
+  rotation: number; // Rotation in degrees
+  opacity: number;
+  grayscale: boolean; // Whether to apply grayscale filter
+}
+
 export interface BarDataPoint extends BaseDataPoint {
   value: number;
   fillColor: string;
@@ -29,6 +58,9 @@ export interface BarChartSettings extends PlotSettings<BarDataPoint> {
   showValueLabels: boolean;
   // Chart orientation
   orientation: BarOrientation;
+  // Additional elements
+  additionalTextElements: AdditionalTextElement[];
+  additionalImageElements: AdditionalImageElement[];
   // Global bar design settings
   barOpacity: number;
   barBorderWidth: number;

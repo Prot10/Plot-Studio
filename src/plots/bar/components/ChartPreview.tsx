@@ -608,6 +608,11 @@ export function ChartPreview({
             <title>{settings.title || 'Bar plot'}</title>
             <defs>
               {/* No global font styling - fonts applied individually to text elements */}
+
+              {/* Grayscale filter for images */}
+              <filter id="grayscale">
+                <feColorMatrix type="saturate" values="0" />
+              </filter>
             </defs>
             <rect
               data-role="background"
@@ -1223,6 +1228,61 @@ export function ChartPreview({
                 onDoubleClick={(event) => sendHighlight(['chartBasics'], event)}
               />
             ) : null}
+
+            {/* Additional Text Elements */}
+            {settings.additionalTextElements?.map((textElement) => {
+              const fontWeight = textElement.isBold ? 700 : 400
+              const fontStyle = textElement.isItalic ? 'italic' : 'normal'
+              const textDecoration = textElement.isUnderline ? 'underline' : 'none'
+              const x = margin.left + textElement.x
+              const y = margin.top + textElement.y
+
+              return (
+                <text
+                  key={textElement.id}
+                  x={x}
+                  y={y}
+                  fill={textElement.color}
+                  fontSize={textElement.fontSize}
+                  fontFamily={textElement.fontFamily}
+                  fillOpacity={textElement.opacity}
+                  style={{
+                    fontWeight,
+                    fontStyle,
+                    textDecoration,
+                  }}
+                  transform={textElement.rotation !== 0 ? `rotate(${textElement.rotation} ${x} ${y})` : undefined}
+                >
+                  {textElement.text}
+                </text>
+              )
+            })}
+
+            {/* Additional Image Elements */}
+            {settings.additionalImageElements?.map((imageElement) => {
+              const x = margin.left + imageElement.x
+              const y = margin.top + imageElement.y
+              const width = imageElement.originalWidth * imageElement.scale
+              const height = imageElement.originalHeight * imageElement.scale
+
+              // Calculate center point for rotation
+              const centerX = x + width / 2
+              const centerY = y + height / 2
+
+              return (
+                <image
+                  key={imageElement.id}
+                  x={x}
+                  y={y}
+                  width={width}
+                  height={height}
+                  href={imageElement.src}
+                  opacity={imageElement.opacity}
+                  filter={imageElement.grayscale ? 'url(#grayscale)' : undefined}
+                  transform={imageElement.rotation !== 0 ? `rotate(${imageElement.rotation} ${centerX} ${centerY})` : undefined}
+                />
+              )
+            })}
           </svg>
         </div>
       </div>

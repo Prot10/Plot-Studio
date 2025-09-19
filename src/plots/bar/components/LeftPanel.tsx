@@ -12,6 +12,8 @@ import type { BarChartSettings, BarDataPoint } from '../../../types/bar'
 import type { FocusRequest, HighlightKey, PaletteKey } from '../../../types/base'
 import { XAxisPanel } from './XAxisPanel'
 import { YAxisPanel } from './YAxisPanel'
+import { AdditionalTextManager } from './AdditionalTextManager'
+import { AdditionalImageManager } from './AdditionalImageManager'
 
 type ToggleProps = {
   title: string
@@ -636,6 +638,26 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
               precision={0}
               onChange={(value) => update('valueLabelOffsetY', value)}
               suffix="px"
+            />
+          </div>
+        </div>
+      </ChartPageBlock>
+
+      <ChartPageBlock title="Additional Elements">
+        <div className="space-y-8">
+          {/* Text Elements Section */}
+          <div className="border-b border-white/10 pb-6">
+            <AdditionalTextManager
+              textElements={settings.additionalTextElements}
+              onChange={(textElements) => update('additionalTextElements', textElements)}
+            />
+          </div>
+
+          {/* Image Elements Section */}
+          <div>
+            <AdditionalImageManager
+              imageElements={settings.additionalImageElements}
+              onChange={(imageElements) => update('additionalImageElements', imageElements)}
             />
           </div>
         </div>
