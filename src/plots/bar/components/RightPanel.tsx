@@ -4,7 +4,7 @@ import { ColorField } from '../../../shared/components/ColorField'
 import { NumericInput } from '../../../shared/components/NumericInput'
 import { SelectField } from '../../../shared/components/SelectField'
 import { useHighlightEffect } from '../../../shared/hooks/useHighlightEffect'
-import type { BarChartSettings, BarDataPoint, BarPattern } from '../../../types/bar'
+import type { BarChartSettings, BarDataPoint, BarPattern, BarOrientation } from '../../../types/bar'
 import type { HighlightKey } from '../../../types/base'
 
 type RightPanelProps = {
@@ -61,6 +61,11 @@ const cornerOptions: CornerStyleOption[] = [
   { value: 'both', label: 'Both' },
 ]
 
+const orientationOptions: Array<{ value: BarOrientation; label: string }> = [
+  { value: 'vertical', label: 'Vertical' },
+  { value: 'horizontal', label: 'Horizontal' },
+]
+
 const errorBarModeOptions: Array<{ value: BarChartSettings['errorBarMode']; label: string }> = [
   { value: 'global', label: 'Uniform' },
   { value: 'match', label: 'Border' },
@@ -96,6 +101,39 @@ function CornerStyleSelector({
                 ? 'bg-sky-500/20 text-white'
                 : 'bg-transparent text-white/70 hover:bg-white/10 hover:text-white'
                 } ${index < cornerOptions.length - 1 ? 'border-r border-white/10' : ''
+                }`}
+            >
+              {option.label}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function OrientationSelector({
+  value,
+  onChange,
+}: {
+  value: BarOrientation
+  onChange: (value: BarOrientation) => void
+}) {
+  return (
+    <div className="flex flex-col gap-1 text-sm text-white">
+      <span className="text-xs uppercase tracking-wide text-white/50">Orientation</span>
+      <div className="flex overflow-hidden rounded-md border border-white/10 bg-white/10 text-white shadow-sm h-9">
+        {orientationOptions.map((option, index) => {
+          const isActive = option.value === value
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onChange(option.value)}
+              className={`flex flex-1 items-center justify-center px-3 text-xs font-medium transition focus:outline-none ${isActive
+                ? 'bg-sky-500/20 text-white'
+                : 'bg-transparent text-white/70 hover:bg-white/10 hover:text-white'
+                } ${index < orientationOptions.length - 1 ? 'border-r border-white/10' : ''
                 }`}
             >
               {option.label}
@@ -160,6 +198,43 @@ export function RightPanel({ settings, bars, onChange, onBarsChange, highlightSi
   }, [bars, selectedBarId, setSelectedBarId])
 
   const update = <K extends keyof BarChartSettings>(key: K, value: BarChartSettings[K]) => {
+    if (key === 'orientation') {
+      // When orientation changes, swap X and Y axis configurations
+      const currentOrientation = settings.orientation
+      const newOrientation = value as BarOrientation
+      
+      if (currentOrientation !== newOrientation) {
+        const swappedSettings: BarChartSettings = { 
+          ...settings, 
+          [key]: value,
+          // Swap axis configurations and titles appropriately
+          xAxis: { 
+            ...settings.yAxis,
+            // For horizontal: X-axis shows values, Y-axis shows categories
+            // For vertical: X-axis shows categories, Y-axis shows values
+            title: newOrientation === 'horizontal' ? 'Values' : 'Categories',
+          },
+          yAxis: { 
+            ...settings.xAxis,
+            title: newOrientation === 'horizontal' ? 'Categories' : 'Values',
+          },
+          // Swap font sizes
+          xAxisTitleFontSize: settings.yAxisTitleFontSize,
+          yAxisTitleFontSize: settings.xAxisTitleFontSize,
+          xAxisTickFontSize: settings.yAxisTickFontSize,
+          yAxisTickFontSize: settings.xAxisTickFontSize,
+          // Swap axis offsets
+          xAxisTickOffsetX: settings.yAxisTickOffsetX,
+          xAxisTickOffsetY: settings.yAxisTickOffsetY,
+          yAxisTickOffsetX: settings.xAxisTickOffsetX,
+          yAxisTickOffsetY: settings.xAxisTickOffsetY,
+          xAxisTitleOffsetY: settings.yAxisTitleOffsetX,
+          yAxisTitleOffsetX: settings.xAxisTitleOffsetY,
+        }
+        onChange(swappedSettings)
+        return
+      }
+    }
     onChange({ ...settings, [key]: value })
   }
 
@@ -186,7 +261,11 @@ export function RightPanel({ settings, bars, onChange, onBarsChange, highlightSi
           {/* Global Settings */}
           <div>
             <h3 className="text-sm font-semibold text-white/80 mb-4">Global Settings</h3>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <OrientationSelector
+                value={settings.orientation}
+                onChange={(value) => update('orientation', value)}
+              />
               <NumericInput
                 title="Bar spacing"
                 value={settings.barGap}
@@ -196,6 +275,8 @@ export function RightPanel({ settings, bars, onChange, onBarsChange, highlightSi
                 precision={2}
                 onChange={(value) => update('barGap', value)}
               />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 mt-4">
               <CornerStyleSelector
                 value={settings.barCornerStyle}
                 onChange={(value) => update('barCornerStyle', value)}
@@ -316,9 +397,10 @@ export function RightPanel({ settings, bars, onChange, onBarsChange, highlightSi
         <div className="space-y-6">
           {/* Individual Bar Settings */}
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-white/80">Bar Settings</h3>
+            <div className="flex items-center justify-start gap-4 mb-4">
+              <span className="text-sm font-semibold text-white/80">Active Bar:</span>
               <SelectField<string>
+                className="w-48"
                 label=""
                 value={selectedBarId}
                 onChange={(newBarId) => setSelectedBarId(newBarId)}

@@ -38,10 +38,41 @@ function createBarPath(
   height: number,
   radius: number,
   style: BarChartSettings['barCornerStyle'],
+  isHorizontal: boolean = false,
 ) {
   const r = Math.max(Math.min(radius, width / 2, height / 2), 0)
   if (r === 0) return ''
 
+  if (isHorizontal) {
+    // For horizontal bars, rounded corners should be on the right side
+    if (style === 'both') {
+      return [
+        `M ${x + r} ${y}`,
+        `H ${x + width - r}`,
+        `Q ${x + width} ${y} ${x + width} ${y + r}`,
+        `V ${y + height - r}`,
+        `Q ${x + width} ${y + height} ${x + width - r} ${y + height}`,
+        `H ${x + r}`,
+        `Q ${x} ${y + height} ${x} ${y + height - r}`,
+        `V ${y + r}`,
+        `Q ${x} ${y} ${x + r} ${y}`,
+        'Z',
+      ].join(' ')
+    }
+
+    // Only right side rounded for horizontal bars
+    return [
+      `M ${x} ${y}`,
+      `H ${x + width - r}`,
+      `Q ${x + width} ${y} ${x + width} ${y + r}`,
+      `V ${y + height - r}`,
+      `Q ${x + width} ${y + height} ${x + width - r} ${y + height}`,
+      `H ${x}`,
+      'Z',
+    ].join(' ')
+  }
+
+  // Vertical bars (original logic)
   if (style === 'both') {
     return [
       `M ${x + r} ${y}`,
@@ -290,34 +321,69 @@ export function ChartPreview({
   }
 
   const barLayout = useMemo(() => {
-    const { data: bars, barGap, barBorderWidth, barOpacity } = settings
+    const { data: bars, barGap, barBorderWidth, barOpacity, orientation } = settings
     const count = bars.length || 1
-    const band = chartBounds.width / count
-    const gap = band * clamp(barGap, 0, 0.9)
-    const barWidth = Math.max(band - gap, 4)
+    const isHorizontal = orientation === 'horizontal'
 
-    return bars.map((bar, index) => {
-      const x = margin.left + band * index + (band - barWidth) / 2
-      const valueRatio = clamp((bar.value - axisMin) / axisRange, 0, 1)
-      const valueHeight = chartBounds.height * valueRatio
-      const y = margin.top + chartBounds.height - valueHeight
-      const opacity = Number.isFinite(bar.opacity) ? bar.opacity : barOpacity
-      const borderWidth = Number.isFinite(bar.borderWidth) ? bar.borderWidth : barBorderWidth
+    if (isHorizontal) {
+      // Horizontal bars: spread along Y-axis, extend along X-axis
+      const band = chartBounds.height / count
+      const gap = band * clamp(barGap, 0, 0.9)
+      const barHeight = Math.max(band - gap, 4)
 
-      return {
-        data: bar,
-        x,
-        y,
-        width: barWidth,
-        height: valueHeight,
-        center: x + barWidth / 2,
-        opacity: clamp(opacity, 0, 1),
-        borderWidth,
-      }
-    })
+      return bars.map((bar, index) => {
+        const y = margin.top + band * index + (band - barHeight) / 2
+        const valueRatio = clamp((bar.value - axisMin) / axisRange, 0, 1)
+        const barWidth = chartBounds.width * valueRatio
+        const x = margin.left
+        const opacity = Number.isFinite(bar.opacity) ? bar.opacity : barOpacity
+        const borderWidth = Number.isFinite(bar.borderWidth) ? bar.borderWidth : barBorderWidth
+
+        return {
+          data: bar,
+          x,
+          y,
+          width: barWidth,
+          height: barHeight,
+          center: y + barHeight / 2,
+          opacity: clamp(opacity, 0, 1),
+          borderWidth,
+        }
+      })
+    } else {
+      // Vertical bars: spread along X-axis, extend along Y-axis (original behavior)
+      const band = chartBounds.width / count
+      const gap = band * clamp(barGap, 0, 0.9)
+      const barWidth = Math.max(band - gap, 4)
+
+      return bars.map((bar, index) => {
+        const x = margin.left + band * index + (band - barWidth) / 2
+        const valueRatio = clamp((bar.value - axisMin) / axisRange, 0, 1)
+        const valueHeight = chartBounds.height * valueRatio
+        const y = margin.top + chartBounds.height - valueHeight
+        const opacity = Number.isFinite(bar.opacity) ? bar.opacity : barOpacity
+        const borderWidth = Number.isFinite(bar.borderWidth) ? bar.borderWidth : barBorderWidth
+
+        return {
+          data: bar,
+          x,
+          y,
+          width: barWidth,
+          height: valueHeight,
+          center: x + barWidth / 2,
+          opacity: clamp(opacity, 0, 1),
+          borderWidth,
+        }
+      })
+    }
   }, [settings, axisMin, axisRange, chartBounds.width, chartBounds.height, margin.left, margin.top])
 
   const toCanvasY = (value: number) => margin.top + scaleY(value)
+
+  const toCanvasX = (value: number) => {
+    const ratio = clamp((value - axisMin) / axisRange, 0, 1)
+    return margin.left + ratio * chartBounds.width
+  }
 
   const axisStyles = {
     x: settings.xAxis,
@@ -726,76 +792,146 @@ export function ChartPreview({
                 })}
             </defs>
 
-            {axisStyles.y.showGridLines
-              ? ticks.map((tick) => {
-                const y = margin.top + scaleY(tick)
+            {/* Grid lines */}
+            {settings.orientation === 'horizontal' ? (
+              // Horizontal orientation: show vertical grid lines for values
+              axisStyles.x.showGridLines
+                ? ticks.map((tick) => {
+                  const x = margin.left + ((tick - axisMin) / axisRange) * chartBounds.width
 
-                // Create stroke dash array based on line style
-                let strokeDasharray = 'none'
-                switch (axisStyles.y.gridLineStyle) {
-                  case 'dashed':
-                    strokeDasharray = '8 4'
-                    break
-                  case 'dotted':
-                    strokeDasharray = '2 2'
-                    break
-                  case 'solid':
-                  default:
-                    strokeDasharray = 'none'
-                    break
-                }
+                  // Create stroke dash array based on line style
+                  let strokeDasharray = 'none'
+                  switch (axisStyles.x.gridLineStyle) {
+                    case 'dashed':
+                      strokeDasharray = '8 4'
+                      break
+                    case 'dotted':
+                      strokeDasharray = '2 2'
+                      break
+                    case 'solid':
+                    default:
+                      strokeDasharray = 'none'
+                      break
+                  }
 
-                return (
-                  <line
-                    key={`grid-${tick}`}
-                    x1={margin.left}
-                    x2={measuredWidth - margin.right}
-                    y1={y}
-                    y2={y}
-                    stroke={axisStyles.y.gridLineColor}
-                    strokeWidth={axisStyles.y.gridLineWidth}
-                    strokeDasharray={strokeDasharray}
-                    strokeOpacity={axisStyles.y.gridLineOpacity}
-                  />
-                )
-              })
-              : null}
+                  return (
+                    <line
+                      key={`grid-${tick}`}
+                      x1={x}
+                      x2={x}
+                      y1={margin.top}
+                      y2={measuredHeight - margin.bottom}
+                      stroke={axisStyles.x.gridLineColor}
+                      strokeWidth={axisStyles.x.gridLineWidth}
+                      strokeDasharray={strokeDasharray}
+                      strokeOpacity={axisStyles.x.gridLineOpacity}
+                    />
+                  )
+                })
+                : null
+            ) : (
+              // Vertical orientation: show horizontal grid lines for values (original behavior)
+              axisStyles.y.showGridLines
+                ? ticks.map((tick) => {
+                  const y = margin.top + scaleY(tick)
+
+                  // Create stroke dash array based on line style
+                  let strokeDasharray = 'none'
+                  switch (axisStyles.y.gridLineStyle) {
+                    case 'dashed':
+                      strokeDasharray = '8 4'
+                      break
+                    case 'dotted':
+                      strokeDasharray = '2 2'
+                      break
+                    case 'solid':
+                    default:
+                      strokeDasharray = 'none'
+                      break
+                  }
+
+                  return (
+                    <line
+                      key={`grid-${tick}`}
+                      x1={margin.left}
+                      x2={measuredWidth - margin.right}
+                      y1={y}
+                      y2={y}
+                      stroke={axisStyles.y.gridLineColor}
+                      strokeWidth={axisStyles.y.gridLineWidth}
+                      strokeDasharray={strokeDasharray}
+                      strokeOpacity={axisStyles.y.gridLineOpacity}
+                    />
+                  )
+                })
+                : null
+            )}
 
             {/* Bars */}
             {barLayout.map(({ data, x, y, width, height, center, opacity }) => {
+              const isHorizontal = settings.orientation === 'horizontal'
               const patternType = data.pattern ?? 'solid'
               const barTop = y
               const barHeight = Math.max(height, 0.01)
+              const barWidth = Math.max(width, 0.01)
               const cornerSetting = clamp(settings.barCornerRadius, 0, 96)
-              const radius = Math.min(cornerSetting, barHeight / 2, width / 2)
-              const pathD = createBarPath(x, barTop, width, barHeight, radius, settings.barCornerStyle)
+              const radius = Math.min(cornerSetting, barHeight / 2, barWidth / 2)
+              const pathD = createBarPath(x, barTop, barWidth, barHeight, radius, settings.barCornerStyle, isHorizontal)
 
               // Use global border settings if showBorder is enabled, otherwise no border
               const actualBorderWidth = settings.showBorder ? Math.max(settings.globalBorderWidth, 0) : 0
               const borderOpacity = settings.showBorder ? (Number.isFinite(data.borderOpacity) ? data.borderOpacity : 1.0) : 0
 
-              const maxLabelY = barTop - 4
-              const desiredLabelY = barTop - settings.valueLabelFontSize * 0.6 - 4
-              const baseLabelY = Math.min(desiredLabelY, maxLabelY)
-              const offsetLabelY = baseLabelY + (settings.valueLabelOffsetY ?? 0)
-              let valueLabelY = offsetLabelY
-              valueLabelY = Math.max(valueLabelY, 0)
-              valueLabelY = Math.min(valueLabelY, chartAreaBottom - 4)
+              // Value label positioning
+              let valueLabelX: number, valueLabelY: number
+              if (isHorizontal) {
+                // For horizontal bars, place label at the end of the bar
+                const maxLabelX = x + barWidth + 4
+                const desiredLabelX = x + barWidth + settings.valueLabelFontSize * 0.6 + 4
+                const baseLabelX = Math.max(desiredLabelX, maxLabelX)
+                const offsetLabelX = baseLabelX + (settings.valueLabelOffsetX ?? 0)
+                valueLabelX = Math.min(offsetLabelX, measuredWidth - margin.right - 4)
+                valueLabelY = center + (settings.valueLabelOffsetY ?? 0)
+              } else {
+                // For vertical bars, place label above the bar (original logic)
+                const maxLabelY = barTop - 4
+                const desiredLabelY = barTop - settings.valueLabelFontSize * 0.6 - 4
+                const baseLabelY = Math.min(desiredLabelY, maxLabelY)
+                const offsetLabelY = baseLabelY + (settings.valueLabelOffsetY ?? 0)
+                valueLabelY = Math.max(Math.min(offsetLabelY, chartAreaBottom - 4), 0)
+                valueLabelX = center + (settings.valueLabelOffsetX ?? 0)
+              }
+
+              // Error bar positioning
               const errorValue = Math.max(data.error, 0)
-              const upperY = toCanvasY(data.value + errorValue)
-              const lowerY = toCanvasY(data.value - errorValue)
-              const errorTopY = Math.min(upperY, lowerY)
-              const errorBottomY = Math.max(upperY, lowerY)
-              const errorLength = errorBottomY - errorTopY
+              let errorX1: number, errorY1: number, errorX2: number, errorY2: number
+              let errorLength: number
+              
+              if (isHorizontal) {
+                const leftX = toCanvasX(data.value - errorValue)
+                const rightX = toCanvasX(data.value + errorValue)
+                errorX1 = Math.min(leftX, rightX)
+                errorX2 = Math.max(leftX, rightX)
+                errorY1 = center
+                errorY2 = center
+                errorLength = errorX2 - errorX1
+              } else {
+                const upperY = toCanvasY(data.value + errorValue)
+                const lowerY = toCanvasY(data.value - errorValue)
+                errorX1 = center
+                errorX2 = center
+                errorY1 = Math.min(upperY, lowerY)
+                errorY2 = Math.max(upperY, lowerY)
+                errorLength = errorY2 - errorY1
+              }
+
               const errorColor = settings.errorBarMode === 'match' ? data.borderColor : settings.errorBarColor
               const errorStroke = Math.max(settings.errorBarWidth, 0)
               const capHalfWidth = settings.errorBarCapWidth / 2
-              const errorVisible =
-                settings.showErrorBars && errorLength > 0.5 && errorTopY < errorBottomY - 0.5
+              const errorVisible = settings.showErrorBars && errorLength > 0.5
               const patternId = `pattern-${data.id}`
               const fillValue = patternType === 'solid' ? data.fillColor : `url(#${patternId})`
               const fillOpacity = patternType === 'solid' ? opacity : 1
-              const valueLabelX = center + (settings.valueLabelOffsetX ?? 0)
 
               return (
                 <g
@@ -816,7 +952,7 @@ export function ChartPreview({
                     <rect
                       x={x}
                       y={barTop}
-                      width={width}
+                      width={barWidth}
                       height={barHeight}
                       fill={fillValue}
                       fillOpacity={fillOpacity}
@@ -829,7 +965,8 @@ export function ChartPreview({
                     <text
                       x={valueLabelX}
                       y={valueLabelY}
-                      textAnchor="middle"
+                      textAnchor={isHorizontal ? "start" : "middle"}
+                      dominantBaseline={isHorizontal ? "middle" : "auto"}
                       fill={settings.textColor}
                       fontFamily={globalFontFamily}
                       fontSize={settings.valueLabelFontSize}
@@ -845,32 +982,57 @@ export function ChartPreview({
                   {errorVisible ? (
                     <g onDoubleClick={(event) => sendHighlight(['errorBars'], event)}>
                       <line
-                        x1={center}
-                        x2={center}
-                        y1={errorTopY}
-                        y2={errorBottomY}
+                        x1={errorX1}
+                        x2={errorX2}
+                        y1={errorY1}
+                        y2={errorY2}
                         stroke={errorColor}
                         strokeWidth={errorStroke}
                         strokeLinecap="round"
                       />
-                      <line
-                        x1={center - capHalfWidth}
-                        x2={center + capHalfWidth}
-                        y1={errorTopY}
-                        y2={errorTopY}
-                        stroke={errorColor}
-                        strokeWidth={errorStroke}
-                        strokeLinecap="round"
-                      />
-                      <line
-                        x1={center - capHalfWidth}
-                        x2={center + capHalfWidth}
-                        y1={errorBottomY}
-                        y2={errorBottomY}
-                        stroke={errorColor}
-                        strokeWidth={errorStroke}
-                        strokeLinecap="round"
-                      />
+                      {isHorizontal ? (
+                        <>
+                          <line
+                            x1={errorX1}
+                            x2={errorX1}
+                            y1={center - capHalfWidth}
+                            y2={center + capHalfWidth}
+                            stroke={errorColor}
+                            strokeWidth={errorStroke}
+                            strokeLinecap="round"
+                          />
+                          <line
+                            x1={errorX2}
+                            x2={errorX2}
+                            y1={center - capHalfWidth}
+                            y2={center + capHalfWidth}
+                            stroke={errorColor}
+                            strokeWidth={errorStroke}
+                            strokeLinecap="round"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <line
+                            x1={center - capHalfWidth}
+                            x2={center + capHalfWidth}
+                            y1={errorY1}
+                            y2={errorY1}
+                            stroke={errorColor}
+                            strokeWidth={errorStroke}
+                            strokeLinecap="round"
+                          />
+                          <line
+                            x1={center - capHalfWidth}
+                            x2={center + capHalfWidth}
+                            y1={errorY2}
+                            y2={errorY2}
+                            stroke={errorColor}
+                            strokeWidth={errorStroke}
+                            strokeLinecap="round"
+                          />
+                        </>
+                      )}
                     </g>
                   ) : null}
                 </g>
@@ -939,54 +1101,114 @@ export function ChartPreview({
             ) : null}
 
             {/* Tick labels */}
-            {axisStyles.y.showTickLabels
-              ? ticks.map((tick) => {
-                const y = margin.top + scaleY(tick)
-                const x = margin.left - 10
-                const baseX = x + (settings.yAxisTickOffsetX ?? 0)
-                const baseY = y + settings.yAxisTickFontSize / 3 + (settings.yAxisTickOffsetY ?? 0)
-                return (
-                  <text
-                    key={`ytick-${tick}`}
-                    x={baseX}
-                    y={baseY}
-                    textAnchor="end"
-                    fill={axisStyles.y.tickLabelColor}
-                    fontFamily={globalFontFamily}
-                    fontSize={settings.yAxisTickFontSize}
-                    transform={axisStyles.y.tickLabelOrientation !== 0 ? `rotate(${axisStyles.y.tickLabelOrientation}, ${baseX}, ${baseY})` : undefined}
-                    onDoubleClick={(event) => sendHighlight(['yAxis'], event)}
-                  >
-                    {tick.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                  </text>
-                )
-              })
-              : null}
+            {settings.orientation === 'horizontal' ? (
+              // Horizontal orientation: category labels on Y-axis, value labels on X-axis
+              <>
+                {/* Category labels on Y-axis */}
+                {axisStyles.y.showTickLabels
+                  ? barLayout.map(({ data, center }) => {
+                    const baseX = margin.left - 10 + (settings.yAxisTickOffsetX ?? 0)
+                    const baseY = center + settings.yAxisTickFontSize / 3 + (settings.yAxisTickOffsetY ?? 0)
+                    return (
+                      <text
+                        key={`ylabel-${data.id}`}
+                        x={baseX}
+                        y={baseY}
+                        textAnchor="end"
+                        fill={axisStyles.y.tickLabelColor}
+                        fontFamily={globalFontFamily}
+                        fontSize={settings.yAxisTickFontSize}
+                        transform={axisStyles.y.tickLabelOrientation !== 0 ? `rotate(${axisStyles.y.tickLabelOrientation}, ${baseX}, ${baseY})` : undefined}
+                        onDoubleClick={(event) => {
+                          sendHighlight(['data'], event)
+                          onRequestFocus({ type: 'barLabel', barId: data.id })
+                        }}
+                      >
+                        {data.label}
+                      </text>
+                    )
+                  })
+                  : null}
+                  
+                {/* Value labels on X-axis */}
+                {axisStyles.x.showTickLabels
+                  ? ticks.map((tick) => {
+                    const x = margin.left + ((tick - axisMin) / axisRange) * chartBounds.width
+                    const baseX = x + (settings.xAxisTickOffsetX ?? 0)
+                    const baseY = xTickBaseY + (settings.xAxisTickOffsetY ?? 0)
+                    return (
+                      <text
+                        key={`xtick-${tick}`}
+                        x={baseX}
+                        y={baseY}
+                        textAnchor="middle"
+                        fill={axisStyles.x.tickLabelColor}
+                        fontFamily={globalFontFamily}
+                        fontSize={settings.xAxisTickFontSize}
+                        transform={axisStyles.x.tickLabelOrientation !== 0 ? `rotate(${axisStyles.x.tickLabelOrientation}, ${baseX}, ${baseY})` : undefined}
+                        onDoubleClick={(event) => sendHighlight(['xAxis'], event)}
+                      >
+                        {tick.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                      </text>
+                    )
+                  })
+                  : null}
+              </>
+            ) : (
+              // Vertical orientation: value labels on Y-axis, category labels on X-axis (original behavior)
+              <>
+                {/* Value labels on Y-axis */}
+                {axisStyles.y.showTickLabels
+                  ? ticks.map((tick) => {
+                    const y = margin.top + scaleY(tick)
+                    const x = margin.left - 10
+                    const baseX = x + (settings.yAxisTickOffsetX ?? 0)
+                    const baseY = y + settings.yAxisTickFontSize / 3 + (settings.yAxisTickOffsetY ?? 0)
+                    return (
+                      <text
+                        key={`ytick-${tick}`}
+                        x={baseX}
+                        y={baseY}
+                        textAnchor="end"
+                        fill={axisStyles.y.tickLabelColor}
+                        fontFamily={globalFontFamily}
+                        fontSize={settings.yAxisTickFontSize}
+                        transform={axisStyles.y.tickLabelOrientation !== 0 ? `rotate(${axisStyles.y.tickLabelOrientation}, ${baseX}, ${baseY})` : undefined}
+                        onDoubleClick={(event) => sendHighlight(['yAxis'], event)}
+                      >
+                        {tick.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                      </text>
+                    )
+                  })
+                  : null}
 
-            {axisStyles.x.showTickLabels
-              ? barLayout.map(({ data, center }) => {
-                const baseX = center + (settings.xAxisTickOffsetX ?? 0)
-                const baseY = xTickBaseY + (settings.xAxisTickOffsetY ?? 0)
-                return (
-                  <text
-                    key={`xlabel-${data.id}`}
-                    x={baseX}
-                    y={baseY}
-                    textAnchor="middle"
-                    fill={axisStyles.x.tickLabelColor}
-                    fontFamily={globalFontFamily}
-                    fontSize={settings.xAxisTickFontSize}
-                    transform={axisStyles.x.tickLabelOrientation !== 0 ? `rotate(${axisStyles.x.tickLabelOrientation}, ${baseX}, ${baseY})` : undefined}
-                    onDoubleClick={(event) => {
-                      sendHighlight(['data'], event)
-                      onRequestFocus({ type: 'barLabel', barId: data.id })
-                    }}
-                  >
-                    {data.label}
-                  </text>
-                )
-              })
-              : null}
+                {/* Category labels on X-axis */}
+                {axisStyles.x.showTickLabels
+                  ? barLayout.map(({ data, center }) => {
+                    const baseX = center + (settings.xAxisTickOffsetX ?? 0)
+                    const baseY = xTickBaseY + (settings.xAxisTickOffsetY ?? 0)
+                    return (
+                      <text
+                        key={`xlabel-${data.id}`}
+                        x={baseX}
+                        y={baseY}
+                        textAnchor="middle"
+                        fill={axisStyles.x.tickLabelColor}
+                        fontFamily={globalFontFamily}
+                        fontSize={settings.xAxisTickFontSize}
+                        transform={axisStyles.x.tickLabelOrientation !== 0 ? `rotate(${axisStyles.x.tickLabelOrientation}, ${baseX}, ${baseY})` : undefined}
+                        onDoubleClick={(event) => {
+                          sendHighlight(['data'], event)
+                          onRequestFocus({ type: 'barLabel', barId: data.id })
+                        }}
+                      >
+                        {data.label}
+                      </text>
+                    )
+                  })
+                  : null}
+              </>
+            )}
 
             {/* Plot box border */}
             {settings.showPlotBox ? (

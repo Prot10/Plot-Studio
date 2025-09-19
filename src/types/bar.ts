@@ -7,6 +7,8 @@ export type BarPattern =
   | "crosshatch"
   | "vertical";
 
+export type BarOrientation = "vertical" | "horizontal";
+
 export interface BarDataPoint extends BaseDataPoint {
   value: number;
   fillColor: string;
@@ -25,6 +27,8 @@ export interface BarDataPoint extends BaseDataPoint {
 export interface BarChartSettings extends PlotSettings<BarDataPoint> {
   showErrorBars: boolean;
   showValueLabels: boolean;
+  // Chart orientation
+  orientation: BarOrientation;
   // Global bar design settings
   barOpacity: number;
   barBorderWidth: number;

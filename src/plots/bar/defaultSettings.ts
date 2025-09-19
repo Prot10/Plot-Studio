@@ -11,6 +11,8 @@ export const defaultBarChartSettings: BarChartSettings = {
   data: baseBars,
   showErrorBars: false,
   showValueLabels: true,
+  // Chart orientation
+  orientation: "vertical",
   // Legacy settings (kept for backward compatibility)
   barOpacity: 0.85,
   barBorderWidth: 2,
