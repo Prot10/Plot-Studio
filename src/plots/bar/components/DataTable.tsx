@@ -176,47 +176,49 @@ export function DataTable({ data, paletteName, onChange, onDesignBar, className 
     }, [getCellValue, handleCellEdit]);
 
     return (
-        <div className={`overflow-hidden ${className}`}>
+        <div className={`overflow-hidden w-full ${className}`}>
             {/* Table Header */}
-            <div className="px-6 py-4 border-b border-white/10">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-white">Data Editor</h3>
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-white/10">
+                <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-base sm:text-lg font-semibold text-white">Data Editor</h3>
                     <button
                         onClick={addRow}
-                        className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-white/10 border border-white/10 rounded-md hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/20 transition-colors"
+                        className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white bg-white/10 border border-white/10 rounded-md hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/20 transition-colors"
                     >
-                        <Plus className="w-4 h-4" />
-                        Add Bar
+                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">Add Bar</span>
+                        <span className="sm:hidden">Add</span>
                     </button>
                 </div>
             </div>
 
             {/* Scrollable Table Container */}
             <div className="overflow-hidden">
-                <div className="max-h-96 overflow-y-auto">
-                    <table className="min-w-full divide-y divide-white/10">
+                <div className="max-h-64 sm:max-h-96 overflow-x-auto overflow-y-auto">
+                    <table className="min-w-full divide-y divide-white/10" style={{ minWidth: '600px' }}>
                         <thead className="bg-white/10 sticky top-0 z-10 backdrop-blur">
                             <tr>
-                                <th scope="col" className="w-8 px-2 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
+                                <th scope="col" className="w-6 sm:w-8 px-1 sm:px-2 py-2 sm:py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                                     {/* Drag handle column */}
                                 </th>
-                                <th scope="col" className="w-48 px-3 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
+                                <th scope="col" className="w-32 sm:w-48 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                                     Color
                                 </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
+                                <th scope="col" className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                                     Label
                                 </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
+                                <th scope="col" className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                                     Value
                                 </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                                    Error (SD)
+                                <th scope="col" className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
+                                    <span className="hidden sm:inline">Error (SD)</span>
+                                    <span className="sm:hidden">Error</span>
                                 </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
+                                <th scope="col" className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                                     Group
                                 </th>
-                                <th scope="col" className="w-16 px-6 py-3 text-right text-xs font-medium text-white/50 uppercase tracking-wider">
-                                    Actions
+                                <th scope="col" className="w-12 sm:w-16 px-3 sm:px-6 py-2 sm:py-3 text-right text-xs font-medium text-white/50 uppercase tracking-wider">
+                                    <span className="sr-only sm:not-sr-only">Actions</span>
                                 </th>
                             </tr>
                         </thead>
@@ -236,12 +238,12 @@ export function DataTable({ data, paletteName, onChange, onDesignBar, className 
                   `}
                                 >
                                     {/* Drag Handle */}
-                                    <td className="px-2 py-4 whitespace-nowrap">
-                                        <GripVertical className="w-4 h-4 text-white/60 cursor-grab active:cursor-grabbing" />
+                                    <td className="px-1 sm:px-2 py-3 sm:py-4 whitespace-nowrap">
+                                        <GripVertical className="w-3 h-3 sm:w-4 sm:h-4 text-white/60 cursor-grab active:cursor-grabbing" />
                                     </td>
 
                                     {/* Fill Color Column */}
-                                    <td className="px-3 py-4 whitespace-nowrap">
+                                    <td className="px-2 sm:px-3 py-3 sm:py-4 whitespace-nowrap">
                                         <ColorField
                                             label=""
                                             value={row.fillColor}
@@ -251,45 +253,45 @@ export function DataTable({ data, paletteName, onChange, onDesignBar, className 
                                     </td>
 
                                     {/* Label Column */}
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-white">
                                         {renderCell(row, index, 'label', 'Label')}
                                     </td>
 
                                     {/* Value Column */}
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-white">
                                         {renderCell(row, index, 'value', 'Value')}
                                     </td>
 
                                     {/* Error Column */}
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-white">
                                         {renderCell(row, index, 'error', 'Error')}
                                     </td>
 
                                     {/* Group Column */}
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-white">
                                         {renderCell(row, index, 'group', 'Group')}
                                     </td>
 
                                     {/* Actions Column */}
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div className="flex items-center justify-end gap-2">
+                                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
+                                        <div className="flex items-center justify-end gap-1 sm:gap-2">
                                             {/* Design button */}
                                             <button
                                                 onClick={() => onDesignBar?.(index)}
-                                                className="text-indigo-400 hover:text-indigo-300 transition-colors"
+                                                className="text-indigo-400 hover:text-indigo-300 transition-colors p-1"
                                                 title="Design this bar"
                                             >
-                                                <Palette className="w-4 h-4" />
+                                                <Palette className="w-3 h-3 sm:w-4 sm:h-4" />
                                             </button>
 
                                             {/* Delete button */}
                                             <button
                                                 onClick={() => deleteRow(index)}
                                                 disabled={data.length <= 1}
-                                                className="text-red-400 hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                                className="text-red-400 hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors p-1"
                                                 title={data.length <= 1 ? "Cannot delete the last row" : "Delete row"}
                                             >
-                                                <Trash2 className="w-4 h-4" />
+                                                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                             </button>
                                         </div>
                                     </td>
@@ -301,9 +303,10 @@ export function DataTable({ data, paletteName, onChange, onDesignBar, className 
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-3 bg-white/10 border-t border-white/10">
-                <p className="text-sm text-white/60">
-                    {data.length} {data.length === 1 ? 'row' : 'rows'} • Double-click any cell to edit • Drag rows to reorder
+            <div className="px-4 sm:px-6 py-2 sm:py-3 bg-white/10 border-t border-white/10">
+                <p className="text-xs sm:text-sm text-white/60">
+                    {data.length} {data.length === 1 ? 'row' : 'rows'}
+                    <span className="hidden sm:inline"> • Double-click any cell to edit • Drag rows to reorder</span>
                 </p>
             </div>
         </div>

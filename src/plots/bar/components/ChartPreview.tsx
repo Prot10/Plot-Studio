@@ -587,7 +587,7 @@ export function ChartPreview({
         <div
           ref={wrapperRef}
           className={classNames(
-            'relative flex min-h-[420px] flex-1 items-center justify-center transition',
+            'relative flex min-h-[280px] sm:min-h-[420px] flex-1 items-center justify-center transition w-full max-w-full overflow-hidden',
             comparisonEnabled
               ? classNames(
                 'border border-white/10',
@@ -595,11 +595,12 @@ export function ChartPreview({
               )
               : 'rounded-2xl'
           )}
-          style={{ backgroundColor: settings.backgroundColor, minHeight: `${minContainerHeight}px` }}
+          style={{ backgroundColor: settings.backgroundColor, minHeight: `${Math.min(minContainerHeight, 420)}px` }}
           onClick={onActivate}
         >
           <svg
             ref={svgRef}
+            className="max-w-full h-auto"
             width={measuredWidth}
             height={measuredHeight}
             viewBox={`0 0 ${measuredWidth} ${measuredHeight}`}

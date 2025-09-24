@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChartPageBlock, ChartPageLayout } from '../../shared/components/ChartPageLayout';
+import { ChartPage } from '../../shared/components/ChartPage';
+import { ChartPageBlock } from '../../shared/components/ChartPageLayout';
 import { TitleSettingsPanel } from '../../shared/components/TitleSettingsPanel';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
 import { useHighlightEffect } from '../../shared/hooks/useHighlightEffect';
@@ -11,7 +11,6 @@ import { defaultScatterPlotSettings } from './defaultSettings';
 const STORAGE_KEY = 'scatterplot-studio-state-v1';
 
 export function ScatterPlotPage() {
-    const navigate = useNavigate();
     useDocumentTitle('Chart Studio | Scatter Plot');
 
     const [settings, setSettings] = useState<ScatterPlotSettings>(defaultScatterPlotSettings);
@@ -66,118 +65,94 @@ export function ScatterPlotPage() {
     const titleHighlight = useHighlightEffect(highlightSignals?.title);
 
     return (
-        <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-            <header className="border-b border-white/10 bg-black/20 backdrop-blur">
-                <div className="mx-auto w-full max-w-content px-6 py-8">
-                    <div className="flex items-center gap-8">
-                        <button
-                            onClick={() => navigate('/')}
-                            className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white hover:bg-white/20 transition-colors"
-                        >
-                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                            Back
-                        </button>
-                        <div className="text-center text-white flex-1">
-                            <div className="flex items-center justify-center gap-3 mb-2">
-                                <img src="/chart-icon.svg" alt="Chart Studio" className="w-8 h-8" />
-                                <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Scatter Plot Studio</h1>
-                            </div>
-                            <p className="mt-2 text-base text-white/60 sm:text-lg">
-                                Visualize relationships between variables with beautiful scatter plots.
+        <ChartPage
+            title="Scatter Plot Studio"
+            subtitle="Visualize relationships between variables with beautiful scatter plots."
+            leftPanel={
+                <>
+                    <ChartPageBlock title="Chart basics" highlighted={basicsHighlight}>
+                        <div className="space-y-3 text-white">
+                            <p className="text-white/60">
+                                Scatter plot basics panel will go here
                             </p>
                         </div>
-                    </div>
-                </div>
-            </header>
-            <ChartPageLayout
-                left={
-                    <>
-                        <ChartPageBlock title="Chart basics" highlighted={basicsHighlight}>
-                            <div className="space-y-3 text-white">
-                                <p className="text-white/60">
-                                    Scatter plot basics panel will go here
-                                </p>
-                            </div>
-                        </ChartPageBlock>
-                        <ChartPageBlock title="Title & Subtitle" highlighted={titleHighlight}>
-                            <TitleSettingsPanel
-                                settings={settings}
-                                onChange={handleSettingsChange}
-                                focusRequest={null}
-                                highlightSignal={highlightSignals?.title}
-                            />
-                        </ChartPageBlock>
-                        <ChartPageBlock title="Data">
-                            <div className="space-y-3 text-white">
-                                <p className="text-white/60">Point data editor will go here</p>
-                                <div className="space-y-2">
-                                    {settings.data.map((point, index) => (
-                                        <div key={point.id} className="rounded-lg bg-white/10 p-3">
-                                            <p className="text-sm">Point {index + 1}: ({point.x}, {point.y})</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </ChartPageBlock>
-                    </>
-                }
-                center={
-                    <section className="rounded-3xl border border-white/10 bg-black/50 p-6 shadow-2xl backdrop-blur">
-                        <div className="text-white text-center">
-                            <h2 className="text-lg font-semibold">Chart preview</h2>
-                            <p className="mt-2 text-white/60">Scatter plot preview will go here</p>
-                            <div className="mt-8 flex h-64 items-center justify-center rounded-lg bg-white/10">
-                                <p className="text-white/40">Scatter Plot Preview Placeholder</p>
+                    </ChartPageBlock>
+                    <ChartPageBlock title="Title & Subtitle" highlighted={titleHighlight}>
+                        <TitleSettingsPanel
+                            settings={settings}
+                            onChange={handleSettingsChange}
+                            focusRequest={null}
+                            highlightSignal={highlightSignals?.title}
+                        />
+                    </ChartPageBlock>
+                    <ChartPageBlock title="Data">
+                        <div className="space-y-3 text-white">
+                            <p className="text-white/60">Point data editor will go here</p>
+                            <div className="space-y-2">
+                                {settings.data.map((point, index) => (
+                                    <div key={point.id} className="rounded-lg bg-white/10 p-3">
+                                        <p className="text-sm">Point {index + 1}: ({point.x}, {point.y})</p>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                    </section>
-                }
-                right={
-                    <>
-                        <ChartPageBlock title="Point styling">
-                            <div className="space-y-3 text-white">
-                                <label className="flex flex-col gap-1 text-sm">
-                                    <span className="text-xs uppercase tracking-wide text-white/50">Point size</span>
-                                    <input
-                                        type="range"
-                                        min={4}
-                                        max={20}
-                                        value={settings.defaultPointSize}
-                                        onChange={(event) =>
-                                            handleSettingsChange({
-                                                ...settings,
-                                                defaultPointSize: Number(event.target.value),
-                                            })
-                                        }
-                                        className="accent-sky-400"
-                                    />
-                                    <span className="text-xs text-white/40">{settings.defaultPointSize}px</span>
-                                </label>
-                                <label className="flex flex-col gap-1 text-sm">
-                                    <span className="text-xs uppercase tracking-wide text-white/50">Opacity</span>
-                                    <input
-                                        type="range"
-                                        min={0.1}
-                                        max={1}
-                                        step={0.1}
-                                        value={settings.pointOpacity}
-                                        onChange={(event) =>
-                                            handleSettingsChange({
-                                                ...settings,
-                                                pointOpacity: Number(event.target.value),
-                                            })
-                                        }
-                                        className="accent-sky-400"
-                                    />
-                                    <span className="text-xs text-white/40">{(settings.pointOpacity * 100).toFixed(0)}%</span>
-                                </label>
-                            </div>
-                        </ChartPageBlock>
-                    </>
-                }
-            />
-        </div>
+                    </ChartPageBlock>
+                </>
+            }
+            centerPanel={
+                <section className="rounded-xl sm:rounded-2xl border border-white/10 bg-black/30 p-4 sm:p-6 shadow-xl backdrop-blur">
+                    <div className="text-white text-center">
+                        <h2 className="text-base sm:text-lg font-semibold">Chart preview</h2>
+                        <p className="mt-2 text-white/60">Scatter plot preview will go here</p>
+                        <div className="mt-6 sm:mt-8 flex h-48 sm:h-64 items-center justify-center rounded-lg bg-white/10">
+                            <p className="text-white/40">Scatter Plot Preview Placeholder</p>
+                        </div>
+                    </div>
+                </section>
+            }
+            rightPanel={
+                <>
+                    <ChartPageBlock title="Point styling">
+                        <div className="space-y-3 text-white">
+                            <label className="flex flex-col gap-1 text-sm">
+                                <span className="text-xs uppercase tracking-wide text-white/50">Point size</span>
+                                <input
+                                    type="range"
+                                    min={4}
+                                    max={20}
+                                    value={settings.defaultPointSize}
+                                    onChange={(event) =>
+                                        handleSettingsChange({
+                                            ...settings,
+                                            defaultPointSize: Number(event.target.value),
+                                        })
+                                    }
+                                    className="accent-sky-400"
+                                />
+                                <span className="text-xs text-white/40">{settings.defaultPointSize}px</span>
+                            </label>
+                            <label className="flex flex-col gap-1 text-sm">
+                                <span className="text-xs uppercase tracking-wide text-white/50">Opacity</span>
+                                <input
+                                    type="range"
+                                    min={0.1}
+                                    max={1}
+                                    step={0.1}
+                                    value={settings.pointOpacity}
+                                    onChange={(event) =>
+                                        handleSettingsChange({
+                                            ...settings,
+                                            pointOpacity: Number(event.target.value),
+                                        })
+                                    }
+                                    className="accent-sky-400"
+                                />
+                                <span className="text-xs text-white/40">{(settings.pointOpacity * 100).toFixed(0)}%</span>
+                            </label>
+                        </div>
+                    </ChartPageBlock>
+                </>
+            }
+        />
     );
 }

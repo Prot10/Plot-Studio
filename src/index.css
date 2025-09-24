@@ -2,9 +2,24 @@
 @import "tailwindcss";
 
 @layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     @apply min-h-screen bg-slate-950 text-slate-100 antialiased;
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  #root {
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 }
 

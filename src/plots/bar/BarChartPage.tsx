@@ -1,9 +1,8 @@
 import { Database, Download, Moon, Settings, Sparkles, Sun, UploadCloud } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChartActionMenu } from '../../shared/components/ChartActionMenu';
-import { ChartPageLayout } from '../../shared/components/ChartPageLayout';
+import { ChartPage } from '../../shared/components/ChartPage';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
+import { createChartAction } from '../../shared/utils/chartHelpers';
 import { createBar } from '../../shared/utils/barFactory';
 import type { BarChartSettings, BarDataPoint } from '../../types/bar';
 import type { FocusRequest, FocusTarget, HighlightKey, PaletteKey } from '../../types/base';
@@ -115,7 +114,6 @@ type PreviewAction = { type: 'importData' | 'exportChart'; target: 0 | 1 };
 type PlotTuple = [BarChartSettings, BarChartSettings];
 
 export function BarChartPage() {
-    const navigate = useNavigate();
     useDocumentTitle('Chart Studio | Bar Chart');
 
     const [plots, setPlots] = useState<PlotTuple>(() => [buildDefaultSettings(), buildDefaultSettings()]);
@@ -378,12 +376,12 @@ export function BarChartPage() {
 
     const actionMenuItems = useMemo(
         () => [
-            { id: 'upload', label: 'Upload data', icon: UploadCloud, onClick: handleRequestImport },
-            { id: 'theme-toggle', label: isDarkTheme ? 'Light theme' : 'Dark theme', icon: isDarkTheme ? Sun : Moon, onClick: toggleTheme },
-            { id: 'clean-studio', label: 'Clean Studio', icon: Sparkles, onClick: handleResetStudio },
-            { id: 'clean-data', label: 'Clean Data', icon: Database, onClick: handleResetData },
-            { id: 'clean-settings', label: 'Clean Settings', icon: Settings, onClick: handleResetSettings },
-            { id: 'export', label: 'Export chart', icon: Download, onClick: handleRequestExport },
+            createChartAction('upload', 'Upload data', UploadCloud, handleRequestImport),
+            createChartAction('theme-toggle', isDarkTheme ? 'Light theme' : 'Dark theme', isDarkTheme ? Sun : Moon, toggleTheme),
+            createChartAction('clean-studio', 'Clean Studio', Sparkles, handleResetStudio),
+            createChartAction('clean-data', 'Clean Data', Database, handleResetData),
+            createChartAction('clean-settings', 'Clean Settings', Settings, handleResetSettings),
+            createChartAction('export', 'Export chart', Download, handleRequestExport),
         ],
         [handleRequestImport, isDarkTheme, toggleTheme, handleResetStudio, handleResetData, handleResetSettings, handleRequestExport],
     );
@@ -404,101 +402,75 @@ export function BarChartPage() {
     );
 
     return (
-        <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-            <header className="border-b border-white/10 bg-black/20 backdrop-blur">
-                <div className="mx-auto w-full max-w-content px-6 py-8">
-                    <div className="flex items-center gap-8">
-                        <button
-                            onClick={() => navigate('/')}
-                            className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white transition-colors hover:bg-white/20"
-                        >
-                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                            Back
-                        </button>
-                        <div className="flex-1 text-center text-white">
-                            <div className="flex items-center justify-center gap-3 mb-2">
-                                <img src="/chart-icon.svg" alt="Chart Studio" className="w-8 h-8" />
-                                <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Bar Chart Studio</h1>
-                            </div>
-                            <p className="mt-2 text-base text-white/60 sm:text-lg">
-                                Build expressive bar charts with precise control over every detail.
-                            </p>
+        <ChartPage
+            title="Bar Chart Studio"
+            subtitle="Build expressive bar charts with precise control over every detail."
+            actions={actionMenuItems}
+            comparison={{
+                comparisonEnabled,
+                activePlot,
+                onToggleComparison: handleToggleComparison,
+                onSelectPlot: handleSelectPlot,
+            }}
+            leftPanel={
+                <LeftPanel
+                    settings={activeSettings}
+                    bars={activeSettings.data}
+                    onChange={handleSettingsChange}
+                    onBarsChange={(bars: BarDataPoint[]) =>
+                        setPlot(activePlot, (current) => ({ ...current, data: bars }))
+                    }
+                    highlightSignals={highlightSignals}
+                    focusRequest={focusRequest}
+                />
+            }
+            centerPanel={
+                <>
+                    <section className="rounded-xl sm:rounded-2xl border border-white/10 bg-black/30 p-4 sm:p-6 shadow-xl backdrop-blur w-full max-w-full overflow-hidden">
+                        <div className={previewIndices.length > 1 ? 'space-y-4 sm:space-y-6' : undefined}>
+                            {previewIndices.map((index) => {
+                                const plotIndex = index as 0 | 1;
+                                return (
+                                    <ChartPreview
+                                        key={`preview-${plotIndex}`}
+                                        settings={plots[plotIndex]}
+                                        onUpdateSettings={(next) => setPlot(plotIndex, next)}
+                                        onHighlight={triggerHighlight}
+                                        onRequestFocus={(target) => handlePreviewFocus(plotIndex, target)}
+                                        actionRequest={previewAction?.target === plotIndex ? previewAction.type : null}
+                                        onActionHandled={handlePreviewActionHandled}
+                                        heading={previewHeading(plotIndex)}
+                                        isActive={activePlot === plotIndex}
+                                        onActivate={() => handleSelectPlot(plotIndex)}
+                                        comparisonEnabled={comparisonEnabled}
+                                    />
+                                );
+                            })}
                         </div>
-                    </div>
-                </div>
-            </header>
-            <ChartPageLayout
-                left={
-                    <LeftPanel
-                        settings={activeSettings}
-                        bars={activeSettings.data}
-                        onChange={handleSettingsChange}
-                        onBarsChange={(bars: BarDataPoint[]) =>
-                            setPlot(activePlot, (current) => ({ ...current, data: bars }))
-                        }
-                        highlightSignals={highlightSignals}
-                        focusRequest={focusRequest}
-                    />
-                }
-                center={
-                    <>
-                        <ChartActionMenu
-                            comparison={{
-                                comparisonEnabled,
-                                activePlot,
-                                onToggleComparison: handleToggleComparison,
-                                onSelectPlot: handleSelectPlot,
-                            }}
-                            actions={actionMenuItems}
+                    </section>
+                    <section className="rounded-xl sm:rounded-2xl border border-white/10 bg-black/30 shadow-xl backdrop-blur mt-4 sm:mt-6 w-full max-w-full overflow-hidden">
+                        <DataTable
+                            data={activeSettings.data}
+                            paletteName={activeSettings.paletteName}
+                            onChange={(newData) => setPlot(activePlot, (current) => ({ ...current, data: newData }))}
+                            onDesignBar={handleDesignBar}
                         />
-                        <section className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-xl backdrop-blur">
-                            <div className={previewIndices.length > 1 ? 'space-y-6' : undefined}>
-                                {previewIndices.map((index) => {
-                                    const plotIndex = index as 0 | 1;
-                                    return (
-                                        <ChartPreview
-                                            key={`preview-${plotIndex}`}
-                                            settings={plots[plotIndex]}
-                                            onUpdateSettings={(next) => setPlot(plotIndex, next)}
-                                            onHighlight={triggerHighlight}
-                                            onRequestFocus={(target) => handlePreviewFocus(plotIndex, target)}
-                                            actionRequest={previewAction?.target === plotIndex ? previewAction.type : null}
-                                            onActionHandled={handlePreviewActionHandled}
-                                            heading={previewHeading(plotIndex)}
-                                            isActive={activePlot === plotIndex}
-                                            onActivate={() => handleSelectPlot(plotIndex)}
-                                            comparisonEnabled={comparisonEnabled}
-                                        />
-                                    );
-                                })}
-                            </div>
-                        </section>
-                        <section className="rounded-2xl border border-white/10 bg-black/30 shadow-xl backdrop-blur mt-6">
-                            <DataTable
-                                data={activeSettings.data}
-                                paletteName={activeSettings.paletteName}
-                                onChange={(newData) => setPlot(activePlot, (current) => ({ ...current, data: newData }))}
-                                onDesignBar={handleDesignBar}
-                            />
-                        </section>
-                    </>
-                }
-                right={
-                    <RightPanel
-                        settings={activeSettings}
-                        bars={activeSettings.data}
-                        onChange={handleSettingsChange}
-                        onBarsChange={(bars: BarDataPoint[]) =>
-                            setPlot(activePlot, (current) => ({ ...current, data: bars }))
-                        }
-                        highlightSignals={highlightSignals}
-                        selectedBarId={selectedBarId}
-                        onSelectBar={setSelectedBarId}
-                    />
-                }
-            />
-        </div>
+                    </section>
+                </>
+            }
+            rightPanel={
+                <RightPanel
+                    settings={activeSettings}
+                    bars={activeSettings.data}
+                    onChange={handleSettingsChange}
+                    onBarsChange={(bars: BarDataPoint[]) =>
+                        setPlot(activePlot, (current) => ({ ...current, data: bars }))
+                    }
+                    highlightSignals={highlightSignals}
+                    selectedBarId={selectedBarId}
+                    onSelectBar={setSelectedBarId}
+                />
+            }
+        />
     );
 }
