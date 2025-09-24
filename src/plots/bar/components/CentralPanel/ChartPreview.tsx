@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
-import { DEFAULT_FONT_STACK } from '../../../shared/constants/fonts'
-import useElementSize from '../../../shared/hooks/useElementSize'
-import type { BarChartSettings, BarDataPoint } from '../../../types/bar'
-import type { FocusTarget, HighlightKey } from '../../../types/base'
+import { DEFAULT_FONT_STACK } from '../../../../shared/constants/fonts'
+import useElementSize from '../../../../shared/hooks/useElementSize'
+import type { BarChartSettings, BarDataPoint } from '../../../../types/bar'
+import type { FocusTarget, HighlightKey } from '../../../../types/base'
 import { DataImportDialog } from './DataImportDialog'
 
 type ChartPreviewAction = 'importData' | 'exportChart'

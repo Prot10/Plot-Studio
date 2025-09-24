@@ -1,283 +1,533 @@
-# Plot Studio - Repository Structure Guide
+# Chart Studio Structure
 
-This document explains the new repository structure designed to support multiple plot types with a scalable, reusable architecture.
+This document outlines the complete architecture and organization of the Chart Studio application.
 
 ## 🏗️ Architecture Overview
 
-The repository has been restructured to support multiple plot types while maintaining code reusability and consistency. All plot types follow a **3-pane layout** pattern with shared components and utilities.
+The Chart Studio uses a highly modular panel system built around the concept of **blocks**. The architecture has been designed to support multiple chart types while maintaining code reusability and consistency. All chart types follow a **3-panel layout** pattern with shared components and utilities.
 
 ### Core Principles
 
-1. **Scalability** - Easy to add new plot types
-2. **Reusability** - Shared components, utilities, and types
-3. **Consistency** - All plots follow the same 3-pane structure
-4. **Type Safety** - Strong TypeScript typing throughout
+1. **Modular Blocks** - Settings organized into reusable, composable blocks
+2. **Shared Abstractions** - Generic panel components that work across chart types  
+3. **Type Safety** - Strong TypeScript typing with generic interfaces
+4. **Scalability** - Easy to add new chart types following established patterns
 
 ## 📁 Directory Structure
 
 ```
 src/
-├── components/           # Legacy components (being phased out)
-├── hooks/               # Legacy hooks (being phased out)
-├── utils/               # Legacy utils (being phased out)
-├── pages/               # Top-level application pages
-│   └── PlotSelectionPage.tsx
-├── plots/               # Plot-specific implementations
+├── components/           # Legacy shared components (being phased out)
+├── pages/               # Page-level components (PlotSelectionPage)
+├── plots/               # Chart-specific implementations
 │   ├── bar/            # Bar chart implementation
-│   │   ├── components/
-│   │   │   ├── BarDataEditor.tsx
-│   │   │   ├── LeftPanel.tsx
-│   │   │   ├── RightPanel.tsx
-│   │   │   └── ChartPreview.tsx
-│   │   ├── BarChartPage.tsx
-│   │   └── index.ts
-│   └── scatter/        # Scatter plot implementation
-│       ├── components/
-│       ├── ScatterPlotPage.tsx
-│       └── index.ts
-├── shared/             # Shared resources across all plots
-│   ├── components/     # Reusable UI components
-│   │   └── ColorField.tsx
-│   ├── hooks/          # Reusable React hooks
-│   │   ├── useElementSize.ts
-│   │   └── useHighlightEffect.ts
-│   └── utils/          # Shared utility functions
-│       ├── barFactory.ts
-│       └── palettes.ts
+│   └── scatter/        # Scatter plot implementation (placeholder)
+├── shared/             # Shared utilities, hooks, and components
 ├── types/              # TypeScript type definitions
-│   ├── base.ts         # Base types for all plots
-│   ├── bar.ts          # Bar chart specific types
-│   └── scatter.ts      # Scatter plot specific types
-├── App.tsx             # Main application router
-├── main.tsx            # Application entry point
-└── defaultSettings.ts  # Default configuration
+└── assets/             # Static assets
 ```
 
-## 🎯 Plot Types Architecture
+## Chart Implementation Architecture
 
-### Base Types (`src/types/base.ts`)
+### Modular Panel System
 
-All plot types extend from base interfaces:
+The chart studio uses a highly modular panel system built around the concept of **blocks**. Each chart page is composed of three main panels:
+
+1. **LeftPanel**: Settings and configuration blocks
+2. **CentralPanel**: Preview and data editing blocks  
+3. **RightPanel**: Individual element styling blocks
+
+### Bar Chart Implementation
+
+```
+plots/bar/
+├── BarChartPage.tsx              # Main page orchestrator
+├── defaultSettings.ts            # Default chart settings
+└── components/
+    ├── BarChartLeftPanel.tsx     # Left panel composer (uses blocks)
+    ├── BarChartCentralPanel.tsx  # Central panel composer
+    ├── BarChartRightPanel.tsx    # Right panel composer
+    ├── LeftPanel/               # Left panel building blocks
+    │   ├── GeneralSettingsBlock.tsx
+    │   ├── ValueLabelsBlock.tsx
+    │   ├── XAxisPanel.tsx
+    │   ├── YAxisPanel.tsx
+    │   ├── axisSync.ts
+    │   ├── AdditionalTextManager.tsx
+    │   └── AdditionalImageManager.tsx
+    ├── CentralPanel/            # Central panel building blocks
+    │   ├── ChartPreviewBlock.tsx
+    │   ├── DataTableBlock.tsx
+    │   ├── ChartPreview.tsx
+    │   ├── DataTable.tsx
+    │   └── DataImportDialog.tsx
+    └── RightPanel/              # Right panel building blocks
+        ├── BarAppearanceBlock.tsx
+        ├── ErrorBarsBlock.tsx
+        ├── BarDesignBlock.tsx
+        ├── RightPanel.tsx
+        └── BarDataEditor.tsx
+```
+
+## Shared Components System
+
+The `src/shared/` directory provides the foundation for the modular system:
+
+```
+shared/
+├── components/          # Core shared components
+│   ├── BlockGroups.tsx       # Main block container component
+│   ├── LeftPanel.tsx         # Generic left panel composer
+│   ├── CentralPanel.tsx      # Generic central panel composer
+│   ├── RightPanel.tsx        # Generic right panel composer
+│   ├── AutoNumericInput.tsx  # Auto/manual input with lock
+│   ├── Toggle.tsx            # Unified toggle component
+│   ├── AxisSyncButton.tsx    # Axis synchronization button
+│   ├── ChartPage.tsx         # Page layout wrapper
+│   ├── ChartPageLayout.tsx   # 3-column responsive layout
+│   ├── ColorField.tsx        # Color picker component
+│   ├── FontPicker.tsx        # Font selection component
+│   ├── GroupComponents.tsx   # Responsive component grouping
+│   ├── NumericInput.tsx      # Numeric input with slider
+│   ├── SelectField.tsx       # Dropdown selection
+│   ├── TextInput.tsx         # Text input component
+│   ├── TextStyleControls.tsx # Bold/italic/underline controls
+│   └── TitleSettingsPanel.tsx # Title/subtitle settings
+├── constants/           # Shared constants
+│   └── fonts.ts
+├── hooks/              # Reusable React hooks
+│   ├── useDocumentTitle.ts
+│   ├── useElementSize.ts
+│   └── useHighlightEffect.ts
+└── utils/              # Utility functions and helpers
+    ├── barFactory.ts
+    ├── chartHelpers.ts
+    └── palettes.ts
+```
+
+## Building Blocks System
+
+### Block Structure
+
+Every panel is composed of **blocks**. Each block has:
 
 ```typescript
-export interface BasePlotSettings {
-  title: string;
-  subtitle: string;
-  // ... common settings
+interface Block {
+  id: string;                    // Unique identifier
+  title: string;                 // Display title
+  sections: Section[];           // Content sections
+  defaultExpanded?: boolean;     // Initial state
+  actions?: ReactNode;           // Header actions
+  headerActions?: ReactNode;     // First-row actions (like sync buttons)
+  highlightKey?: string;         // For highlighting effects
 }
 
-export interface BaseDataPoint {
-  id: string;
-  // ... common data properties
+interface Section {
+  id: string;                    // Unique identifier  
+  title?: string;                // Optional section title
+  content: ReactNode;            // Actual content
+  className?: string;            // Additional styling
+  disabled?: boolean;            // Whether section is disabled
 }
 ```
 
-### Plot-Specific Types
+### Creating Blocks
 
-Each plot type has its own type definitions:
-
-- `src/types/bar.ts` - Bar chart types
-- `src/types/scatter.ts` - Scatter plot types
-
-### Legacy Compatibility
-
-The type system maintains backward compatibility with legacy components through type aliases:
+Blocks are created using specialized block functions:
 
 ```typescript
-// Legacy aliases for backward compatibility
-export type HighlightKey = keyof typeof HIGHLIGHT_KEYS;
-export type FocusTarget = keyof typeof FOCUS_TARGETS;
+// General Settings Block
+const generalSettings = GeneralSettingsBlock({ settings, bars, onChange, onBarsChange });
+
+// Returns structured content:
+// - generalSettings.generalSettings
+// - generalSettings.chartSettings  
+// - generalSettings.chartDimensions
+// - generalSettings.plotBoxSettings
+
+// Value Labels Block
+const valueLabels = ValueLabelsBlock({ settings, onChange });
+
+// Returns structured content:
+// - valueLabels.toggleAndFontSize
+// - valueLabels.colorAndOffsets
 ```
 
-## 🔧 Adding a New Plot Type
+### Panel Composers
 
-To add a new plot type (e.g., "line"), follow these steps:
-
-### 1. Create Type Definitions
-
-Create `src/types/line.ts`:
+Each chart type has three panel composers that assemble blocks:
 
 ```typescript
-import { BasePlotSettings, BaseDataPoint } from "./base";
-
-export interface LineChartSettings extends BasePlotSettings {
-  // Line-specific settings
-  lineWidth: number;
-  showPoints: boolean;
-  // ...
-}
-
-export interface LineDataPoint extends BaseDataPoint {
-  // Line-specific data properties
-  x: number;
-  y: number;
-  // ...
+// BarChartLeftPanel.tsx - Assembles left panel blocks
+export function BarChartLeftPanel({ settings, bars, onChange, ... }) {
+  const blocks: LeftPanelBlock[] = [
+    {
+      id: 'general-settings',
+      title: 'General Settings', 
+      sections: [
+        { id: 'main', content: generalSettings.generalSettings },
+        { id: 'dimensions', title: 'Chart Dimensions', content: generalSettings.chartDimensions }
+      ]
+    },
+    createTitleBlock(settings, onChange, focusRequest, highlightSignals?.title),
+    // ... more blocks
+  ];
+  
+  return <LeftPanel blocks={blocks} highlightSignals={highlightSignals} />;
 }
 ```
 
-### 2. Create Plot Directory Structure
+### Core Building Block Components
+
+The shared component library provides essential UI elements:
+
+#### BlockGroups.tsx
+Main container component that renders collapsible sections with highlighting:
+```typescript
+interface BlockGroupsProps {
+  blocks: Block[];
+  highlightSignals?: Record<string, number>;
+}
+```
+
+#### AutoNumericInput.tsx
+Input component with auto/manual toggle and lock mechanism:
+```typescript
+interface AutoNumericInputProps {
+  value: number;
+  isAuto: boolean;
+  autoValue?: number;
+  onValueChange: (value: number) => void;
+  onAutoChange: (isAuto: boolean) => void;
+  // ... other props
+}
+```
+
+#### Toggle.tsx
+Unified toggle switch component:
+```typescript
+interface ToggleProps {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label?: string;
+  // ... other props
+}
+```
+
+#### AxisSyncButton.tsx
+Button for synchronizing axis properties:
+```typescript
+interface AxisSyncButtonProps {
+  onSync: () => void;
+  tooltip?: string;
+}
+```
+
+## Panel System Architecture
+
+### Left Panel Structure
+The left panel contains general chart settings organized into expandable blocks:
+- **General Settings**: Chart type, dimensions, basic configuration
+- **Title Settings**: Main title and subtitle configuration
+- **X-Axis Settings**: X-axis labels, styling, and behavior
+- **Y-Axis Settings**: Y-axis labels, styling, and behavior
+- **Value Labels**: Data point label configuration
+- **Additional Text**: Custom text overlays
+- **Additional Images**: Custom image overlays
+
+### Central Panel Structure
+The central panel provides data editing and chart preview:
+- **Chart Preview**: Live chart rendering with highlighting
+- **Data Table**: Inline data editing with CSV import/export
+
+### Right Panel Structure
+The right panel focuses on individual element styling:
+- **Bar Appearance**: Individual bar styling and colors
+- **Error Bars**: Error bar configuration and styling
+- **Bar Design**: Advanced bar design options
+
+## Creating New Chart Types
+
+To add a new chart type (e.g., line chart):
+
+### 1. Create Directory Structure
 
 ```
 src/plots/line/
-├── components/
-│   ├── LineDataEditor.tsx
-│   ├── LeftPanel.tsx             # General chart settings
-│   ├── RightPanel.tsx            # Design + data controls
-│   └── ChartPreview.tsx
 ├── LineChartPage.tsx
-└── index.ts
+├── defaultSettings.ts
+└── components/
+    ├── LineChartLeftPanel.tsx
+    ├── LineChartCentralPanel.tsx
+    ├── LineChartRightPanel.tsx
+    ├── LeftPanel/
+    │   ├── LineSettingsBlock.tsx
+    │   └── LineStyleBlock.tsx
+    ├── CentralPanel/
+    │   └── LinePreviewBlock.tsx
+    └── RightPanel/
+        └── LinePointsBlock.tsx
 ```
 
-### 3. Implement the 3-Pane Layout
+### 2. Define Types
 
-Each plot type follows the same structure in its main page component:
+```typescript
+// src/types/line.ts
+export interface LineDataPoint extends BaseDataPoint {
+  x: number;
+  y: number;
+  // ... line-specific properties
+}
 
-```tsx
-export default function LineChartPage() {
-  const [settings, setSettings] = useState<LineChartSettings>(defaultSettings);
-  const [data, setData] = useState<LineDataPoint[]>(defaultData);
-  const [highlightSignals, setHighlightSignals] = useState<
-    Record<HighlightKey, number>
-  >({
-    // Initialize all highlight keys
-  });
+export interface LineChartSettings extends PlotSettings<LineDataPoint> {
+  showLines: boolean;
+  lineWidth: number;
+  // ... line-specific settings
+}
+```
 
+### 3. Create Building Blocks
+
+Each block returns structured content objects:
+
+```typescript
+// LeftPanel/LineSettingsBlock.tsx
+export function LineSettingsBlock({ settings, onChange }: LineSettingsBlockProps) {
+  return {
+    lineAppearance: (
+      <div className="space-y-4">
+        <Toggle
+          checked={settings.showLines}
+          onChange={(checked) => onChange({ ...settings, showLines: checked })}
+          label="Show Lines"
+        />
+        <NumericInput
+          label="Line Width"
+          value={settings.lineWidth}
+          onChange={(value) => onChange({ ...settings, lineWidth: value })}
+        />
+      </div>
+    ),
+    pointSettings: (
+      <div className="space-y-4">
+        {/* Point configuration JSX */}
+      </div>
+    ),
+  };
+}
+```
+
+### 4. Create Panel Composers
+
+```typescript
+// LineChartLeftPanel.tsx
+export function LineChartLeftPanel({ settings, onChange, highlightSignals }: LineChartLeftPanelProps) {
+  const lineSettings = LineSettingsBlock({ settings, onChange });
+  
+  const blocks: LeftPanelBlock[] = [
+    {
+      id: 'line-settings',
+      title: 'Line Settings',
+      sections: [
+        { id: 'appearance', content: lineSettings.lineAppearance },
+        { id: 'points', content: lineSettings.pointSettings }
+      ],
+      defaultExpanded: true,
+    },
+    {
+      id: 'title-settings',
+      title: 'Title & Labels',
+      sections: [
+        { id: 'main', content: /* title configuration */ }
+      ]
+    },
+    // ... more blocks
+  ];
+  
+  return <LeftPanel blocks={blocks} highlightSignals={highlightSignals} />;
+}
+```
+
+### 5. Create Main Page
+
+```typescript
+// LineChartPage.tsx
+export function LineChartPage() {
+  const [activeSettings, setActiveSettings] = useState<LineChartSettings>(defaultSettings);
+  const [data, setData] = useState<LineDataPoint[]>([]);
+  const [highlightSignals, setHighlightSignals] = useState<Record<string, number>>({});
+  
+  // ... state management logic
+  
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Left Pane - General settings */}
-      <div className="w-80 border-r bg-white">
-        <LeftPanel
-          settings={settings}
-          data={data}
-          onSettingsChange={setSettings}
-          onDataChange={setData}
+    <ChartPage
+      title="Line Chart Studio"
+      leftPanel={
+        <LineChartLeftPanel 
+          settings={activeSettings} 
+          onChange={handleSettingsChange}
           highlightSignals={highlightSignals}
         />
-      </div>
-
-      {/* Middle Pane - Live preview */}
-      <div className="flex-1 border-r bg-white">
-        <ChartPreview
-          settings={settings}
-          data={data}
-          highlightSignals={highlightSignals}
+      }
+      centerPanel={
+        <LineChartCentralPanel 
+          chartPreview={/* chart preview component */}
+          dataTable={/* data table component */}
         />
-      </div>
-
-      {/* Right Pane - Design & data tools */}
-      <div className="w-96 bg-white">
-        <RightPanel
-          settings={settings}
-          data={data}
-          onSettingsChange={setSettings}
-          onDataChange={setData}
-          highlightSignals={highlightSignals}
+      }
+      rightPanel={
+        <LineChartRightPanel 
+          settings={activeSettings} 
+          onChange={handleSettingsChange}
         />
-      </div>
-    </div>
+      }
+    />
   );
 }
 ```
 
-### 4. Add to Plot Selection
+### 6. Add to Route System
 
-Update `src/pages/PlotSelectionPage.tsx` to include the new plot type:
+Update `src/pages/PlotSelectionPage.tsx` and `src/App.tsx` to include the new chart type.
 
-```tsx
-const plotTypes = [
-  { id: "bar", name: "Bar Chart", icon: BarChart },
-  { id: "scatter", name: "Scatter Plot", icon: Scatter },
-  { id: "line", name: "Line Chart", icon: LineChart }, // Add this
-];
-```
+## Helper Functions and Utilities
 
-### 5. Update App Router
+### Block Creation Helpers
 
-Add the new route to `src/App.tsx`:
+Common patterns for creating blocks are abstracted into helper functions:
 
-```tsx
-import LineChartPage from "./plots/line/LineChartPage";
-
-// In the router section:
-{
-  plotType === "line" && <LineChartPage />;
+```typescript
+// Creates a standard title block
+export function createTitleBlock(
+  settings: ChartSettings,
+  onChange: (settings: ChartSettings) => void,
+  focusRequest?: FocusRequestCallback,
+  highlighted?: boolean
+): LeftPanelBlock {
+  return {
+    id: 'title-settings',
+    title: 'Title & Labels',
+    sections: [
+      {
+        id: 'main',
+        content: <TitleSettingsPanel /* ... */ />
+      }
+    ],
+    highlightKey: 'title',
+    defaultExpanded: true
+  };
 }
 ```
 
-## 🔄 Shared Components
+### Content Organization
 
-### Reusable Components
+Block content is organized using consistent patterns:
 
-Components in `src/shared/components/` can be used across all plot types:
+- **Settings Groups**: Related settings are grouped in `<div className="space-y-4">` containers
+- **Input Pairs**: Related inputs use `<GroupComponents>` for responsive layout
+- **Section Titles**: Optional section titles separate different areas within blocks
+- **Disabled Sections**: Sections can be disabled based on other settings
 
-- `ColorField.tsx` - Color picker component
-- Add more shared UI components as needed
+## State Management
 
-### Shared Hooks
+### Settings Flow
+1. Settings are maintained at the page level in each chart component
+2. Settings flow down to panels through props
+3. Changes bubble up through callback functions
+4. All panels receive the same settings object reference
 
-Hooks in `src/shared/hooks/` provide common functionality:
-
-- `useElementSize.ts` - Track element dimensions
-- `useHighlightEffect.ts` - Handle highlight animations
-
-### Shared Utilities
-
-Utilities in `src/shared/utils/` offer common functions:
-
-- `palettes.ts` - Color palette definitions
-- `barFactory.ts` - Chart generation utilities
-
-## 🎨 The 3-Pane Layout
-
-Every plot type follows the same consistent layout:
-
-### Left Pane - Chart Basics
-
-- Title and subtitle
-- Dimensions (width/height)
-- Basic chart configuration
-
-### Middle Pane - Data Editor
-
-- Data input and editing
-- Import/export functionality
-- Data validation
-
-### Right Pane - Preview & Controls
-
-- Live chart preview (top)
-- Advanced styling controls (bottom)
-- Export options
-
-## 🔧 Working with Highlight System
-
-The highlight system provides visual feedback across components:
+### Highlighting System
+The highlighting system provides visual feedback across components:
 
 ```typescript
-// All plots use the same highlight keys
-const [highlightSignals, setHighlightSignals] = useState<
-  Record<HighlightKey, number>
->({
-  chartBasics: 0,
-  yAxis: 0,
+const [highlightSignals, setHighlightSignals] = useState<Record<string, number>>({
+  title: 0,
   xAxis: 0,
+  yAxis: 0,
   data: 0,
   design: 0,
-  barDesign: 0, // Legacy compatibility
-  valueLabels: 0,
-  errorBars: 0,
+  // ... other highlight keys
 });
 
 // Trigger highlights from any component
-const triggerHighlight = (key: HighlightKey) => {
-  setHighlightSignals((prev) => ({
+const triggerHighlight = (key: string) => {
+  setHighlightSignals(prev => ({
     ...prev,
-    [key]: prev[key] + 1,
+    [key]: prev[key] + 1
   }));
 };
 ```
 
-## 🚀 Development Workflow
+### Focus Management
+Focus requests allow cross-panel communication:
+
+```typescript
+interface FocusRequest {
+  target: string;
+  timestamp: number;
+}
+
+// Request focus on a specific input
+const requestFocus = useCallback((target: string) => {
+  setFocusRequest({ target, timestamp: Date.now() });
+}, []);
+```
+
+## Key Features
+
+### Modular Architecture
+- **Composable Blocks**: Settings are organized into reusable blocks
+- **Structured Content**: Each block returns organized content objects  
+- **Easy Extension**: New blocks can be added without changing core layout
+- **Type Safety**: Full TypeScript support with generic interfaces
+
+### Shared Components
+- **Unified UI**: All charts use the same base components
+- **Consistent Behavior**: Toggles, inputs, and controls work identically
+- **Theme Support**: Dark/light themes work across all components
+- **Responsive Design**: Components adapt to different screen sizes
+
+### Developer Experience
+- **Hot Reload**: Changes appear instantly during development
+- **Clear Structure**: Easy to find and modify specific functionality
+- **Helper Functions**: Utilities for common block creation patterns
+- **Type Checking**: Compile-time error detection with TypeScript
+
+### User Features
+- **Real-time Preview**: Live updates as settings change
+- **Comparison Mode**: Side-by-side chart comparison
+- **Export Capabilities**: PNG, SVG, and PDF export
+- **Data Import**: CSV import and manual data entry
+- **Persistent State**: Settings saved to localStorage
+- **Undo/Redo**: Built-in state history management
+
+## Best Practices
+
+### Block Design
+- Keep blocks focused on a single concern
+- Return structured content objects, not JSX directly
+- Use consistent naming conventions for content objects
+- Include proper TypeScript interfaces for all props
+
+### Panel Composition  
+- Group related blocks logically
+- Use appropriate highlight keys for user guidance
+- Include header actions where they make sense (like sync buttons)
+- Maintain consistent section structure across chart types
+
+### Component Reuse
+- Always use shared components from `src/shared/components/`
+- Create new shared components for patterns used across chart types
+- Avoid duplicating component logic between chart implementations
+- Extract common functionality to utility functions
+
+### Type Safety
+- Define interfaces for all component props
+- Use generic types for reusable components
+- Extend base interfaces for chart-specific settings
+- Maintain backward compatibility when updating interfaces
+
+## Development Workflow
 
 ### Running the Application
 
@@ -295,54 +545,9 @@ npm run type-check
 ### Adding New Features
 
 1. **Start with types** - Define TypeScript interfaces first
-2. **Follow the pattern** - Use existing plot types as templates
-3. **Reuse when possible** - Leverage shared components and utilities
-4. **Maintain consistency** - Follow the 3-pane layout structure
+2. **Create blocks** - Build composable block functions that return structured content
+3. **Compose panels** - Use shared panel components to assemble blocks
+4. **Follow patterns** - Use existing chart types as templates
+5. **Test thoroughly** - Ensure all panels work correctly together
 
-### Best Practices
-
-- **Strong typing** - Always define proper TypeScript types
-- **Component isolation** - Keep plot-specific logic in plot folders
-- **Shared utilities** - Extract common functionality to shared folder
-- **Legacy compatibility** - Maintain backward compatibility when refactoring
-
-## 📝 Migration Notes
-
-### From Legacy Structure
-
-The old structure had all components in a flat `src/components/` folder. The new structure:
-
-- **Maintains all functionality** - No features were removed
-- **Improves organization** - Clear separation of concerns
-- **Enables scaling** - Easy to add new plot types
-- **Preserves compatibility** - Legacy type aliases ensure old code works
-
-### Breaking Changes
-
-- Import paths have changed for plot-specific components
-- Some property names were standardized (e.g., `bars` → `data`)
-- Type definitions were reorganized but maintain compatibility
-
-## 🎯 Future Enhancements
-
-The new structure enables:
-
-1. **Easy plot type addition** - Follow the established pattern
-2. **Shared component library** - Build reusable UI components
-3. **Plugin architecture** - Potential for plot type plugins
-4. **Better testing** - Isolated components are easier to test
-5. **Documentation generation** - Structured types enable auto-docs
-
-## 🤝 Contributing
-
-When adding new features:
-
-1. Follow the established folder structure
-2. Define types first in the appropriate `src/types/*.ts` file
-3. Create components in the plot-specific folder
-4. Add shared utilities to `src/shared/` if reusable
-5. Update this documentation as needed
-
----
-
-This structure provides a solid foundation for scaling Plot Studio to support many different chart types while maintaining code quality and developer experience.
+This modular system provides a scalable foundation for adding new chart types while maintaining consistency and code quality across the entire application.

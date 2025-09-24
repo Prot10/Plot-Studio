@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
-import { ColorField } from '../../../shared/components/ColorField'
-import { FontPicker } from '../../../shared/components/FontPicker'
-import { NumericInput } from '../../../shared/components/NumericInput'
-import { SelectField } from '../../../shared/components/SelectField'
-import { TextInput } from '../../../shared/components/TextInput'
-import { TextStyleControls } from '../../../shared/components/TextStyleControls'
-import { DEFAULT_FONT_OPTIONS } from '../../../shared/constants/fonts'
-import type { AdditionalTextElement } from '../../../types/bar'
+import { ColorField } from '../../../../shared/components/ColorField'
+import { FontPicker } from '../../../../shared/components/FontPicker'
+import { NumericInput } from '../../../../shared/components/NumericInput'
+import { SelectField } from '../../../../shared/components/SelectField'
+import { TextInput } from '../../../../shared/components/TextInput'
+import { TextStyleControls } from '../../../../shared/components/TextStyleControls'
+import { DEFAULT_FONT_OPTIONS } from '../../../../shared/constants/fonts'
+import type { AdditionalTextElement } from '../../../../types/bar'
 
 type AdditionalTextManagerProps = {
     textElements: AdditionalTextElement[]

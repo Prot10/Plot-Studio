@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
-import { SelectField } from '../../../shared/components/SelectField';
-import { createBar } from '../../../shared/utils/barFactory';
-import type { BarDataPoint } from '../../../types/bar';
-import type { PaletteKey } from '../../../types/base';
+import { SelectField } from '../../../../shared/components/SelectField';
+import { createBar } from '../../../../shared/utils/barFactory';
+import type { BarDataPoint } from '../../../../types/bar';
+import type { PaletteKey } from '../../../../types/base';
 
 const MAX_IMPORT_ROWS = 30;
 

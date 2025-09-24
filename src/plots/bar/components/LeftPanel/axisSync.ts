@@ -1,4 +1,4 @@
-import type { AxisSettings } from '../../../types/base'
+import type { AxisSettings } from '../../../../types/base'
 
 export const SYNCED_AXIS_FIELDS = [
   'showAxisLines',

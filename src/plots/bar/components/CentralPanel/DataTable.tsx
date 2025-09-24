@@ -1,9 +1,9 @@
 import { GripVertical, Plus, Trash2, Palette } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import { createBar } from '../../../shared/utils/barFactory';
-import { ColorField } from '../../../shared/components/ColorField';
-import type { BarDataPoint } from '../../../types/bar';
-import type { PaletteKey } from '../../../types/base';
+import { createBar } from '../../../../shared/utils/barFactory';
+import { ColorField } from '../../../../shared/components/ColorField';
+import type { BarDataPoint } from '../../../../types/bar';
+import type { PaletteKey } from '../../../../types/base';
 
 interface DataTableProps {
     data: BarDataPoint[];

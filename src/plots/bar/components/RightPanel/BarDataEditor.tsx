@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react'
 import { Palette } from 'lucide-react'
-import { ColorField } from '../../../shared/components/ColorField'
-import { SelectField } from '../../../shared/components/SelectField'
-import { useHighlightEffect } from '../../../shared/hooks/useHighlightEffect'
-import { createBar } from '../../../shared/utils/barFactory'
-import type { BarDataPoint } from '../../../types/bar'
-import type { FocusRequest, PaletteKey } from '../../../types/base'
+import { ColorField } from '../../../../shared/components/ColorField'
+import { SelectField } from '../../../../shared/components/SelectField'
+import { useHighlightEffect } from '../../../../shared/hooks/useHighlightEffect'
+import { createBar } from '../../../../shared/utils/barFactory'
+import type { BarDataPoint } from '../../../../types/bar'
+import type { FocusRequest, PaletteKey } from '../../../../types/base'
 
 type BarDataEditorProps = {
   bars: BarDataPoint[]

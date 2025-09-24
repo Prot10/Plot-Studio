@@ -6,10 +6,9 @@ import { createChartAction } from '../../shared/utils/chartHelpers';
 import { createBar } from '../../shared/utils/barFactory';
 import type { BarChartSettings, BarDataPoint } from '../../types/bar';
 import type { FocusRequest, FocusTarget, HighlightKey, PaletteKey } from '../../types/base';
-import { ChartPreview } from './components/ChartPreview';
-import { DataTable } from './components/DataTable';
-import { LeftPanel } from './components/LeftPanel';
-import { RightPanel } from './components/RightPanel';
+import { BarChartLeftPanel } from './components/BarChartLeftPanel';
+import { BarChartCentralPanel } from './components/BarChartCentralPanel';
+import { BarChartRightPanel } from './components/BarChartRightPanel';
 import { defaultBarChartSettings } from './defaultSettings';
 
 const STORAGE_KEY = 'barplot-studio-state-v1';
@@ -413,7 +412,7 @@ export function BarChartPage() {
                 onSelectPlot: handleSelectPlot,
             }}
             leftPanel={
-                <LeftPanel
+                <BarChartLeftPanel
                     settings={activeSettings}
                     bars={activeSettings.data}
                     onChange={handleSettingsChange}
@@ -425,41 +424,32 @@ export function BarChartPage() {
                 />
             }
             centerPanel={
-                <>
-                    <section className="rounded-xl sm:rounded-2xl border border-white/10 bg-black/30 p-4 sm:p-6 shadow-xl backdrop-blur w-full max-w-full overflow-hidden">
-                        <div className={previewIndices.length > 1 ? 'space-y-4 sm:space-y-6' : undefined}>
-                            {previewIndices.map((index) => {
-                                const plotIndex = index as 0 | 1;
-                                return (
-                                    <ChartPreview
-                                        key={`preview-${plotIndex}`}
-                                        settings={plots[plotIndex]}
-                                        onUpdateSettings={(next) => setPlot(plotIndex, next)}
-                                        onHighlight={triggerHighlight}
-                                        onRequestFocus={(target) => handlePreviewFocus(plotIndex, target)}
-                                        actionRequest={previewAction?.target === plotIndex ? previewAction.type : null}
-                                        onActionHandled={handlePreviewActionHandled}
-                                        heading={previewHeading(plotIndex)}
-                                        isActive={activePlot === plotIndex}
-                                        onActivate={() => handleSelectPlot(plotIndex)}
-                                        comparisonEnabled={comparisonEnabled}
-                                    />
-                                );
-                            })}
-                        </div>
-                    </section>
-                    <section className="rounded-xl sm:rounded-2xl border border-white/10 bg-black/30 shadow-xl backdrop-blur mt-4 sm:mt-6 w-full max-w-full overflow-hidden">
-                        <DataTable
-                            data={activeSettings.data}
-                            paletteName={activeSettings.paletteName}
-                            onChange={(newData) => setPlot(activePlot, (current) => ({ ...current, data: newData }))}
-                            onDesignBar={handleDesignBar}
-                        />
-                    </section>
-                </>
+                <BarChartCentralPanel
+                    chartPreview={previewIndices.map((index) => {
+                        const plotIndex = index as 0 | 1;
+                        return {
+                            settings: plots[plotIndex],
+                            onUpdateSettings: (next: BarChartSettings) => setPlot(plotIndex, next),
+                            onHighlight: triggerHighlight,
+                            onRequestFocus: (target) => handlePreviewFocus(plotIndex, target),
+                            actionRequest: previewAction?.target === plotIndex ? previewAction.type : null,
+                            onActionHandled: handlePreviewActionHandled,
+                            heading: previewHeading(plotIndex),
+                            isActive: activePlot === plotIndex,
+                            onActivate: () => handleSelectPlot(plotIndex),
+                            comparisonEnabled: comparisonEnabled,
+                        };
+                    })}
+                    dataTable={{
+                        data: activeSettings.data,
+                        paletteName: activeSettings.paletteName,
+                        onChange: (newData: BarDataPoint[]) => setPlot(activePlot, (current) => ({ ...current, data: newData })),
+                        onDesignBar: handleDesignBar,
+                    }}
+                />
             }
             rightPanel={
-                <RightPanel
+                <BarChartRightPanel
                     settings={activeSettings}
                     bars={activeSettings.data}
                     onChange={handleSettingsChange}
