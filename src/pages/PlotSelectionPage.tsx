@@ -55,7 +55,7 @@ export function PlotSelectionPage() {
 
             <main className="flex-1 px-4 sm:px-6 py-8 sm:py-12">
                 <div className="mx-auto max-w-6xl">
-                    <div className="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
                         {plotTypes.map((plotType) => {
                             const IconComponent = plotType.icon;
                             const isDisabled = plotType.type === 'scatter';
@@ -64,7 +64,7 @@ export function PlotSelectionPage() {
                                 return (
                                     <div
                                         key={plotType.type}
-                                        className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-8 text-left opacity-70 cursor-not-allowed"
+                                        className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-8 text-left opacity-70 cursor-not-allowed w-full max-w-sm"
                                         aria-disabled={true}
                                     >
                                         <div className={`absolute inset-0 bg-gradient-to-br ${plotType.gradient} opacity-5`} />
@@ -90,7 +90,7 @@ export function PlotSelectionPage() {
                                 <button
                                     key={plotType.type}
                                     onClick={() => handleSelectPlotType(plotType.type)}
-                                    className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 bg-black/30 p-6 sm:p-8 text-left transition-all duration-300 hover:border-white/20 hover:bg-black/40 hover:shadow-2xl backdrop-blur w-full"
+                                    className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 bg-black/30 p-6 sm:p-8 text-left transition-all duration-300 hover:border-white/20 hover:bg-black/40 hover:shadow-2xl backdrop-blur w-full max-w-sm"
                                 >
                                     <div className={`absolute inset-0 bg-gradient-to-br ${plotType.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-10`} />
 
