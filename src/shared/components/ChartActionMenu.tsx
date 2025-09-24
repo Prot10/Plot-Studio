@@ -150,6 +150,7 @@ type CleanGroupProps = {
 function CleanGroup({ actions }: CleanGroupProps) {
   const baseButtonClasses =
     'flex-1 h-10 sm:h-12 px-3 sm:px-4 text-xs sm:text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
+  const inactiveClasses = 'text-white/70 hover:text-white hover:bg-white/10'
 
   return (
     <div className="flex flex-1 min-w-[9rem] sm:min-w-[14rem] h-10 sm:h-12">
@@ -168,7 +169,7 @@ function CleanGroup({ actions }: CleanGroupProps) {
                 'inline-flex items-center justify-center gap-1 sm:gap-2',
                 baseButtonClasses,
                 index < actions.length - 1 ? 'border-r border-white/10' : null,
-                disabled ? 'opacity-60' : null,
+                disabled ? 'opacity-60' : inactiveClasses,
               )}
             >
               <div className="relative flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center">
