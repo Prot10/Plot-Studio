@@ -1,4 +1,4 @@
-import { CentralPanel, type CentralPanelBlock } from '../../../shared/components/CentralPanel';
+import { BlockGroup } from '../../../shared/components/BlockGroups';
 import { createChartPreviewBlock, type ChartPreviewBlockProps } from './CentralPanel/ChartPreviewBlock';
 import { createDataTableBlock, type DataTableBlockProps } from './CentralPanel/DataTableBlock';
 
@@ -8,10 +8,12 @@ export interface BarChartCentralPanelProps {
 }
 
 export function BarChartCentralPanel({ chartPreview, dataTable }: BarChartCentralPanelProps) {
-    const blocks: CentralPanelBlock[] = [
-        // Chart preview block - can have multiple previews for comparison
-        {
-            id: 'chart-preview-container',
+    const chartPreviewBlock = {
+        id: 'chart-preview-container',
+        title: 'Chart Preview',
+        defaultExpanded: true,
+        sections: [{
+            id: 'chart-preview-content',
             content: (
                 <div className={chartPreview.length > 1 ? 'space-y-4 sm:space-y-6' : undefined}>
                     {chartPreview.map((previewProps, index) => (
@@ -20,16 +22,26 @@ export function BarChartCentralPanel({ chartPreview, dataTable }: BarChartCentra
                         </div>
                     ))}
                 </div>
-            ),
-            className: 'w-full max-w-full overflow-hidden'
-        },
+            )
+        }]
+    };
 
-        // Data table block
-        {
-            ...createDataTableBlock(dataTable),
-            className: 'w-full max-w-full overflow-hidden'
-        }
-    ];
+    const dataTableBlock = createDataTableBlock(dataTable);
 
-    return <CentralPanel blocks={blocks} />;
+    return (
+        <div className="flex flex-col gap-4 sm:gap-6">
+            <BlockGroup
+                title={chartPreviewBlock.title}
+                sections={chartPreviewBlock.sections}
+                defaultExpanded={chartPreviewBlock.defaultExpanded}
+                className="w-full max-w-full overflow-hidden"
+            />
+            <BlockGroup
+                title={dataTableBlock.title}
+                sections={dataTableBlock.sections}
+                defaultExpanded={dataTableBlock.defaultExpanded}
+                className="w-full max-w-full overflow-hidden"
+            />
+        </div>
+    );
 }

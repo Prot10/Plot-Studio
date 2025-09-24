@@ -1,4 +1,5 @@
 import type { BaseDataPoint, PlotSettings } from "./base";
+import type { DataTableRow } from "../shared/components/DataTable";
 
 export type BarPattern =
   | "solid"
@@ -38,7 +39,7 @@ export interface AdditionalImageElement {
   grayscale: boolean; // Whether to apply grayscale filter
 }
 
-export interface BarDataPoint extends BaseDataPoint {
+export interface BarDataPoint extends BaseDataPoint, DataTableRow {
   value: number;
   fillColor: string;
   borderColor: string;

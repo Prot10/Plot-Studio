@@ -12,6 +12,11 @@ export interface DataTableBlockProps {
 export function createDataTableBlock(props: DataTableBlockProps) {
     return {
         id: 'data-table',
-        content: <DataTable {...props} />
+        title: 'Data Editor',
+        defaultExpanded: false,
+        sections: [{
+            id: 'data-table-content',
+            content: <DataTable {...props} />
+        }]
     };
 }

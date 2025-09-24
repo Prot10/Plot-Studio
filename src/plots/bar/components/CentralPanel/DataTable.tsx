@@ -1,11 +1,12 @@
-import { GripVertical, Plus, Trash2, Palette } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { Palette } from 'lucide-react';
+import { useCallback } from 'react';
 import { createBar } from '../../../../shared/utils/barFactory';
 import { ColorField } from '../../../../shared/components/ColorField';
+import { DataTable as SharedDataTable, type DataTableColumn } from '../../../../shared/components/DataTable';
 import type { BarDataPoint } from '../../../../types/bar';
 import type { PaletteKey } from '../../../../types/base';
 
-interface DataTableProps {
+interface BarDataTableProps {
     data: BarDataPoint[];
     paletteName: PaletteKey;
     onChange: (data: BarDataPoint[]) => void;
@@ -13,9 +14,8 @@ interface DataTableProps {
     className?: string;
 }
 
-export function DataTable({ data, paletteName, onChange, onDesignBar, className = '' }: DataTableProps) {
-    const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-    const [dragOverIndex, setDragOverIndex] = useState<number | null>(null); const handleCellEdit = useCallback((rowIndex: number, column: string, value: string) => {
+export function DataTable({ data, paletteName, onChange, onDesignBar, className = '' }: BarDataTableProps) {
+    const handleCellEdit = useCallback((rowIndex: number, column: string, value: string) => {
         const updatedData = [...data];
         const row = { ...updatedData[rowIndex] };
 
@@ -68,37 +68,15 @@ export function DataTable({ data, paletteName, onChange, onDesignBar, className 
         }
     }, [data, onChange]);
 
-    const handleDragStart = useCallback((e: React.DragEvent, index: number) => {
-        e.dataTransfer.effectAllowed = 'move';
-        setDraggedIndex(index);
-    }, []);
-
-    const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        setDragOverIndex(index);
-    }, []);
-
-    const handleDragEnd = useCallback(() => {
-        setDraggedIndex(null);
-        setDragOverIndex(null);
-    }, []);
-
-    const handleDrop = useCallback((e: React.DragEvent, dropIndex: number) => {
-        e.preventDefault();
-
-        if (draggedIndex === null || draggedIndex === dropIndex) {
-            return;
-        }
-
+    const handleReorder = useCallback((fromIndex: number, toIndex: number) => {
         const updatedData = [...data];
-        const draggedItem = updatedData[draggedIndex];
+        const draggedItem = updatedData[fromIndex];
 
         // Remove the dragged item
-        updatedData.splice(draggedIndex, 1);
+        updatedData.splice(fromIndex, 1);
 
         // Insert at new position
-        const actualDropIndex = draggedIndex < dropIndex ? dropIndex - 1 : dropIndex;
+        const actualDropIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
         updatedData.splice(actualDropIndex, 0, draggedItem);
 
         // Update only IDs to maintain order, but preserve all other properties including colors
@@ -108,207 +86,67 @@ export function DataTable({ data, paletteName, onChange, onDesignBar, className 
         }));
 
         onChange(reindexedData);
-        setDraggedIndex(null);
-        setDragOverIndex(null);
-    }, [data, draggedIndex, onChange]);
+    }, [data, onChange]);
 
-    const getCellValue = useCallback((row: BarDataPoint, column: string) => {
-        switch (column) {
-            case 'label':
-                return row.label;
-            case 'value':
-                return row.value.toString();
-            case 'error':
-                return row.error.toString();
-            case 'group':
-                return row.group || '';
-            default:
-                return '';
+    const columns: DataTableColumn<BarDataPoint>[] = [
+        {
+            key: 'fillColor',
+            label: 'Color',
+            width: 'w-32 sm:w-48',
+            render: (_, row, index) => (
+                <ColorField
+                    label=""
+                    value={row.fillColor}
+                    onChange={(value) => handleColorChange(index, 'fillColor', value)}
+                    inputProps={{ className: "text-xs" }}
+                />
+            )
+        },
+        {
+            key: 'label',
+            label: 'Label'
+        },
+        {
+            key: 'value',
+            label: 'Value'
+        },
+        {
+            key: 'error',
+            label: 'Error (SD)'
+        },
+        {
+            key: 'group',
+            label: 'Group'
         }
-    }, []);
+    ];
 
-    const renderCell = useCallback((row: BarDataPoint, rowIndex: number, column: string, label: string) => {
-        const value = getCellValue(row, column);
-
-        const handleKeyDown = (e: React.KeyboardEvent<HTMLSpanElement>) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const target = e.target as HTMLSpanElement;
-                target.blur();
-            } else if (e.key === 'Escape') {
-                e.preventDefault();
-                const target = e.target as HTMLSpanElement;
-                target.textContent = value;
-                target.blur();
-            }
-        };
-
-        const handleBlur = (e: React.FocusEvent<HTMLSpanElement>) => {
-            const newValue = e.target.textContent || '';
-            if (newValue !== value) {
-                handleCellEdit(rowIndex, column, newValue);
-            }
-        };
-
-        const handleFocus = (e: React.FocusEvent<HTMLSpanElement>) => {
-            // Select all text when focused
-            const range = document.createRange();
-            range.selectNodeContents(e.target);
-            const selection = window.getSelection();
-            selection?.removeAllRanges();
-            selection?.addRange(range);
-        };
-
-        return (
-            <span
-                contentEditable
-                suppressContentEditableWarning
-                onKeyDown={handleKeyDown}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                className="cursor-text hover:bg-white/10 rounded px-2 py-1 block transition-colors focus:outline-none focus:bg-white/10"
-                title={`Click to edit ${label.toLowerCase()}`}
-                style={{ minHeight: '1.5rem' }}
-            >
-                {value || (column === 'value' || column === 'error' ? '0' : `${label} ${rowIndex + 1}`)}
-            </span>
-        );
-    }, [getCellValue, handleCellEdit]);
+    const renderActions = useCallback((_row: BarDataPoint, index: number) => (
+        <>
+            {onDesignBar && (
+                <button
+                    onClick={() => onDesignBar(index)}
+                    className="text-indigo-400 hover:text-indigo-300 transition-colors p-1"
+                    title="Design this bar"
+                >
+                    <Palette className="w-3 h-3 sm:w-4 sm:h-4" />
+                </button>
+            )}
+        </>
+    ), [onDesignBar]);
 
     return (
-        <div className={`overflow-hidden w-full ${className}`}>
-            {/* Table Header */}
-            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-white/10">
-                <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-base sm:text-lg font-semibold text-white">Data Editor</h3>
-                    <button
-                        onClick={addRow}
-                        className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white bg-white/10 border border-white/10 rounded-md hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/20 transition-colors"
-                    >
-                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span className="hidden sm:inline">Add Bar</span>
-                        <span className="sm:hidden">Add</span>
-                    </button>
-                </div>
-            </div>
-
-            {/* Scrollable Table Container */}
-            <div className="overflow-hidden">
-                <div className="max-h-64 sm:max-h-96 overflow-x-auto overflow-y-auto">
-                    <table className="min-w-full divide-y divide-white/10" style={{ minWidth: '600px' }}>
-                        <thead className="bg-white/10 sticky top-0 z-10 backdrop-blur">
-                            <tr>
-                                <th scope="col" className="w-6 sm:w-8 px-1 sm:px-2 py-2 sm:py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                                    {/* Drag handle column */}
-                                </th>
-                                <th scope="col" className="w-32 sm:w-48 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                                    Color
-                                </th>
-                                <th scope="col" className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                                    Label
-                                </th>
-                                <th scope="col" className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                                    Value
-                                </th>
-                                <th scope="col" className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                                    <span className="hidden sm:inline">Error (SD)</span>
-                                    <span className="sm:hidden">Error</span>
-                                </th>
-                                <th scope="col" className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                                    Group
-                                </th>
-                                <th scope="col" className="w-12 sm:w-16 px-3 sm:px-6 py-2 sm:py-3 text-right text-xs font-medium text-white/50 uppercase tracking-wider">
-                                    <span className="sr-only sm:not-sr-only">Actions</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-transparent divide-y divide-white/10">
-                            {data.map((row, index) => (
-                                <tr
-                                    key={row.id}
-                                    draggable
-                                    onDragStart={(e) => handleDragStart(e, index)}
-                                    onDragOver={(e) => handleDragOver(e, index)}
-                                    onDragEnd={handleDragEnd}
-                                    onDrop={(e) => handleDrop(e, index)}
-                                    className={`
-                    hover:bg-white/10 transition-colors
-                    ${draggedIndex === index ? 'opacity-50' : ''}
-                    ${dragOverIndex === index ? 'border-t-2 border-sky-400' : ''}
-                  `}
-                                >
-                                    {/* Drag Handle */}
-                                    <td className="px-1 sm:px-2 py-3 sm:py-4 whitespace-nowrap">
-                                        <GripVertical className="w-3 h-3 sm:w-4 sm:h-4 text-white/60 cursor-grab active:cursor-grabbing" />
-                                    </td>
-
-                                    {/* Fill Color Column */}
-                                    <td className="px-2 sm:px-3 py-3 sm:py-4 whitespace-nowrap">
-                                        <ColorField
-                                            label=""
-                                            value={row.fillColor}
-                                            onChange={(value) => handleColorChange(index, 'fillColor', value)}
-                                            inputProps={{ className: "text-xs" }}
-                                        />
-                                    </td>
-
-                                    {/* Label Column */}
-                                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-white">
-                                        {renderCell(row, index, 'label', 'Label')}
-                                    </td>
-
-                                    {/* Value Column */}
-                                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-white">
-                                        {renderCell(row, index, 'value', 'Value')}
-                                    </td>
-
-                                    {/* Error Column */}
-                                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-white">
-                                        {renderCell(row, index, 'error', 'Error')}
-                                    </td>
-
-                                    {/* Group Column */}
-                                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-white">
-                                        {renderCell(row, index, 'group', 'Group')}
-                                    </td>
-
-                                    {/* Actions Column */}
-                                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
-                                        <div className="flex items-center justify-end gap-1 sm:gap-2">
-                                            {/* Design button */}
-                                            <button
-                                                onClick={() => onDesignBar?.(index)}
-                                                className="text-indigo-400 hover:text-indigo-300 transition-colors p-1"
-                                                title="Design this bar"
-                                            >
-                                                <Palette className="w-3 h-3 sm:w-4 sm:h-4" />
-                                            </button>
-
-                                            {/* Delete button */}
-                                            <button
-                                                onClick={() => deleteRow(index)}
-                                                disabled={data.length <= 1}
-                                                className="text-red-400 hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors p-1"
-                                                title={data.length <= 1 ? "Cannot delete the last row" : "Delete row"}
-                                            >
-                                                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            {/* Footer */}
-            <div className="px-4 sm:px-6 py-2 sm:py-3 bg-white/10 border-t border-white/10">
-                <p className="text-xs sm:text-sm text-white/60">
-                    {data.length} {data.length === 1 ? 'row' : 'rows'}
-                    <span className="hidden sm:inline"> • Double-click any cell to edit • Drag rows to reorder</span>
-                </p>
-            </div>
-        </div>
+        <SharedDataTable
+            data={data}
+            columns={columns}
+            onRowAdd={addRow}
+            onRowDelete={deleteRow}
+            onRowReorder={handleReorder}
+            onCellEdit={handleCellEdit}
+            addButtonLabel="Add Bar"
+            canDelete={() => data.length > 1}
+            actions={renderActions}
+            className={className}
+        />
     );
 }
+
