@@ -3,7 +3,8 @@ import { DEFAULT_FONT_STACK } from '../../../../shared/constants/fonts'
 import useElementSize from '../../../../shared/hooks/useElementSize'
 import type { BarChartSettings, BarDataPoint } from '../../../../types/bar'
 import type { FocusTarget, HighlightKey } from '../../../../types/base'
-import { DataImportDialog } from './DataImportDialog'
+import DataImportModal from '../../../../shared/components/DataImportModal'
+import ExportModal from '../../../../shared/components/ExportModal'
 
 type ChartPreviewAction = 'importData' | 'exportChart'
 
@@ -389,12 +390,6 @@ export function ChartPreview({
     x: settings.xAxis,
     y: settings.yAxis,
   }
-
-  const formatOptions: Array<{ value: ExportFormat; label: string; description: string }> = [
-    { value: 'png', label: 'PNG', description: 'High-quality raster image with transparency support' },
-    { value: 'svg', label: 'SVG', description: 'Scalable vector graphic for design tools' },
-    { value: 'pdf', label: 'PDF', description: 'Printable document' },
-  ]
 
   const globalFontFamily = settings.globalFontFamily || DEFAULT_FONT_STACK
   const titleColor = settings.titleColor ?? settings.textColor
@@ -1287,117 +1282,19 @@ export function ChartPreview({
           </svg>
         </div>
       </div>
-      <DataImportDialog
-        isOpen={isImportDialogOpen}
-        paletteName={settings.paletteName}
-        onCancel={handleImportCancel}
-        onConfirm={handleImportConfirm}
+      <DataImportModal isOpen={isImportDialogOpen} paletteName={settings.paletteName} onCancel={handleImportCancel} onConfirm={handleImportConfirm} />
+      <ExportModal
+        isOpen={isExportDialogOpen}
+        onClose={closeExportDialog}
+        initial={{ format: exportFormat, fileName: exportFileName, scale: exportScale, transparent: exportTransparent }}
+        onExport={async (opts) => {
+          setExportFormat(opts.format)
+          setExportFileName(opts.fileName)
+          setExportScale(opts.scale)
+          setExportTransparent(opts.transparent)
+          await handleExportConfirm()
+        }}
       />
-      {isExportDialogOpen ? (
-        <div
-          className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm"
-          onClick={closeExportDialog}
-        >
-          <div
-            className="w-full max-w-md scale-100 rounded-2xl border border-white/10 bg-slate-950/95 p-6 text-white shadow-2xl"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Export chart</h3>
-              <button
-                type="button"
-                onClick={closeExportDialog}
-                className="text-white/60 transition hover:text-white"
-                aria-label="Close export dialog"
-              >
-                ×
-              </button>
-            </div>
-            <div className="mt-4 space-y-4">
-              <label className="flex flex-col gap-1 text-sm">
-                <span className="text-xs uppercase tracking-wide text-white/50">File name</span>
-                <input
-                  type="text"
-                  value={exportFileName}
-                  onChange={(event) => setExportFileName(event.target.value)}
-                  className="rounded-md border border-white/10 bg-black/30 px-3 py-2 text-white focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-300/40"
-                  placeholder="barplot"
-                />
-              </label>
-              <div className="space-y-2">
-                <span className="text-xs uppercase tracking-wide text-white/50">Format</span>
-                <div className="grid gap-2">
-                  {formatOptions.map((option) => {
-                    const id = `export-format-${option.value}`
-                    const checked = exportFormat === option.value
-                    return (
-                      <label
-                        key={option.value}
-                        htmlFor={id}
-                        className={`flex cursor-pointer items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm transition ${checked ? 'border-sky-400 bg-sky-400/15 text-white' : 'border-white/10 bg-white/5 text-white/70 hover:text-white'}`}
-                      >
-                        <div className="flex flex-col">
-                          <span className="font-medium">{option.label}</span>
-                          <span className="text-xs text-white/50">{option.description}</span>
-                        </div>
-                        <input
-                          id={id}
-                          type="radio"
-                          name="export-format"
-                          value={option.value}
-                          checked={checked}
-                          onChange={() => setExportFormat(option.value)}
-                          className="sr-only"
-                        />
-                      </label>
-                    )
-                  })}
-                </div>
-              </div>
-              <label className="flex flex-col gap-2 text-sm">
-                <span className="text-xs uppercase tracking-wide text-white/50">Quality</span>
-                <input
-                  type="range"
-                  min={1}
-                  max={6}
-                  step={1}
-                  value={exportScale}
-                  onChange={(event) => setExportScale(Number.parseInt(event.target.value, 10))}
-                  className="accent-sky-400"
-                />
-                <span className="text-xs text-white/50">Scale ×{exportScale}</span>
-              </label>
-              <label className="flex items-center gap-3 text-sm">
-                <input
-                  type="checkbox"
-                  checked={exportTransparent}
-                  onChange={(event) => setExportTransparent(event.target.checked)}
-                  className="h-4 w-4 rounded border border-white/20 bg-white/10 text-sky-400 focus:ring-sky-400"
-                />
-                <span>Transparent background</span>
-              </label>
-            </div>
-            <div className="mt-6 flex justify-end gap-3 text-sm">
-              <button
-                type="button"
-                onClick={closeExportDialog}
-                disabled={isExporting}
-                className="rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleExportConfirm}
-                disabled={isExporting}
-                className="inline-flex items-center gap-2 rounded-md border border-sky-400 bg-sky-400/20 px-3 py-1.5 font-medium text-white transition hover:bg-sky-400/30 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isExporting ? 'Exporting…' : 'Export'}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
     </>
   )
 }

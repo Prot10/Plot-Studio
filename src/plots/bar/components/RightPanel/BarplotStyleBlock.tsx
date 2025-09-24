@@ -79,8 +79,8 @@ function CornerStyleSelector({
                             type="button"
                             onClick={() => onChange(option.value)}
                             className={`flex flex-1 items-center justify-center px-3 text-xs font-medium transition focus:outline-none ${isActive
-                                    ? 'bg-sky-500/20 text-white'
-                                    : 'bg-transparent text-white/70 hover:bg-white/10 hover:text-white'
+                                ? 'bg-sky-500/20 text-white'
+                                : 'bg-transparent text-white/70 hover:bg-white/10 hover:text-white'
                                 } ${index < cornerOptions.length - 1 ? 'border-r border-white/10' : ''
                                 }`}
                         >
@@ -112,8 +112,8 @@ function OrientationSelector({
                             type="button"
                             onClick={() => onChange(option.value)}
                             className={`flex flex-1 items-center justify-center px-3 text-xs font-medium transition focus:outline-none ${isActive
-                                    ? 'bg-sky-500/20 text-white'
-                                    : 'bg-transparent text-white/70 hover:bg-white/10 hover:text-white'
+                                ? 'bg-sky-500/20 text-white'
+                                : 'bg-transparent text-white/70 hover:bg-white/10 hover:text-white'
                                 } ${index < orientationOptions.length - 1 ? 'border-r border-white/10' : ''
                                 }`}
                         >
@@ -148,10 +148,10 @@ function ErrorBarModeSelector({
                             onClick={() => !disabled && onChange(option.value)}
                             disabled={disabled}
                             className={`flex flex-1 items-center justify-center px-3 text-xs font-medium transition focus:outline-none ${disabled
-                                    ? 'cursor-not-allowed'
-                                    : isActive
-                                        ? 'bg-sky-500/20 text-white'
-                                        : 'bg-transparent text-white/70 hover:bg-white/10 hover:text-white'
+                                ? 'cursor-not-allowed'
+                                : isActive
+                                    ? 'bg-sky-500/20 text-white'
+                                    : 'bg-transparent text-white/70 hover:bg-white/10 hover:text-white'
                                 } ${index < errorBarModeOptions.length - 1 ? 'border-r border-white/10' : ''
                                 }`}
                         >
@@ -254,7 +254,6 @@ export function BarplotStyleBlock({ settings, onChange, highlightSignals }: Barp
 
         borderSettings: (
             <div>
-                <h3 className="text-sm font-semibold text-white/80 mb-4">Border</h3>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                     <Toggle
@@ -283,7 +282,6 @@ export function BarplotStyleBlock({ settings, onChange, highlightSignals }: Barp
 
         errorBars: (
             <div>
-                <h3 className="text-sm font-semibold text-white/80 mb-4">Error Bars</h3>
 
                 <div
                     className="grid gap-4 sm:grid-cols-3"
