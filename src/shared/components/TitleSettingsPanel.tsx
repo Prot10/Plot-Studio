@@ -3,6 +3,7 @@ import type { FocusRequest } from '../../types/base'
 import { useHighlightEffect } from '../hooks/useHighlightEffect'
 import { NumericInput } from './NumericInput'
 import { ColorField } from './ColorField'
+import { GroupComponents } from './GroupComponents'
 import { TextStyleControls } from './TextStyleControls'
 import { TextInput } from './TextInput'
 
@@ -93,7 +94,12 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
     <section className={classNames('space-y-10', highlight ? 'highlight-pulse' : null, className)}>
       <div className="space-y-8">
         <h3 className="text-sm font-semibold text-white/80">Title</h3>
-        <div className="grid gap-8 sm:grid-cols-3">
+        <GroupComponents
+          minComponentWidth={16}
+          maxColumns={3}
+          gap={2}
+          rowGap={2}
+        >
           <TextInput
             ref={titleRef}
             label="Title text"
@@ -115,9 +121,14 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
             }}
             onChange={handleTitleStyleChange}
           />
-        </div>
+        </GroupComponents>
 
-        <div className="grid gap-8 sm:grid-cols-3">
+        <GroupComponents
+          minComponentWidth={16}
+          maxColumns={3}
+          gap={2}
+          rowGap={2}
+        >
           <div className="min-w-[12rem] flex-1 sm:flex-none">
             <NumericInput
               title="Size"
@@ -150,12 +161,17 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
             onChange={(value) => update('titleOffsetX', value)}
             suffix="px"
           />
-        </div>
+        </GroupComponents>
       </div>
 
       <div className="space-y-8 border-t border-white/10 pt-8">
         <h3 className="text-sm font-semibold text-white/80">Subtitle</h3>
-        <div className="grid gap-8 sm:grid-cols-3">
+        <GroupComponents
+          minComponentWidth={16}
+          maxColumns={3}
+          gap={2}
+          rowGap={2}
+        >
           <TextInput
             ref={subtitleRef}
             label="Subtitle text"
@@ -177,9 +193,14 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
             }}
             onChange={handleSubtitleStyleChange}
           />
-        </div>
+        </GroupComponents>
 
-        <div className="grid gap-8 sm:grid-cols-3">
+        <GroupComponents
+          minComponentWidth={16}
+          maxColumns={3}
+          gap={2}
+          rowGap={2}
+        >
           <div className="min-w-[12rem] flex-1 sm:flex-none">
             <NumericInput
               title="Size"
@@ -212,7 +233,7 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
             onChange={(value) => update('subtitleOffsetX', value)}
             suffix="px"
           />
-        </div>
+        </GroupComponents>
       </div>
     </section>
   )

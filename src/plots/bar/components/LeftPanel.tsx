@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ChartPageBlock } from '../../../shared/components/ChartPageLayout'
 import { ColorField } from '../../../shared/components/ColorField'
 import { FontPicker } from '../../../shared/components/FontPicker'
+import { GroupComponents } from '../../../shared/components/GroupComponents'
 import { NumericInput } from '../../../shared/components/NumericInput'
 import { SelectField } from '../../../shared/components/SelectField'
 import { TitleSettingsPanel } from '../../../shared/components/TitleSettingsPanel'
@@ -426,7 +427,12 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
     <>
       <ChartPageBlock title="General Settings" highlighted={panelHighlight}>
         <div className="space-y-8">
-          <div className="grid gap-16 sm:grid-cols-2">
+          <GroupComponents
+            minComponentWidth={5}
+            maxColumns={3}
+            gap={2}
+            rowGap={2}
+          >
             <SelectField<PaletteKey>
               label="Color Palette"
               value={settings.paletteName}
@@ -439,9 +445,14 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
               value={settings.backgroundColor}
               onChange={(value) => update('backgroundColor', value)}
             />
-          </div>
+          </GroupComponents>
 
-          <div className="grid gap-16 sm:grid-cols-2">
+          <GroupComponents
+            minComponentWidth={20}
+            maxColumns={2}
+            gap={2}
+            rowGap={2}
+          >
             <FontPicker
               label="Chart text font"
               value={settings.globalFontFamily}
@@ -458,13 +469,18 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
               onChange={(value) => update('canvasPadding', value)}
               suffix="px"
             />
-          </div>
+          </GroupComponents>
 
           <div className="space-y-8 border-t border-white/10 pt-8">
             <h3 className="text-sm font-semibold text-white/80">Chart Dimensions</h3>
 
             {/* Chart dimensions controls - all in one row with 3 columns */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            <GroupComponents
+              minComponentWidth={18}
+              maxColumns={3}
+              gap={2}
+              rowGap={2}
+            >
               <AutoNumericInput
                 title="Custom width"
                 value={settings.customWidth}
@@ -501,21 +517,24 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
                 autoValue={settings.aspectRatio}
                 placeholder="auto"
               />
-            </div>
+            </GroupComponents>
           </div>
 
           <div className="space-y-8 border-t border-white/10 pt-8">
             <h3 className="text-sm font-semibold text-white/80">Plot Box</h3>
 
             {/* Plot box controls - toggle, line width, and color */}
-            <div className="grid grid-cols-3 gap-8">
-              <div>
-                <Toggle
-                  title="Show plot box"
-                  value={settings.showPlotBox}
-                  onChange={(value) => update('showPlotBox', value)}
-                />
-              </div>
+            <GroupComponents
+              minComponentWidth={16}
+              maxColumns={3}
+              gap={2}
+              rowGap={2}
+            >
+              <Toggle
+                title="Show plot box"
+                value={settings.showPlotBox}
+                onChange={(value) => update('showPlotBox', value)}
+              />
 
               <div className={`transition-opacity ${!settings.showPlotBox ? 'opacity-50 pointer-events-none' : ''}`}>
                 <NumericInput
@@ -536,7 +555,7 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
                   onChange={(value) => update('plotBoxColor', value)}
                 />
               </div>
-            </div>
+            </GroupComponents>
           </div>
         </div>
       </ChartPageBlock>
@@ -582,14 +601,17 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
         bodyClassName="space-y-4"
       >
         {/* First row: Toggle to show value labels and font size */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-          <div>
-            <Toggle
-              title="Show value labels"
-              value={settings.showValueLabels}
-              onChange={(value) => update('showValueLabels', value)}
-            />
-          </div>
+        <GroupComponents
+          minComponentWidth={20}
+          maxColumns={2}
+          gap={2}
+          rowGap={2}
+        >
+          <Toggle
+            title="Show value labels"
+            value={settings.showValueLabels}
+            onChange={(value) => update('showValueLabels', value)}
+          />
 
           <div className={`transition-opacity ${!settings.showValueLabels ? 'opacity-50 pointer-events-none' : ''}`}>
             <NumericInput
@@ -603,19 +625,22 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
               suffix="px"
             />
           </div>
-        </div>
+        </GroupComponents>
 
         {/* Second row: Color, X offset, Y offset */}
-        <div className={`grid grid-cols-1 sm:grid-cols-3 gap-8 transition-opacity ${!settings.showValueLabels ? 'opacity-50 pointer-events-none' : ''}`}>
-          <div>
+        <div className={`transition-opacity ${!settings.showValueLabels ? 'opacity-50 pointer-events-none' : ''}`}>
+          <GroupComponents
+            minComponentWidth={16}
+            maxColumns={3}
+            gap={2}
+            rowGap={2}
+          >
             <ColorField
               label="Label color"
               value={settings.textColor}
               onChange={(value) => update('textColor', value)}
             />
-          </div>
 
-          <div>
             <NumericInput
               title="X offset"
               value={settings.valueLabelOffsetX}
@@ -626,9 +651,7 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
               onChange={(value) => update('valueLabelOffsetX', value)}
               suffix="px"
             />
-          </div>
 
-          <div>
             <NumericInput
               title="Y offset"
               value={settings.valueLabelOffsetY}
@@ -639,7 +662,7 @@ export function LeftPanel({ settings, bars, onChange, onBarsChange, highlightSig
               onChange={(value) => update('valueLabelOffsetY', value)}
               suffix="px"
             />
-          </div>
+          </GroupComponents>
         </div>
       </ChartPageBlock>
 
