@@ -56,11 +56,8 @@ plots/bar/
     │   ├── AdditionalTextManager.tsx
     │   └── AdditionalImageManager.tsx
     ├── CentralPanel/            # Central panel building blocks
-    │   ├── ChartPreviewBlock.tsx
-    │   ├── DataTableBlock.tsx
-    │   ├── ChartPreview.tsx
-    │   ├── DataTable.tsx
-    │   └── DataImportDialog.tsx
+    │   ├── ChartPreview.tsx     # Bar-specific chart preview implementation
+    │   └── DataTable.tsx        # Bar-specific data table implementation
     └── RightPanel/              # Right panel building blocks
         ├── BarAppearanceBlock.tsx
         ├── ErrorBarsBlock.tsx
@@ -80,6 +77,9 @@ shared/
 │   ├── LeftPanel.tsx         # Generic left panel composer
 │   ├── CentralPanel.tsx      # Generic central panel composer
 │   ├── RightPanel.tsx        # Generic right panel composer
+│   ├── PreviewBlock.tsx      # Generic chart preview block wrapper
+│   ├── ChartPreviewBlock.tsx # Chart-agnostic preview block
+│   ├── DataEditorBlock.tsx   # Generic data editor block using BlockGroups
 │   ├── AutoNumericInput.tsx  # Auto/manual input with lock
 │   ├── Toggle.tsx            # Unified toggle component
 │   ├── AxisSyncButton.tsx    # Axis synchronization button

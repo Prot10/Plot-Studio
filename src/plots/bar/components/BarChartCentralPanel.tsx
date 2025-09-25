@@ -1,10 +1,36 @@
 import { BlockGroup } from '../../../shared/components/BlockGroups';
-import { createChartPreviewBlock, type ChartPreviewBlockProps } from './CentralPanel/ChartPreviewBlock';
-import { createDataTableBlock, type DataTableBlockProps } from './CentralPanel/DataTableBlock';
+import { ChartPreviewBlock } from '../../../shared/components/ChartPreviewBlock';
+import { DataEditorBlock } from '../../../shared/components/DataEditorBlock';
+import { ChartPreview } from './CentralPanel/ChartPreview';
+import { DataTable } from './CentralPanel/DataTable';
+import type { BarChartSettings, BarDataPoint } from '../../../types/bar';
+import type { FocusTarget, HighlightKey, PaletteKey } from '../../../types/base';
+
+export type ChartPreviewAction = 'importData' | 'exportChart';
+
+export interface ChartPreviewProps {
+    settings: BarChartSettings;
+    onUpdateSettings: (settings: BarChartSettings) => void;
+    onHighlight: (keys: HighlightKey[]) => void;
+    onRequestFocus: (target: FocusTarget) => void;
+    actionRequest?: ChartPreviewAction | null;
+    onActionHandled?: () => void;
+    heading?: string;
+    isActive?: boolean;
+    onActivate?: () => void;
+    comparisonEnabled?: boolean;
+}
+
+export interface DataTableProps {
+    data: BarDataPoint[];
+    paletteName: PaletteKey;
+    onChange: (data: BarDataPoint[]) => void;
+    onDesignBar?: (barIndex: number) => void;
+}
 
 export interface BarChartCentralPanelProps {
-    chartPreview: ChartPreviewBlockProps[];
-    dataTable: DataTableBlockProps;
+    chartPreview: ChartPreviewProps[];
+    dataTable: DataTableProps;
 }
 
 export function BarChartCentralPanel({ chartPreview, dataTable }: BarChartCentralPanelProps) {
@@ -17,16 +43,19 @@ export function BarChartCentralPanel({ chartPreview, dataTable }: BarChartCentra
             content: (
                 <div className={chartPreview.length > 1 ? 'space-y-4 sm:space-y-6' : undefined}>
                     {chartPreview.map((previewProps, index) => (
-                        <div key={`preview-${index}`}>
-                            {createChartPreviewBlock(previewProps).content}
-                        </div>
+                        <ChartPreviewBlock
+                            key={`preview-${index}`}
+                            chartElement={<ChartPreview {...previewProps} />}
+                            heading={previewProps.heading}
+                            isActive={previewProps.isActive}
+                            onActivate={previewProps.onActivate}
+                            comparisonEnabled={previewProps.comparisonEnabled}
+                        />
                     ))}
                 </div>
             )
         }]
     };
-
-    const dataTableBlock = createDataTableBlock(dataTable);
 
     return (
         <div className="flex flex-col gap-4 sm:gap-6">
@@ -36,12 +65,13 @@ export function BarChartCentralPanel({ chartPreview, dataTable }: BarChartCentra
                 defaultExpanded={chartPreviewBlock.defaultExpanded}
                 className="w-full max-w-full overflow-hidden"
             />
-            <BlockGroup
-                title={dataTableBlock.title}
-                sections={dataTableBlock.sections}
-                defaultExpanded={dataTableBlock.defaultExpanded}
+            <DataEditorBlock
+                title="Data Editor"
+                defaultExpanded={false}
                 className="w-full max-w-full overflow-hidden"
-            />
+            >
+                <DataTable {...dataTable} />
+            </DataEditorBlock>
         </div>
     );
 }
