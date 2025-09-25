@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Plus, Trash2, Upload } from 'lucide-react';
 import { ColorField } from '../../../../shared/components/ColorField';
 import { FontPicker } from '../../../../shared/components/FontPicker';
+import { GroupComponents } from '../../../../shared/components/GroupComponents';
 import { NumericInput } from '../../../../shared/components/NumericInput';
 import { SelectField } from '../../../../shared/components/SelectField';
 import { TextInput } from '../../../../shared/components/TextInput';
@@ -127,7 +128,11 @@ function TextElementManager({ textElements, onChange }: { textElements: Addition
                     {selectedElement && (
                         <div className="space-y-4">
                             {/* Text Content and Color */}
-                            <div className="grid gap-4 sm:grid-cols-3">
+                            <GroupComponents
+                                maxColumns={3}
+                                gap={2}
+                                rowGap={2}
+                            >
                                 <TextInput
                                     label="Text content"
                                     value={selectedElement.text}
@@ -148,10 +153,14 @@ function TextElementManager({ textElements, onChange }: { textElements: Addition
                                     precision={2}
                                     onChange={(value) => updateTextElement(selectedElement.id, 'opacity', value)}
                                 />
-                            </div>
+                            </GroupComponents>
 
                             {/* Font and Style Controls */}
-                            <div className="grid gap-4 sm:grid-cols-3">
+                            <GroupComponents
+                                maxColumns={3}
+                                gap={2}
+                                rowGap={2}
+                            >
                                 <FontPicker
                                     label="Font family"
                                     value={selectedElement.fontFamily}
@@ -177,10 +186,14 @@ function TextElementManager({ textElements, onChange }: { textElements: Addition
                                     }}
                                     onChange={(styles) => handleTextStyleChange(selectedElement.id, styles)}
                                 />
-                            </div>
+                            </GroupComponents>
 
                             {/* Position Controls */}
-                            <div className="grid gap-4 sm:grid-cols-3">
+                            <GroupComponents
+                                maxColumns={3}
+                                gap={2}
+                                rowGap={2}
+                            >
                                 <NumericInput
                                     title="X position"
                                     value={selectedElement.x}
@@ -211,7 +224,7 @@ function TextElementManager({ textElements, onChange }: { textElements: Addition
                                     onChange={(value) => updateTextElement(selectedElement.id, 'rotation', value)}
                                     suffix="°"
                                 />
-                            </div>
+                            </GroupComponents>
                         </div>
                     )}
                 </>
@@ -377,7 +390,11 @@ function ImageElementManager({ imageElements, onChange }: { imageElements: Addit
                             </div>
 
                             {/* Position Controls */}
-                            <div className="grid gap-4 sm:grid-cols-2">
+                            <GroupComponents
+                                maxColumns={2}
+                                gap={2}
+                                rowGap={2}
+                            >
                                 <NumericInput
                                     title="X position"
                                     value={selectedElement.x}
@@ -398,10 +415,14 @@ function ImageElementManager({ imageElements, onChange }: { imageElements: Addit
                                     onChange={(value) => updateImageElement(selectedElement.id, 'y', value)}
                                     suffix="px"
                                 />
-                            </div>
+                            </GroupComponents>
 
                             {/* Scale and Rotation Controls */}
-                            <div className="grid gap-4 sm:grid-cols-2">
+                            <GroupComponents
+                                maxColumns={2}
+                                gap={2}
+                                rowGap={2}
+                            >
                                 <NumericInput
                                     title="Scale"
                                     value={selectedElement.scale}
@@ -422,10 +443,14 @@ function ImageElementManager({ imageElements, onChange }: { imageElements: Addit
                                     onChange={(value) => updateImageElement(selectedElement.id, 'rotation', value)}
                                     suffix="°"
                                 />
-                            </div>
+                            </GroupComponents>
 
                             {/* Appearance Controls */}
-                            <div className="grid gap-4 sm:grid-cols-2">
+                            <GroupComponents
+                                maxColumns={2}
+                                gap={2}
+                                rowGap={2}
+                            >
                                 <NumericInput
                                     title="Opacity"
                                     value={selectedElement.opacity}
@@ -440,7 +465,7 @@ function ImageElementManager({ imageElements, onChange }: { imageElements: Addit
                                     value={selectedElement.grayscale}
                                     onChange={(value) => updateImageElement(selectedElement.id, 'grayscale', value)}
                                 />
-                            </div>
+                            </GroupComponents>
                         </div>
                     )}
                 </>
