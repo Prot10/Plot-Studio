@@ -5,8 +5,7 @@ import { ValueLabelsBlock } from './LeftPanel/ValueLabelsBlock';
 import { XAxisBlock } from './LeftPanel/XAxisBlock';
 import { YAxisBlock } from './LeftPanel/YAxisBlock';
 import { GridBlock } from './LeftPanel/GridBlock';
-import { AdditionalTextManager } from './LeftPanel/AdditionalTextManager';
-import { AdditionalImageManager } from './LeftPanel/AdditionalImageManager';
+import { AdditionalElementsBlock } from './LeftPanel/AdditionalElementsBlock';
 import type { BarChartSettings, BarDataPoint } from '../../../types/bar';
 import type { FocusRequest, HighlightKey } from '../../../types/base';
 
@@ -27,10 +26,6 @@ export function BarChartLeftPanel({
   highlightSignals,
   focusRequest
 }: BarChartLeftPanelProps) {
-  const update = <K extends keyof BarChartSettings>(key: K, value: BarChartSettings[K]) => {
-    onChange({ ...settings, [key]: value });
-  };
-
   const toggleAxesSync = (source: 'x' | 'y') => {
     const nextState = !settings.axesSynced;
 
@@ -79,6 +74,7 @@ export function BarChartLeftPanel({
   const xAxisBlocks = XAxisBlock({ settings, onChange, focusRequest });
   const yAxisBlocks = YAxisBlock({ settings, onChange, focusRequest });
   const gridBlocks = GridBlock({ settings, onChange });
+  const additionalElements = AdditionalElementsBlock({ settings, onChange });
 
   const blocks: LeftPanelBlock[] = [
     // General Settings Block
@@ -247,22 +243,12 @@ export function BarChartLeftPanel({
       sections: [
         {
           id: 'text-elements',
-          content: (
-            <AdditionalTextManager
-              textElements={settings.additionalTextElements}
-              onChange={(textElements) => update('additionalTextElements', textElements)}
-            />
-          ),
+          content: additionalElements.textElements,
           className: 'border-b border-white/10 pb-6'
         },
         {
           id: 'image-elements',
-          content: (
-            <AdditionalImageManager
-              imageElements={settings.additionalImageElements}
-              onChange={(imageElements) => update('additionalImageElements', imageElements)}
-            />
-          )
+          content: additionalElements.imageElements
         }
       ]
     }
