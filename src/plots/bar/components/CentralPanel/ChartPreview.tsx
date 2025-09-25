@@ -794,79 +794,117 @@ export function ChartPreview({
             </defs>
 
             {/* Grid lines */}
-            {settings.orientation === 'horizontal' ? (
-              // Horizontal orientation: show vertical grid lines for values
-              axisStyles.x.showGridLines
-                ? ticks.map((tick) => {
-                  const x = margin.left + ((tick - axisMin) / axisRange) * chartBounds.width
+            {/* Horizontal grid lines - based on value ticks */}
+            {axisStyles.y.showGridLines
+              ? ticks.map((tick) => {
+                const y = margin.top + scaleY(tick)
 
-                  // Create stroke dash array based on line style
-                  let strokeDasharray = 'none'
-                  switch (axisStyles.x.gridLineStyle) {
-                    case 'dashed':
-                      strokeDasharray = '8 4'
-                      break
-                    case 'dotted':
-                      strokeDasharray = '2 2'
-                      break
-                    case 'solid':
-                    default:
-                      strokeDasharray = 'none'
-                      break
-                  }
+                // Create stroke dash array based on line style
+                let strokeDasharray = 'none'
+                switch (axisStyles.y.gridLineStyle) {
+                  case 'dashed':
+                    strokeDasharray = '8 4'
+                    break
+                  case 'dotted':
+                    strokeDasharray = '2 2'
+                    break
+                  case 'solid':
+                  default:
+                    strokeDasharray = 'none'
+                    break
+                }
 
-                  return (
-                    <line
-                      key={`grid-${tick}`}
-                      x1={x}
-                      x2={x}
-                      y1={margin.top}
-                      y2={measuredHeight - margin.bottom}
-                      stroke={axisStyles.x.gridLineColor}
-                      strokeWidth={axisStyles.x.gridLineWidth}
-                      strokeDasharray={strokeDasharray}
-                      strokeOpacity={axisStyles.x.gridLineOpacity}
-                    />
-                  )
-                })
-                : null
-            ) : (
-              // Vertical orientation: show horizontal grid lines for values (original behavior)
-              axisStyles.y.showGridLines
-                ? ticks.map((tick) => {
-                  const y = margin.top + scaleY(tick)
+                return (
+                  <line
+                    key={`h-grid-${tick}`}
+                    x1={margin.left}
+                    x2={measuredWidth - margin.right}
+                    y1={y}
+                    y2={y}
+                    stroke={axisStyles.y.gridLineColor}
+                    strokeWidth={axisStyles.y.gridLineWidth}
+                    strokeDasharray={strokeDasharray}
+                    strokeOpacity={axisStyles.y.gridLineOpacity}
+                  />
+                )
+              })
+              : null
+            }
 
-                  // Create stroke dash array based on line style
-                  let strokeDasharray = 'none'
-                  switch (axisStyles.y.gridLineStyle) {
-                    case 'dashed':
-                      strokeDasharray = '8 4'
-                      break
-                    case 'dotted':
-                      strokeDasharray = '2 2'
-                      break
-                    case 'solid':
-                    default:
-                      strokeDasharray = 'none'
-                      break
-                  }
+            {/* Vertical grid lines - based on category positions */}
+            {axisStyles.x.showGridLines && settings.orientation === 'vertical'
+              ? barLayout.slice(0, -1).map(({ data }, index) => {
+                const band = chartBounds.width / barLayout.length
+                const x = margin.left + band * (index + 1) // Position between bars
 
-                  return (
-                    <line
-                      key={`grid-${tick}`}
-                      x1={margin.left}
-                      x2={measuredWidth - margin.right}
-                      y1={y}
-                      y2={y}
-                      stroke={axisStyles.y.gridLineColor}
-                      strokeWidth={axisStyles.y.gridLineWidth}
-                      strokeDasharray={strokeDasharray}
-                      strokeOpacity={axisStyles.y.gridLineOpacity}
-                    />
-                  )
-                })
-                : null
-            )}
+                // Create stroke dash array based on line style
+                let strokeDasharray = 'none'
+                switch (axisStyles.x.gridLineStyle) {
+                  case 'dashed':
+                    strokeDasharray = '8 4'
+                    break
+                  case 'dotted':
+                    strokeDasharray = '2 2'
+                    break
+                  case 'solid':
+                  default:
+                    strokeDasharray = 'none'
+                    break
+                }
+
+                return (
+                  <line
+                    key={`v-grid-${data.id}`}
+                    x1={x}
+                    x2={x}
+                    y1={margin.top}
+                    y2={measuredHeight - margin.bottom}
+                    stroke={axisStyles.x.gridLineColor}
+                    strokeWidth={axisStyles.x.gridLineWidth}
+                    strokeDasharray={strokeDasharray}
+                    strokeOpacity={axisStyles.x.gridLineOpacity}
+                  />
+                )
+              })
+              : null
+            }
+
+            {/* For horizontal orientation, vertical grid lines based on value ticks */}
+            {axisStyles.x.showGridLines && settings.orientation === 'horizontal'
+              ? ticks.map((tick) => {
+                const x = margin.left + ((tick - axisMin) / axisRange) * chartBounds.width
+
+                // Create stroke dash array based on line style
+                let strokeDasharray = 'none'
+                switch (axisStyles.x.gridLineStyle) {
+                  case 'dashed':
+                    strokeDasharray = '8 4'
+                    break
+                  case 'dotted':
+                    strokeDasharray = '2 2'
+                    break
+                  case 'solid':
+                  default:
+                    strokeDasharray = 'none'
+                    break
+                }
+
+                return (
+                  <line
+                    key={`v-grid-${tick}`}
+                    x1={x}
+                    x2={x}
+                    y1={margin.top}
+                    y2={measuredHeight - margin.bottom}
+                    stroke={axisStyles.x.gridLineColor}
+                    strokeWidth={axisStyles.x.gridLineWidth}
+                    strokeDasharray={strokeDasharray}
+                    strokeOpacity={axisStyles.x.gridLineOpacity}
+                  />
+                )
+              })
+              : null
+            }
 
             {/* Bars */}
             {barLayout.map(({ data, x, y, width, height, center, opacity }) => {

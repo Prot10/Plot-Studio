@@ -4,7 +4,6 @@ import { GroupComponents } from '../../../../shared/components/GroupComponents';
 import { NumericInput } from '../../../../shared/components/NumericInput';
 import { SelectField } from '../../../../shared/components/SelectField';
 import { AutoNumericInput } from '../../../../shared/components/AutoNumericInput';
-import { Toggle } from '../../../../shared/components/Toggle';
 import { DEFAULT_FONT_OPTIONS } from '../../../../shared/constants/fonts';
 import { paletteOptions, palettes } from '../../../../shared/utils/palettes';
 import type { BarChartSettings, BarDataPoint } from '../../../../types/bar';
@@ -196,35 +195,24 @@ export function GeneralSettingsBlock({ settings, bars, onChange, onBarsChange }:
         plotBoxSettings: (
             <GroupComponents
                 minComponentWidth={16}
-                maxColumns={3}
+                maxColumns={2}
                 gap={2}
                 rowGap={2}
             >
-                <Toggle
-                    title="Show plot box"
-                    value={settings.showPlotBox}
-                    onChange={(value) => update('showPlotBox', value)}
+                <NumericInput
+                    title="Line width"
+                    value={settings.plotBoxLineWidth}
+                    min={0.5}
+                    max={8}
+                    step={0.5}
+                    precision={1}
+                    onChange={(value) => update('plotBoxLineWidth', value)}
                 />
-
-                <div className={`transition-opacity ${!settings.showPlotBox ? 'opacity-50 pointer-events-none' : ''}`}>
-                    <NumericInput
-                        title="Line width"
-                        value={settings.plotBoxLineWidth}
-                        min={0.5}
-                        max={8}
-                        step={0.5}
-                        precision={1}
-                        onChange={(value) => update('plotBoxLineWidth', value)}
-                    />
-                </div>
-
-                <div className={`transition-opacity ${!settings.showPlotBox ? 'opacity-50 pointer-events-none' : ''}`}>
-                    <ColorField
-                        label="Line color"
-                        value={settings.plotBoxColor}
-                        onChange={(value) => update('plotBoxColor', value)}
-                    />
-                </div>
+                <ColorField
+                    label="Line color"
+                    value={settings.plotBoxColor}
+                    onChange={(value) => update('plotBoxColor', value)}
+                />
             </GroupComponents>
         )
     };

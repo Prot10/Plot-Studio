@@ -2,8 +2,9 @@ import { LeftPanel } from '../../../shared/components/LeftPanel';
 import { createTitleBlock, createAxisSyncButton, type LeftPanelBlock } from '../../../shared/utils/leftPanelHelpers';
 import { GeneralSettingsBlock } from './LeftPanel/GeneralSettingsBlock';
 import { ValueLabelsBlock } from './LeftPanel/ValueLabelsBlock';
-import { XAxisPanel } from './LeftPanel/XAxisPanel';
-import { YAxisPanel } from './LeftPanel/YAxisPanel';
+import { XAxisBlock } from './LeftPanel/XAxisBlock';
+import { YAxisBlock } from './LeftPanel/YAxisBlock';
+import { GridBlock } from './LeftPanel/GridBlock';
 import { AdditionalTextManager } from './LeftPanel/AdditionalTextManager';
 import { AdditionalImageManager } from './LeftPanel/AdditionalImageManager';
 import type { BarChartSettings, BarDataPoint } from '../../../types/bar';
@@ -75,6 +76,9 @@ export function BarChartLeftPanel({
   // Create the blocks using the GeneralSettingsBlock helper
   const generalSettings = GeneralSettingsBlock({ settings, bars, onChange, onBarsChange });
   const valueLabels = ValueLabelsBlock({ settings, onChange });
+  const xAxisBlocks = XAxisBlock({ settings, onChange, focusRequest });
+  const yAxisBlocks = YAxisBlock({ settings, onChange, focusRequest });
+  const gridBlocks = GridBlock({ settings, onChange });
 
   const blocks: LeftPanelBlock[] = [
     // General Settings Block
@@ -99,7 +103,11 @@ export function BarChartLeftPanel({
         {
           id: 'plot-box',
           title: 'Plot Box',
-          content: generalSettings.plotBoxSettings
+          content: generalSettings.plotBoxSettings,
+          toggle: {
+            value: settings.showPlotBox,
+            onChange: (value: boolean) => onChange({ ...settings, showPlotBox: value })
+          }
         }
       ]
     },
@@ -115,15 +123,33 @@ export function BarChartLeftPanel({
       headerActions: createAxisSyncButton(settings.axesSynced, () => toggleAxesSync('x')),
       sections: [
         {
-          id: 'x-axis-content',
-          content: (
-            <XAxisPanel
-              settings={settings}
-              onChange={onChange}
-              highlightSignals={highlightSignals}
-              focusRequest={focusRequest}
-            />
-          )
+          id: 'x-axis-title',
+          title: 'Title',
+          content: xAxisBlocks.title
+        },
+        {
+          id: 'x-axis-appearance',
+          title: 'Appearance',
+          content: xAxisBlocks.appearance,
+          toggle: {
+            value: settings.xAxis.showAxisLines,
+            onChange: (value: boolean) => onChange({
+              ...settings,
+              xAxis: { ...settings.xAxis, showAxisLines: value }
+            })
+          }
+        },
+        {
+          id: 'x-axis-ticks',
+          title: 'Ticks',
+          content: xAxisBlocks.ticks,
+          toggle: {
+            value: settings.xAxis.showTickLabels,
+            onChange: (value: boolean) => onChange({
+              ...settings,
+              xAxis: { ...settings.xAxis, showTickLabels: value }
+            })
+          }
         }
       ]
     },
@@ -136,15 +162,66 @@ export function BarChartLeftPanel({
       headerActions: createAxisSyncButton(settings.axesSynced, () => toggleAxesSync('y')),
       sections: [
         {
-          id: 'y-axis-content',
-          content: (
-            <YAxisPanel
-              settings={settings}
-              onChange={onChange}
-              highlightSignals={highlightSignals}
-              focusRequest={focusRequest}
-            />
-          )
+          id: 'y-axis-title',
+          title: 'Title',
+          content: yAxisBlocks.title
+        },
+        {
+          id: 'y-axis-appearance',
+          title: 'Appearance',
+          content: yAxisBlocks.appearance,
+          toggle: {
+            value: settings.yAxis.showAxisLines,
+            onChange: (value: boolean) => onChange({
+              ...settings,
+              yAxis: { ...settings.yAxis, showAxisLines: value }
+            })
+          }
+        },
+        {
+          id: 'y-axis-ticks',
+          title: 'Ticks',
+          content: yAxisBlocks.ticks,
+          toggle: {
+            value: settings.yAxis.showTickLabels,
+            onChange: (value: boolean) => onChange({
+              ...settings,
+              yAxis: { ...settings.yAxis, showTickLabels: value }
+            })
+          }
+        }
+      ]
+    },
+
+    // Grid Block
+    {
+      id: 'grid',
+      title: 'Grid',
+      headerActions: gridBlocks.syncButton,
+      sections: [
+        {
+          id: 'grid-vertical',
+          title: 'Vertical',
+          content: gridBlocks.vertical,
+          toggle: {
+            value: settings.xAxis.showGridLines,
+            onChange: (value: boolean) => onChange({
+              ...settings,
+              xAxis: { ...settings.xAxis, showGridLines: value }
+            })
+          }
+        },
+        {
+          id: 'grid-horizontal',
+          title: 'Horizontal',
+          content: gridBlocks.horizontal,
+          toggle: {
+            value: settings.yAxis.showGridLines,
+            onChange: (value: boolean) => onChange({
+              ...settings,
+              yAxis: { ...settings.yAxis, showGridLines: value }
+            })
+          }
         }
       ]
     },
@@ -156,12 +233,13 @@ export function BarChartLeftPanel({
       highlightKey: 'valueLabels',
       sections: [
         {
-          id: 'value-labels-toggle',
-          content: valueLabels.toggleAndFontSize
-        },
-        {
-          id: 'value-labels-styling',
-          content: valueLabels.colorAndOffsets
+          id: 'value-labels-settings',
+          title: 'Settings',
+          content: valueLabels.settings,
+          toggle: {
+            value: settings.showValueLabels,
+            onChange: (value: boolean) => onChange({ ...settings, showValueLabels: value })
+          }
         }
       ]
     },

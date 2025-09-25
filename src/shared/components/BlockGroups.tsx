@@ -7,6 +7,10 @@ interface BlockSection {
     content: ReactNode;
     className?: string;
     disabled?: boolean;
+    toggle?: {
+        value: boolean;
+        onChange: (value: boolean) => void;
+    };
 }
 
 interface BlockGroupProps {
@@ -101,20 +105,43 @@ export function BlockGroup({
                         )}
 
                         {/* Render sections */}
-                        {sections.map((section, index) => (
-                            <div key={section.id} className={classNames(
-                                section.className,
-                                section.disabled && 'opacity-50 pointer-events-none',
-                                index > 0 && section.title && 'border-t border-white/10 pt-8'
-                            )}>
-                                {section.title && (
-                                    <h3 className="text-sm font-semibold text-white/80 mb-8">
-                                        {section.title}
-                                    </h3>
-                                )}
-                                {section.content}
-                            </div>
-                        ))}
+                        {sections.map((section, index) => {
+                            const isActive = section.toggle ? section.toggle.value : true;
+                            return (
+                                <div key={section.id} className={classNames(
+                                    section.className,
+                                    section.disabled && 'opacity-50 pointer-events-none',
+                                    index > 0 && section.title && 'border-t border-white/10 pt-8'
+                                )}>
+                                    {section.title && (
+                                        <div className="flex items-center justify-between mb-8">
+                                            <h3 className="text-sm font-semibold text-white/80">
+                                                {section.title}
+                                            </h3>
+                                            {section.toggle && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => section.toggle?.onChange(!section.toggle.value)}
+                                                    className={`relative inline-flex h-4 w-8 flex-none items-center rounded-full transition ${section.toggle.value ? 'bg-sky-400' : 'bg-white/20'
+                                                        }`}
+                                                    role="switch"
+                                                    aria-checked={section.toggle.value}
+                                                >
+                                                    <span
+                                                        className={`inline-block h-3 w-3 transform rounded-full bg-white transition ${section.toggle.value ? 'translate-x-4' : 'translate-x-0.5'
+                                                            }`}
+                                                    />
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+                                    <div className={`transition-opacity ${!isActive ? 'opacity-50 pointer-events-none' : ''
+                                        }`}>
+                                        {section.content}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             ) : null}

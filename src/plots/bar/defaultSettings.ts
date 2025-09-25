@@ -93,7 +93,7 @@ export const defaultBarChartSettings: BarChartSettings = {
   xAxis: {
     showAxisLines: true,
     showTickLabels: true,
-    showGridLines: false,
+    showGridLines: true,
     axisLineColor: "#e2e8f0",
     axisLineWidth: 1.5,
     tickLabelColor: "#e2e8f0",
