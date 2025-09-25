@@ -116,15 +116,6 @@ export function GeneralSettingsBlock({ settings, bars, onChange, onBarsChange }:
                     value={settings.backgroundColor}
                     onChange={(value) => update('backgroundColor', value)}
                 />
-            </GroupComponents>
-        ),
-
-        chartSettings: (
-            <GroupComponents
-                maxColumns={2}
-                gap={2}
-                rowGap={2}
-            >
                 <FontPicker
                     label="Chart text font"
                     value={settings.globalFontFamily}

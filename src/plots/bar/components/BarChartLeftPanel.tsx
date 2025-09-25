@@ -92,10 +92,6 @@ export function BarChartLeftPanel({
           content: generalSettings.generalSettings
         },
         {
-          id: 'chart-settings',
-          content: generalSettings.chartSettings
-        },
-        {
           id: 'chart-dimensions',
           title: 'Chart Dimensions',
           content: generalSettings.chartDimensions
