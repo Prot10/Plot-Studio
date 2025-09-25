@@ -113,7 +113,6 @@ export function XAxisBlock({ settings, onChange, focusRequest }: XAxisBlockProps
 
                 {settings.xAxis.title.trim() && (
                     <GroupComponents
-                        minComponentWidth={16}
                         maxColumns={2}
                         gap={2}
                         rowGap={2}
@@ -145,7 +144,6 @@ export function XAxisBlock({ settings, onChange, focusRequest }: XAxisBlockProps
 
         appearance: (
             <GroupComponents
-                minComponentWidth={16}
                 maxColumns={2}
                 gap={2}
                 rowGap={2}
@@ -169,7 +167,6 @@ export function XAxisBlock({ settings, onChange, focusRequest }: XAxisBlockProps
 
         ticks: (
             <GroupComponents
-                minComponentWidth={16}
                 maxColumns={3}
                 gap={2}
                 rowGap={2}

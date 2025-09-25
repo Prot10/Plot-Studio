@@ -27,7 +27,6 @@ export function BarAppearanceBlock({ settings, onChange }: BarAppearanceBlockPro
     return {
         orientationAndSpacing: (
             <GroupComponents
-                minComponentWidth={20}
                 maxColumns={2}
                 gap={2}
                 rowGap={2}
@@ -54,7 +53,6 @@ export function BarAppearanceBlock({ settings, onChange }: BarAppearanceBlockPro
 
         borderAndCorners: (
             <GroupComponents
-                minComponentWidth={16}
                 maxColumns={3}
                 gap={2}
                 rowGap={2}
@@ -89,7 +87,6 @@ export function BarAppearanceBlock({ settings, onChange }: BarAppearanceBlockPro
 
         cornerRadius: (
             <GroupComponents
-                minComponentWidth={20}
                 maxColumns={2}
                 gap={2}
                 rowGap={2}

@@ -16,7 +16,6 @@ export function ValueLabelsBlock({ settings, onChange }: ValueLabelsBlockProps) 
     return {
         settings: (
             <GroupComponents
-                minComponentWidth={16}
                 maxColumns={3}
                 gap={2}
                 rowGap={2}

@@ -60,7 +60,6 @@ export function GridBlock({ settings, onChange }: GridBlockProps) {
     return {
         vertical: (
             <GroupComponents
-                minComponentWidth={16}
                 maxColumns={2}
                 gap={2}
                 rowGap={2}
@@ -104,7 +103,6 @@ export function GridBlock({ settings, onChange }: GridBlockProps) {
 
         horizontal: (
             <GroupComponents
-                minComponentWidth={16}
                 maxColumns={2}
                 gap={2}
                 rowGap={2}

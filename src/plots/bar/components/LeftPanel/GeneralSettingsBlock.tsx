@@ -100,7 +100,6 @@ export function GeneralSettingsBlock({ settings, bars, onChange, onBarsChange }:
     return {
         generalSettings: (
             <GroupComponents
-                minComponentWidth={5}
                 maxColumns={3}
                 gap={2}
                 rowGap={2}
@@ -122,7 +121,6 @@ export function GeneralSettingsBlock({ settings, bars, onChange, onBarsChange }:
 
         chartSettings: (
             <GroupComponents
-                minComponentWidth={20}
                 maxColumns={2}
                 gap={2}
                 rowGap={2}
@@ -148,7 +146,6 @@ export function GeneralSettingsBlock({ settings, bars, onChange, onBarsChange }:
 
         chartDimensions: (
             <GroupComponents
-                minComponentWidth={18}
                 maxColumns={3}
                 gap={2}
                 rowGap={2}
@@ -194,7 +191,6 @@ export function GeneralSettingsBlock({ settings, bars, onChange, onBarsChange }:
 
         plotBoxSettings: (
             <GroupComponents
-                minComponentWidth={16}
                 maxColumns={2}
                 gap={2}
                 rowGap={2}

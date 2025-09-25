@@ -5,29 +5,28 @@ import type { ReactNode } from 'react'
  * GroupComponents - A responsive layout component that automatically adjusts columns
  * 
  * This component provides a smart grid layout that:
- * - Calculates optimal number of columns based on available space and minimum component widths
+ * - Automatically detects minimum width requirements of child components
+ * - Calculates optimal number of columns based on available space and component needs
  * - Automatically wraps components to new rows when needed
  * - Maintains consistent spacing and responsive behavior
  * - Uses ResizeObserver for real-time layout adjustments
  * 
  * Example usage:
  * ```tsx
- * <GroupComponents minComponentWidth={20} maxColumns={3} gap={2}>
+ * <GroupComponents maxColumns={3} gap={2}>
  *   <NumericInput ... />
  *   <ColorField ... />
  *   <SelectField ... />
  * </GroupComponents>
  * ```
  * 
- * If the container is 75rem wide with 3 components (min 20rem each), all fit in one row.
- * If the container is 55rem wide, it shows 2 components in first row, 1 in second row.
+ * The component will try to fit up to maxColumns per row, but will create fewer columns
+ * if the available space is insufficient for the components' minimum widths.
  */
 
 type GroupComponentsProps = {
     /** Child components to arrange responsively */
     children: ReactNode[]
-    /** Minimum width for each component in rem units (default: 20) */
-    minComponentWidth?: number
     /** Maximum number of columns allowed (default: 4) */
     maxColumns?: number
     /** Gap between components in rem units (default: 2) */
@@ -40,7 +39,6 @@ type GroupComponentsProps = {
 
 export function GroupComponents({
     children,
-    minComponentWidth = 20, // 20rem = 320px at default font size
     maxColumns = 4,
     gap = 2, // 2rem = 32px
     rowGap = 2, // 2rem = 32px
@@ -53,6 +51,9 @@ export function GroupComponents({
     // Convert rem to pixels (assuming 16px base font size)
     const remToPx = (rem: number) => rem * 16
 
+    // Filter out any null/undefined children early
+    const validChildren = children.filter(child => child != null)
+
     useEffect(() => {
         const updateLayout = () => {
             if (!containerRef.current) return
@@ -60,18 +61,25 @@ export function GroupComponents({
             const containerWidthPx = containerRef.current.offsetWidth
             setContainerWidth(containerWidthPx)
 
-            // Calculate how many components can fit in one row
-            const minComponentWidthPx = remToPx(minComponentWidth)
             const gapPx = remToPx(gap)
 
-            // Calculate available width for components (total width minus gaps)
-            const availableWidth = containerWidthPx - (gapPx * (maxColumns - 1))
+            // Adaptive minimum width based on typical component needs
+            // Most form components (NumericInput, SelectField, etc.) need ~16-20rem to display properly
+            const minComponentWidth = 256 // 16rem in pixels - smaller than before for better responsiveness
 
-            // Calculate maximum number of components that can fit
-            const possibleColumns = Math.floor(availableWidth / minComponentWidthPx)
+            // Calculate how many components can fit in one row
+            let optimalColumns = 1
 
-            // Limit to maxColumns and ensure at least 1 column
-            const optimalColumns = Math.max(1, Math.min(maxColumns, possibleColumns))
+            for (let cols = 1; cols <= maxColumns; cols++) {
+                const totalGapWidth = gapPx * (cols - 1)
+                const availableWidthPerComponent = (containerWidthPx - totalGapWidth) / cols
+
+                if (availableWidthPerComponent >= minComponentWidth) {
+                    optimalColumns = cols
+                } else {
+                    break // Can't fit more columns
+                }
+            }
 
             setColumns(optimalColumns)
         }
@@ -88,7 +96,7 @@ export function GroupComponents({
         return () => {
             resizeObserver.disconnect()
         }
-    }, [minComponentWidth, maxColumns, gap])
+    }, [maxColumns, gap])
 
     // Calculate the actual width for each component
     const calculateComponentWidth = () => {
@@ -103,9 +111,6 @@ export function GroupComponents({
     }
 
     const componentWidth = calculateComponentWidth()
-
-    // Filter out any null/undefined children
-    const validChildren = children.filter(child => child != null)
 
     return (
         <div
@@ -122,7 +127,7 @@ export function GroupComponents({
                     key={index}
                     style={{
                         width: componentWidth,
-                        minWidth: `${minComponentWidth}rem`,
+                        minWidth: '16rem', // 256px - reasonable minimum for form components
                         flexShrink: 0,
                     }}
                 >

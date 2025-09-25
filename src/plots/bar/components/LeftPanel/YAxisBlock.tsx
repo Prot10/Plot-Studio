@@ -137,7 +137,6 @@ export function YAxisBlock({ settings, onChange, focusRequest }: YAxisBlockProps
 
                 {settings.yAxis.title.trim() && (
                     <GroupComponents
-                        minComponentWidth={16}
                         maxColumns={2}
                         gap={2}
                         rowGap={2}
@@ -169,7 +168,6 @@ export function YAxisBlock({ settings, onChange, focusRequest }: YAxisBlockProps
 
         appearance: (
             <GroupComponents
-                minComponentWidth={16}
                 maxColumns={2}
                 gap={2}
                 rowGap={2}
@@ -193,7 +191,6 @@ export function YAxisBlock({ settings, onChange, focusRequest }: YAxisBlockProps
 
         ticks: (
             <GroupComponents
-                minComponentWidth={16}
                 maxColumns={3}
                 gap={2}
                 rowGap={2}

@@ -95,7 +95,6 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
       <div className="space-y-8">
         <h3 className="text-sm font-semibold text-white/80">Title</h3>
         <GroupComponents
-          minComponentWidth={16}
           maxColumns={3}
           gap={2}
           rowGap={2}
@@ -129,7 +128,6 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
 
         {settings.title.trim() && (
           <GroupComponents
-            minComponentWidth={16}
             maxColumns={3}
             gap={2}
             rowGap={2}
@@ -173,7 +171,6 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
       <div className="space-y-8 border-t border-white/10 pt-8">
         <h3 className="text-sm font-semibold text-white/80">Subtitle</h3>
         <GroupComponents
-          minComponentWidth={16}
           maxColumns={3}
           gap={2}
           rowGap={2}
@@ -207,7 +204,6 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
 
         {settings.subtitle.trim() && (
           <GroupComponents
-            minComponentWidth={16}
             maxColumns={3}
             gap={2}
             rowGap={2}
