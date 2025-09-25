@@ -27,10 +27,10 @@ export function AxisSyncButton({ isActive, onToggle }: AxisSyncButtonProps) {
             type="button"
             onClick={onToggle}
             className={`${baseClasses}${stateClasses}`}
-            title={isActive ? 'Axes are linked' : 'Link X and Y axes'}
+            title={isActive ? 'X and Y Axes style linked' : 'Link X and Y Axes style'}
         >
             <SyncIcon active={isActive} />
-            <span>{isActive ? 'Axes style linked' : 'Link axes style'}</span>
+            <span>{isActive ? 'X and Y Axes style linked' : 'Link X and Y Axes style'}</span>
         </button>
     );
 }

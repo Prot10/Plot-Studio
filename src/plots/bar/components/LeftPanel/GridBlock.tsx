@@ -152,8 +152,8 @@ export function GridBlock({ settings, onChange }: GridBlockProps) {
                     type="button"
                     onClick={syncGridSettings}
                     className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${gridSynced
-                            ? 'bg-sky-600 text-white hover:bg-sky-700'
-                            : 'bg-white/10 text-white/80 hover:bg-white/20'
+                        ? 'bg-sky-600 text-white hover:bg-sky-700'
+                        : 'bg-white/10 text-white/80 hover:bg-white/20'
                         }`}
                 >
                     <svg
@@ -169,7 +169,7 @@ export function GridBlock({ settings, onChange }: GridBlockProps) {
                             d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
                         />
                     </svg>
-                    {gridSynced ? 'Grid Synced' : 'Sync Grid'}
+                    {gridSynced ? 'V and H Grid Lines Synced' : 'Sync V and H Grid Lines'}
                 </button>
             </div>
         )
