@@ -98,12 +98,7 @@ export function XAxisBlock({ settings, onChange, focusRequest }: XAxisBlockProps
 
     return {
         title: (
-            <GroupComponents
-                minComponentWidth={16}
-                maxColumns={3}
-                gap={2}
-                rowGap={2}
-            >
+            <div className="space-y-6">
                 <div className="flex flex-col gap-1 text-sm text-white">
                     <span className="text-xs uppercase tracking-wide text-white/50">Axis title</span>
                     <input
@@ -116,32 +111,36 @@ export function XAxisBlock({ settings, onChange, focusRequest }: XAxisBlockProps
                     />
                 </div>
 
-                <div className={`transition-opacity ${!settings.xAxis.title.trim() ? 'opacity-50 pointer-events-none' : ''}`}>
-                    <NumericInput
-                        title="Title font size"
-                        value={settings.xAxisTitleFontSize}
-                        min={8}
-                        max={72}
-                        step={1}
-                        precision={0}
-                        onChange={handleTitleFontSizeChange}
-                        suffix="px"
-                    />
-                </div>
-
-                <div className={`transition-opacity ${!settings.xAxis.title.trim() ? 'opacity-50 pointer-events-none' : ''}`}>
-                    <NumericInput
-                        title="Title offset"
-                        value={settings.xAxisTitleOffsetY}
-                        min={-200}
-                        max={200}
-                        step={1}
-                        precision={0}
-                        onChange={(value) => update('xAxisTitleOffsetY', value)}
-                        suffix="px"
-                    />
-                </div>
-            </GroupComponents>
+                {settings.xAxis.title.trim() && (
+                    <GroupComponents
+                        minComponentWidth={16}
+                        maxColumns={2}
+                        gap={2}
+                        rowGap={2}
+                    >
+                        <NumericInput
+                            title="Title font size"
+                            value={settings.xAxisTitleFontSize}
+                            min={8}
+                            max={72}
+                            step={1}
+                            precision={0}
+                            onChange={handleTitleFontSizeChange}
+                            suffix="px"
+                        />
+                        <NumericInput
+                            title="Title offset"
+                            value={settings.xAxisTitleOffsetY}
+                            min={-200}
+                            max={200}
+                            step={1}
+                            precision={0}
+                            onChange={(value) => update('xAxisTitleOffsetY', value)}
+                            suffix="px"
+                        />
+                    </GroupComponents>
+                )}
+            </div>
         ),
 
         appearance: (

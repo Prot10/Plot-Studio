@@ -107,61 +107,67 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
             onChange={(value) => update('title', value)}
             placeholder="Untitled chart"
           />
-          <ColorField
-            label="Title color"
-            value={settings.titleColor}
-            onChange={(value) => update('titleColor', value)}
-          />
-          <TextStyleControls
-            label="Title style"
-            value={{
-              bold: settings.titleIsBold,
-              italic: settings.titleIsItalic,
-              underline: settings.titleIsUnderline,
-            }}
-            onChange={handleTitleStyleChange}
-          />
+          {settings.title.trim() && (
+            <>
+              <ColorField
+                label="Title color"
+                value={settings.titleColor}
+                onChange={(value) => update('titleColor', value)}
+              />
+              <TextStyleControls
+                label="Title style"
+                value={{
+                  bold: settings.titleIsBold,
+                  italic: settings.titleIsItalic,
+                  underline: settings.titleIsUnderline,
+                }}
+                onChange={handleTitleStyleChange}
+              />
+            </>
+          )}
         </GroupComponents>
 
-        <GroupComponents
-          minComponentWidth={16}
-          maxColumns={3}
-          gap={2}
-          rowGap={2}
-        >
-          <div className="min-w-[12rem] flex-1 sm:flex-none">
+        {settings.title.trim() && (
+          <GroupComponents
+            minComponentWidth={16}
+            maxColumns={3}
+            gap={2}
+            rowGap={2}
+          >
+            <div className="min-w-[12rem] flex-1 sm:flex-none">
+              <NumericInput
+                title="Size"
+                value={settings.titleFontSize}
+                min={10}
+                max={96}
+                step={1}
+                precision={0}
+                onChange={(value) => update('titleFontSize', value)}
+                suffix="px"
+              />
+            </div>
             <NumericInput
-              title="Size"
-              value={settings.titleFontSize}
-              min={10}
-              max={96}
+              title="Vertical offset"
+              value={settings.titleOffsetY}
+              min={-200}
+              max={200}
               step={1}
               precision={0}
-              onChange={(value) => update('titleFontSize', value)}
+              onChange={(value) => update('titleOffsetY', value)}
               suffix="px"
             />
-          </div>
-          <NumericInput
-            title="Vertical offset"
-            value={settings.titleOffsetY}
-            min={-200}
-            max={200}
-            step={1}
-            precision={0}
-            onChange={(value) => update('titleOffsetY', value)}
-            suffix="px"
-          />
-          <NumericInput
-            title="Horizontal offset"
-            value={settings.titleOffsetX}
-            min={-400}
-            max={400}
-            step={1}
-            precision={0}
-            onChange={(value) => update('titleOffsetX', value)}
-            suffix="px"
-          />
-        </GroupComponents>
+            <NumericInput
+              title="Horizontal offset"
+              value={settings.titleOffsetX}
+              min={-400}
+              max={400}
+              step={1}
+              precision={0}
+              onChange={(value) => update('titleOffsetX', value)}
+              suffix="px"
+            />
+          </GroupComponents>
+        )}
       </div>
 
       <div className="space-y-8 border-t border-white/10 pt-8">
@@ -179,61 +185,67 @@ export function TitleSettingsPanel<TSettings extends TitleSettingsShape>({
             onChange={(value) => update('subtitle', value)}
             placeholder="Add a subtitle"
           />
-          <ColorField
-            label="Subtitle color"
-            value={settings.subtitleColor}
-            onChange={(value) => update('subtitleColor', value)}
-          />
-          <TextStyleControls
-            label="Subtitle style"
-            value={{
-              bold: settings.subtitleIsBold,
-              italic: settings.subtitleIsItalic,
-              underline: settings.subtitleIsUnderline,
-            }}
-            onChange={handleSubtitleStyleChange}
-          />
+          {settings.subtitle.trim() && (
+            <>
+              <ColorField
+                label="Subtitle color"
+                value={settings.subtitleColor}
+                onChange={(value) => update('subtitleColor', value)}
+              />
+              <TextStyleControls
+                label="Subtitle style"
+                value={{
+                  bold: settings.subtitleIsBold,
+                  italic: settings.subtitleIsItalic,
+                  underline: settings.subtitleIsUnderline,
+                }}
+                onChange={handleSubtitleStyleChange}
+              />
+            </>
+          )}
         </GroupComponents>
 
-        <GroupComponents
-          minComponentWidth={16}
-          maxColumns={3}
-          gap={2}
-          rowGap={2}
-        >
-          <div className="min-w-[12rem] flex-1 sm:flex-none">
+        {settings.subtitle.trim() && (
+          <GroupComponents
+            minComponentWidth={16}
+            maxColumns={3}
+            gap={2}
+            rowGap={2}
+          >
+            <div className="min-w-[12rem] flex-1 sm:flex-none">
+              <NumericInput
+                title="Size"
+                value={settings.subtitleFontSize}
+                min={8}
+                max={72}
+                step={1}
+                precision={0}
+                onChange={(value) => update('subtitleFontSize', value)}
+                suffix="px"
+              />
+            </div>
             <NumericInput
-              title="Size"
-              value={settings.subtitleFontSize}
-              min={8}
-              max={72}
+              title="Vertical offset"
+              value={settings.subtitleOffsetY}
+              min={-200}
+              max={200}
               step={1}
               precision={0}
-              onChange={(value) => update('subtitleFontSize', value)}
+              onChange={(value) => update('subtitleOffsetY', value)}
               suffix="px"
             />
-          </div>
-          <NumericInput
-            title="Vertical offset"
-            value={settings.subtitleOffsetY}
-            min={-200}
-            max={200}
-            step={1}
-            precision={0}
-            onChange={(value) => update('subtitleOffsetY', value)}
-            suffix="px"
-          />
-          <NumericInput
-            title="Horizontal offset"
-            value={settings.subtitleOffsetX}
-            min={-400}
-            max={400}
-            step={1}
-            precision={0}
-            onChange={(value) => update('subtitleOffsetX', value)}
-            suffix="px"
-          />
-        </GroupComponents>
+            <NumericInput
+              title="Horizontal offset"
+              value={settings.subtitleOffsetX}
+              min={-400}
+              max={400}
+              step={1}
+              precision={0}
+              onChange={(value) => update('subtitleOffsetX', value)}
+              suffix="px"
+            />
+          </GroupComponents>
+        )}
       </div>
     </section>
   )

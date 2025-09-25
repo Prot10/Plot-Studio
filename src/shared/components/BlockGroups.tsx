@@ -135,10 +135,11 @@ export function BlockGroup({
                                             )}
                                         </div>
                                     )}
-                                    <div className={`transition-opacity ${!isActive ? 'opacity-50 pointer-events-none' : ''
-                                        }`}>
-                                        {section.content}
-                                    </div>
+                                    {isActive && (
+                                        <div>
+                                            {section.content}
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}
