@@ -11,6 +11,10 @@ export interface RightPanelBlock {
         content: ReactNode;
         className?: string;
         disabled?: boolean;
+        toggle?: {
+            value: boolean;
+            onChange: (value: boolean) => void;
+        };
     }>;
     defaultExpanded?: boolean;
     actions?: ReactNode;

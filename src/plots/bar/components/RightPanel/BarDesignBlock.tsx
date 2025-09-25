@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { ColorField } from '../../../../shared/components/ColorField'
 import { NumericInput } from '../../../../shared/components/NumericInput'
 import { SelectField } from '../../../../shared/components/SelectField'
+import { GroupComponents } from '../../../../shared/components/GroupComponents'
 import type { BarChartSettings, BarDataPoint, BarPattern } from '../../../../types/bar'
 
 const patternOptions: Array<{ value: BarPattern; label: string }> = [
@@ -70,13 +71,17 @@ export function BarDesignBlock({
         ),
 
         barSettings: selectedBar ? (
-            <div className="space-y-4">
+            <div className="space-y-8">
                 {(() => {
                     const isPatternActive = selectedBar.pattern !== 'solid'
 
                     return (
-                        <div className="space-y-4">
-                            <div className="grid gap-4 sm:grid-cols-2">
+                        <>
+                            <GroupComponents
+                                maxColumns={2}
+                                gap={2}
+                                rowGap={2}
+                            >
                                 <ColorField
                                     label="Fill color"
                                     value={selectedBar.fillColor}
@@ -91,9 +96,13 @@ export function BarDesignBlock({
                                     precision={2}
                                     onChange={(value) => updateBar(selectedBar.id, 'opacity', value)}
                                 />
-                            </div>
+                            </GroupComponents>
 
-                            <div className="grid gap-4 sm:grid-cols-2">
+                            <GroupComponents
+                                maxColumns={2}
+                                gap={2}
+                                rowGap={2}
+                            >
                                 <div className="relative">
                                     <ColorField
                                         label="Border color"
@@ -134,9 +143,13 @@ export function BarDesignBlock({
                                         </div>
                                     )}
                                 </div>
-                            </div>
+                            </GroupComponents>
 
-                            <div className="grid gap-4 sm:grid-cols-2">
+                            <GroupComponents
+                                maxColumns={2}
+                                gap={2}
+                                rowGap={2}
+                            >
                                 <SelectField<BarPattern>
                                     label="Pattern"
                                     value={selectedBar.pattern}
@@ -155,9 +168,13 @@ export function BarDesignBlock({
                                     disabled={!isPatternActive}
                                     suffix="px"
                                 />
-                            </div>
+                            </GroupComponents>
 
-                            <div className="grid gap-4 sm:grid-cols-2">
+                            <GroupComponents
+                                maxColumns={2}
+                                gap={2}
+                                rowGap={2}
+                            >
                                 <ColorField
                                     label="Pattern color"
                                     value={selectedBar.patternColor}
@@ -174,8 +191,8 @@ export function BarDesignBlock({
                                     onChange={(value) => updateBar(selectedBar.id, 'patternOpacity', value)}
                                     disabled={!isPatternActive}
                                 />
-                            </div>
-                        </div>
+                            </GroupComponents>
+                        </>
                     )
                 })()}
             </div>

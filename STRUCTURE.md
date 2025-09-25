@@ -59,11 +59,8 @@ plots/bar/
     │   ├── ChartPreview.tsx     # Bar-specific chart preview implementation
     │   └── DataTable.tsx        # Bar-specific data table implementation
     └── RightPanel/              # Right panel building blocks
-        ├── BarAppearanceBlock.tsx
-        ├── ErrorBarsBlock.tsx
-        ├── BarDesignBlock.tsx
-        ├── RightPanel.tsx
-        └── BarDataEditor.tsx
+        ├── BarplotStyleBlock.tsx    # Global bar styling (orientation, spacing, borders, error bars)
+        └── BarDesignBlock.tsx       # Individual bar design (colors, patterns, opacity)
 ```
 
 ## Shared Components System

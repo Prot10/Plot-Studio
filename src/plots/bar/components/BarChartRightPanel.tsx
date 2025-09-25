@@ -42,13 +42,21 @@ export function BarChartRightPanel({
                     id: 'border-settings',
                     title: 'Border',
                     content: barplotStyle.borderSettings,
-                    className: 'border-t border-white/10 pt-6'
+                    className: 'border-t border-white/10 pt-6',
+                    toggle: {
+                        value: settings.showBorder,
+                        onChange: (value: boolean) => onChange({ ...settings, showBorder: value })
+                    }
                 },
                 {
                     id: 'error-bars',
                     title: 'Error Bars',
                     content: barplotStyle.errorBars,
-                    className: 'border-t border-white/10 pt-6'
+                    className: 'border-t border-white/10 pt-6',
+                    toggle: {
+                        value: settings.showErrorBars,
+                        onChange: (value: boolean) => onChange({ ...settings, showErrorBars: value })
+                    }
                 }
             ]
         },
