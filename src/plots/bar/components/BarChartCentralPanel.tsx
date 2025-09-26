@@ -42,16 +42,19 @@ export function BarChartCentralPanel({ chartPreview, dataTable }: BarChartCentra
             id: 'chart-preview-content',
             content: (
                 <div className={chartPreview.length > 1 ? 'space-y-4 sm:space-y-6' : undefined}>
-                    {chartPreview.map((previewProps, index) => (
-                        <ChartPreviewBlock
-                            key={`preview-${index}`}
-                            chartElement={<ChartPreview {...previewProps} />}
-                            heading={previewProps.heading}
-                            isActive={previewProps.isActive}
-                            onActivate={previewProps.onActivate}
-                            comparisonEnabled={previewProps.comparisonEnabled}
-                        />
-                    ))}
+                    {chartPreview.map((previewProps, index) => {
+                        const { heading, ...chartPreviewProps } = previewProps;
+                        return (
+                            <ChartPreviewBlock
+                                key={`preview-${index}`}
+                                chartElement={<ChartPreview {...chartPreviewProps} />}
+                                heading={heading}
+                                isActive={previewProps.isActive}
+                                onActivate={previewProps.onActivate}
+                                comparisonEnabled={previewProps.comparisonEnabled}
+                            />
+                        );
+                    })}
                 </div>
             )
         }]
