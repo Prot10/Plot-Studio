@@ -54,25 +54,32 @@ export function ChartPage({
         <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
             {/* Header */}
             <header className="border-b border-white/10 bg-black/20 backdrop-blur">
-                <div className="w-full px-4 sm:px-6 py-6 sm:py-8 relative">
-                    {/* Home button positioned absolutely */}
-                    <button
-                        onClick={handleBackClick}
-                        className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 flex items-center justify-center rounded-lg border border-white/10 bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
-                        title="Home"
-                    >
-                        <Home className="h-4 w-4" />
-                    </button>
+                <div className="w-full px-4 sm:px-6 py-6 sm:py-8">
+                    {/* Title row with home icon on left, title centered, and logo on right */}
+                    <div className="flex items-center justify-between mb-2">
+                        {/* Home button on the left */}
+                        <button
+                            onClick={handleBackClick}
+                            className="flex items-center justify-center p-2 text-white/80 hover:text-white"
+                            title="Home"
+                        >
+                            <Home className="h-4 w-4 sm:h-5 sm:w-5" />
+                        </button>
 
-                    {/* Title and subtitle centered absolutely */}
-                    <div className="text-center text-white max-w-2/3 justify-center mx-auto">
-                        <div className="flex items-center justify-center gap-4 sm:gap-8 mb-2">
-                            <img src="/chart-icon.svg" alt="Chart Studio" className="w-6 h-6 sm:w-8 sm:h-8 shrink-0" />
-                            <h1 className="text-xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-                                {title}
-                            </h1>
+                        {/* Title centered */}
+                        <h1 className="text-xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-white">
+                            {title}
+                        </h1>
+
+                        {/* Logo on the right */}
+                        <div className="flex items-center">
+                            <img src="/chart-icon.svg" alt="Chart Studio" className="w-6 h-6 sm:w-8 sm:h-8" />
                         </div>
-                        <p className="mt-1 sm:mt-2 text-sm sm:text-base lg:text-lg text-white/60">
+                    </div>
+
+                    {/* Subtitle centered below */}
+                    <div className="text-center">
+                        <p className="text-sm sm:text-base lg:text-lg text-white/60">
                             {subtitle}
                         </p>
                     </div>

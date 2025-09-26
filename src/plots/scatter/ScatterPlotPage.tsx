@@ -67,7 +67,7 @@ export function ScatterPlotPage() {
 
     return (
         <ChartPage
-            title="Scatter Plot Studio"
+            title="Scatter Plot"
             subtitle="Visualize relationships between variables with beautiful scatter plots."
             leftPanel={
                 <>

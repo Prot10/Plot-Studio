@@ -402,7 +402,7 @@ export function BarChartPage() {
 
     return (
         <ChartPage
-            title="Bar Chart Studio"
+            title="Bar Chart"
             subtitle="Build expressive bar charts with precise control over every detail."
             actions={actionMenuItems}
             comparison={{
