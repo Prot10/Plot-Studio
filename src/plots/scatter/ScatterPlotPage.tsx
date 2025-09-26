@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ChartPage } from '../../shared/components/ChartPage';
 import { ChartPageBlock } from '../../shared/components/ChartPageLayout';
+import { BlockGroup } from '../../shared/components/BlockGroups';
 import { TitleSettingsPanel } from '../../shared/components/TitleSettingsPanel';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
 import { useHighlightEffect } from '../../shared/hooks/useHighlightEffect';
@@ -100,15 +101,22 @@ export function ScatterPlotPage() {
                 </>
             }
             centerPanel={
-                <section className="rounded-xl sm:rounded-2xl border border-white/10 bg-black/30 p-4 sm:p-6 shadow-xl backdrop-blur">
-                    <div className="text-white text-center">
-                        <h2 className="text-base sm:text-lg font-semibold">Chart preview</h2>
-                        <p className="mt-2 text-white/60">Scatter plot preview will go here</p>
-                        <div className="mt-6 sm:mt-8 flex h-48 sm:h-64 items-center justify-center rounded-lg bg-white/10">
-                            <p className="text-white/40">Scatter Plot Preview Placeholder</p>
-                        </div>
-                    </div>
-                </section>
+                <BlockGroup
+                    title="Chart Preview"
+                    defaultExpanded={true}
+                    enableStickyMobile={true}
+                    sections={[{
+                        id: 'scatter-preview',
+                        content: (
+                            <div className="text-white text-center">
+                                <p className="mt-2 text-white/60">Scatter plot preview will go here</p>
+                                <div className="mt-6 sm:mt-8 flex h-48 sm:h-64 items-center justify-center rounded-lg bg-white/10">
+                                    <p className="text-white/40">Scatter Plot Preview Placeholder</p>
+                                </div>
+                            </div>
+                        )
+                    }]}
+                />
             }
             rightPanel={
                 <>

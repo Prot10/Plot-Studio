@@ -67,6 +67,7 @@ export function BarChartCentralPanel({ chartPreview, dataTable }: BarChartCentra
                 sections={chartPreviewBlock.sections}
                 defaultExpanded={chartPreviewBlock.defaultExpanded}
                 className="w-full max-w-full overflow-hidden"
+                enableStickyMobile={true}
             />
             <DataEditorBlock
                 title="Data Editor"
