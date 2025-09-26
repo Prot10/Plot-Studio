@@ -9,20 +9,22 @@ interface PlotTypeOption {
     description: string;
     icon: React.ComponentType<{ className?: string }>;
     gradient: string;
+    backgroundImage?: string;
 }
 
 const plotTypes: PlotTypeOption[] = [
     {
         type: 'bar',
         title: 'Bar Chart',
-        description: 'Create beautiful bar charts with precise control over every detail. Perfect for comparing categories and showing data distributions.',
+        description: 'Create beautiful bar charts with precise control over styling and data presentation.',
         icon: BarChart3,
         gradient: 'from-blue-500 to-purple-600',
+        backgroundImage: '/barplot.png',
     },
     {
         type: 'scatter',
         title: 'Scatter Plot',
-        description: 'Visualize relationships between two variables with customizable scatter plots. Great for correlation analysis and trend identification.',
+        description: 'Visualize relationships between variables with customizable scatter plots.',
         icon: ScatterChart,
         gradient: 'from-green-500 to-blue-500',
     },
@@ -57,28 +59,26 @@ export function PlotSelectionPage() {
                 <div className="mx-auto max-w-6xl">
                     <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
                         {plotTypes.map((plotType) => {
-                            const IconComponent = plotType.icon;
                             const isDisabled = plotType.type === 'scatter';
 
                             if (isDisabled) {
                                 return (
                                     <div
                                         key={plotType.type}
-                                        className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-8 text-left opacity-70 cursor-not-allowed w-full max-w-sm"
+                                        className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/20 text-left opacity-70 cursor-not-allowed w-full max-w-sm h-80"
                                         aria-disabled={true}
                                     >
                                         <div className={`absolute inset-0 bg-gradient-to-br ${plotType.gradient} opacity-5`} />
 
-                                        <div className="relative z-10">
-                                            <div className={`inline-flex rounded-xl bg-gradient-to-br ${plotType.gradient} p-3 text-white/60 shadow-lg filter grayscale`}>
-                                                <IconComponent className="h-8 w-8" />
-                                            </div>
+                                        {/* Gradient overlay for fading effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/60 to-transparent" />
 
-                                            <h3 className="mt-6 text-2xl font-semibold text-white/70">
+                                        <div className="relative z-10 p-6 h-full flex flex-col">
+                                            <h3 className="text-2xl font-semibold text-white/70 mb-3">
                                                 {plotType.title}
                                             </h3>
 
-                                            <p className="mt-3 text-white/50 leading-relaxed">
+                                            <p className="text-white/50 leading-relaxed">
                                                 Coming next...
                                             </p>
                                         </div>
@@ -90,24 +90,32 @@ export function PlotSelectionPage() {
                                 <button
                                     key={plotType.type}
                                     onClick={() => handleSelectPlotType(plotType.type)}
-                                    className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 bg-black/30 p-6 sm:p-8 text-left transition-all duration-300 hover:border-white/20 hover:bg-black/40 hover:shadow-2xl backdrop-blur w-full max-w-sm"
+                                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-black/30 text-left transition-all duration-300 hover:border-white/20 hover:shadow-2xl backdrop-blur w-full max-w-sm h-96"
                                 >
-                                    <div className={`absolute inset-0 bg-gradient-to-br ${plotType.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-10`} />
+                                    {/* Background image */}
+                                    {plotType.backgroundImage && (
+                                        <div
+                                            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105"
+                                            style={{
+                                                backgroundImage: `url(${plotType.backgroundImage})`,
+                                                backgroundPosition: 'center bottom',
+                                            }}
+                                        />
+                                    )}
 
-                                    <div className="relative z-10">
-                                        <div className={`inline-flex rounded-xl bg-gradient-to-br ${plotType.gradient} p-3 text-white shadow-lg`}>
-                                            <IconComponent className="h-8 w-8" />
-                                        </div>
+                                    {/* Gradient overlay for fading effect - invisible at top, fully visible at bottom */}
+                                    <div className="absolute inset-0 bg-gradient-to-b from-black/95 via-black/70 to-black/30 transition-opacity duration-300 group-hover:from-black/90 group-hover:via-black/60 group-hover:to-black/20" />
 
-                                        <h3 className="mt-4 sm:mt-6 text-xl sm:text-2xl font-semibold text-white">
+                                    <div className="relative z-10 p-6 h-full flex flex-col">
+                                        <h3 className="text-2xl font-semibold text-white mb-3">
                                             {plotType.title}
                                         </h3>
 
-                                        <p className="mt-2 sm:mt-3 text-sm sm:text-base text-white/70 leading-relaxed">
+                                        <p className="text-white/80 leading-relaxed mb-4 flex-grow">
                                             {plotType.description}
                                         </p>
 
-                                        <div className="mt-6 flex items-center text-sm font-medium text-white/80">
+                                        <div className="flex items-center text-sm font-medium text-white/90 mt-auto">
                                             <span>Create {plotType.title.toLowerCase()}</span>
                                             <svg
                                                 className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
