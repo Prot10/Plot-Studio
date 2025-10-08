@@ -1,6 +1,7 @@
 import { RightPanel } from '../../../shared/components/RightPanel';
 import { BarplotStyleBlock } from './RightPanel/BarplotStyleBlock';
 import { BarDesignBlock } from './RightPanel/BarDesignBlock';
+import { LegendBlock } from './RightPanel/LegendBlock';
 import type { BarChartSettings, BarDataPoint } from '../../../types/bar'
 import type { HighlightKey } from '../../../types/base'
 import type { RightPanelBlock } from '../../../shared/components/RightPanel';
@@ -27,6 +28,7 @@ export function BarChartRightPanel({
     // Create the blocks using the component helpers
     const barplotStyle = BarplotStyleBlock({ settings, onChange, highlightSignals });
     const barDesign = BarDesignBlock({ settings, bars, onBarsChange, selectedBarId, onSelectBar });
+    const legend = LegendBlock({ settings, onChange });
 
     const blocks: RightPanelBlock[] = [
         // Barplot Style Block
@@ -75,6 +77,52 @@ export function BarChartRightPanel({
                     content: barDesign.barSettings
                 }
             ]
+        },
+
+        // Legend Block
+        {
+            id: 'legend',
+            title: 'Legend',
+            sections: [
+                {
+                    id: 'legend-position',
+                    content: legend.position
+                },
+                {
+                    id: 'legend-text',
+                    title: 'Text',
+                    content: legend.textSettings,
+                    className: 'border-t border-white/10 pt-6'
+                },
+                {
+                    id: 'legend-background',
+                    title: 'Background & Border',
+                    content: legend.background,
+                    className: 'border-t border-white/10 pt-6'
+                },
+                {
+                    id: 'legend-spacing',
+                    title: 'Spacing',
+                    content: legend.spacing,
+                    className: 'border-t border-white/10 pt-6'
+                },
+                {
+                    id: 'legend-marker',
+                    title: 'Marker',
+                    content: legend.markerSettings,
+                    className: 'border-t border-white/10 pt-6'
+                },
+                {
+                    id: 'legend-offset',
+                    title: 'Position Offset',
+                    content: legend.position_offset,
+                    className: 'border-t border-white/10 pt-6'
+                }
+            ],
+            toggle: {
+                value: settings.legend.show,
+                onChange: (value: boolean) => onChange({ ...settings, legend: { ...settings.legend, show: value } })
+            }
         }
     ];
 

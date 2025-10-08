@@ -1311,6 +1311,192 @@ export function ChartPreview({
               />
             )
           })}
+
+          {/* Legend */}
+          {settings.legend.show && settings.data.length > 0 ? (() => {
+            const legend = settings.legend
+            const items = settings.data.map(bar => ({
+              label: bar.label,
+              color: bar.fillColor,
+              opacity: bar.opacity,
+              pattern: bar.pattern,
+              patternColor: bar.patternColor,
+              patternOpacity: bar.patternOpacity,
+              patternSize: bar.patternSize,
+            }))
+
+            const markerSize = legend.markerSize
+            const itemHeight = Math.max(markerSize, legend.fontSize) + legend.itemSpacing
+            const legendWidth = Math.max(...items.map(item => {
+              const textWidth = item.label.length * legend.fontSize * 0.6
+              return markerSize + legend.markerSpacing + textWidth
+            })) + legend.paddingX * 2
+            const legendHeight = items.length * itemHeight - legend.itemSpacing + legend.paddingY * 2
+
+            let legendX = 0
+            let legendY = 0
+
+            switch (legend.position) {
+              case 'top':
+                legendX = (measuredWidth - legendWidth) / 2
+                legendY = margin.top / 2 - legendHeight / 2
+                break
+              case 'bottom':
+                legendX = (measuredWidth - legendWidth) / 2
+                legendY = measuredHeight - margin.bottom / 2 - legendHeight / 2
+                break
+              case 'left':
+                legendX = margin.left / 2 - legendWidth / 2
+                legendY = (measuredHeight - legendHeight) / 2
+                break
+              case 'right':
+                legendX = measuredWidth - margin.right / 2 - legendWidth / 2
+                legendY = (measuredHeight - legendHeight) / 2
+                break
+              case 'top-left':
+                legendX = margin.left + 10
+                legendY = margin.top + 10
+                break
+              case 'top-right':
+                legendX = measuredWidth - margin.right - legendWidth - 10
+                legendY = margin.top + 10
+                break
+              case 'bottom-left':
+                legendX = margin.left + 10
+                legendY = measuredHeight - margin.bottom - legendHeight - 10
+                break
+              case 'bottom-right':
+                legendX = measuredWidth - margin.right - legendWidth - 10
+                legendY = measuredHeight - margin.bottom - legendHeight - 10
+                break
+            }
+
+            legendX += legend.offsetX
+            legendY += legend.offsetY
+
+            const fontWeight = legend.isBold ? 700 : 400
+            const fontStyle = legend.isItalic ? 'italic' : 'normal'
+
+            return (
+              <g key="legend">
+                {legend.borderWidth > 0 || legend.backgroundOpacity > 0 ? (
+                  <rect
+                    x={legendX}
+                    y={legendY}
+                    width={legendWidth}
+                    height={legendHeight}
+                    fill={legend.backgroundColor}
+                    fillOpacity={legend.backgroundOpacity}
+                    stroke={legend.borderColor}
+                    strokeWidth={legend.borderWidth}
+                    rx={legend.borderRadius}
+                    ry={legend.borderRadius}
+                  />
+                ) : null}
+                {items.map((item, index) => {
+                  const itemY = legendY + legend.paddingY + index * itemHeight
+                  const markerX = legendX + legend.paddingX
+                  const markerY = itemY + (itemHeight - legend.itemSpacing) / 2 - markerSize / 2
+                  const textX = markerX + markerSize + legend.markerSpacing
+                  const textY = itemY + (itemHeight - legend.itemSpacing) / 2 + legend.fontSize * 0.35
+
+                  const patternId = `legend-pattern-${index}`
+
+                  return (
+                    <g key={index}>
+                      {item.pattern !== 'solid' ? (
+                        <defs>
+                          <pattern
+                            id={patternId}
+                            patternUnits="userSpaceOnUse"
+                            width={item.patternSize}
+                            height={item.patternSize}
+                          >
+                            <rect width={item.patternSize} height={item.patternSize} fill={item.color} opacity={item.opacity} />
+                            {item.pattern === 'diagonal' && (
+                              <>
+                                <path
+                                  d={`M0 ${item.patternSize} L ${item.patternSize} 0`}
+                                  stroke={item.patternColor}
+                                  strokeOpacity={item.patternOpacity}
+                                  strokeWidth={Math.max(item.patternSize * 0.18, 0.75)}
+                                />
+                              </>
+                            )}
+                            {item.pattern === 'dots' && (
+                              <>
+                                <circle
+                                  cx={item.patternSize * 0.375}
+                                  cy={item.patternSize * 0.375}
+                                  r={Math.max(item.patternSize * 0.2, 1)}
+                                  fill={item.patternColor}
+                                  fillOpacity={item.patternOpacity}
+                                />
+                                <circle
+                                  cx={item.patternSize * 0.875}
+                                  cy={item.patternSize * 0.875}
+                                  r={Math.max(item.patternSize * 0.2, 1)}
+                                  fill={item.patternColor}
+                                  fillOpacity={item.patternOpacity}
+                                />
+                              </>
+                            )}
+                            {item.pattern === 'crosshatch' && (
+                              <>
+                                <path
+                                  d={`M0 ${item.patternSize / 2} H ${item.patternSize}`}
+                                  stroke={item.patternColor}
+                                  strokeOpacity={item.patternOpacity}
+                                  strokeWidth={Math.max(item.patternSize * 0.14, 0.6)}
+                                />
+                                <path
+                                  d={`M${item.patternSize / 2} 0 V ${item.patternSize}`}
+                                  stroke={item.patternColor}
+                                  strokeOpacity={item.patternOpacity}
+                                  strokeWidth={Math.max(item.patternSize * 0.14, 0.6)}
+                                />
+                              </>
+                            )}
+                            {item.pattern === 'vertical' && (
+                              <path
+                                d={`M${item.patternSize / 2} 0 V ${item.patternSize}`}
+                                stroke={item.patternColor}
+                                strokeOpacity={item.patternOpacity}
+                                strokeWidth={Math.max(item.patternSize * 0.18, 0.75)}
+                              />
+                            )}
+                          </pattern>
+                        </defs>
+                      ) : null}
+                      <rect
+                        x={markerX}
+                        y={markerY}
+                        width={markerSize}
+                        height={markerSize}
+                        fill={item.pattern === 'solid' ? item.color : `url(#${patternId})`}
+                        fillOpacity={item.pattern === 'solid' ? item.opacity : 1}
+                        rx={2}
+                        ry={2}
+                      />
+                      <text
+                        x={textX}
+                        y={textY}
+                        fill={legend.textColor}
+                        fontSize={legend.fontSize}
+                        fontFamily={legend.fontFamily}
+                        style={{
+                          fontWeight,
+                          fontStyle,
+                        }}
+                      >
+                        {item.label}
+                      </text>
+                    </g>
+                  )
+                })}
+              </g>
+            )
+          })() : null}
         </svg>
       </div>
       <DataImportModal isOpen={isImportDialogOpen} paletteName={settings.paletteName} onCancel={handleImportCancel} onConfirm={handleImportConfirm} />

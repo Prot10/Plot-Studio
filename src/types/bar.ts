@@ -54,6 +54,30 @@ export interface BarDataPoint extends BaseDataPoint, DataTableRow {
   patternSize: number;
 }
 
+export type LegendPosition = "top" | "bottom" | "left" | "right" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
+
+export interface LegendSettings {
+  show: boolean;
+  position: LegendPosition;
+  fontSize: number;
+  fontFamily: string;
+  textColor: string;
+  isBold: boolean;
+  isItalic: boolean;
+  backgroundColor: string;
+  backgroundOpacity: number;
+  borderColor: string;
+  borderWidth: number;
+  borderRadius: number;
+  paddingX: number;
+  paddingY: number;
+  itemSpacing: number;
+  markerSize: number;
+  markerSpacing: number;
+  offsetX: number;
+  offsetY: number;
+}
+
 export interface BarChartSettings extends PlotSettings<BarDataPoint> {
   showErrorBars: boolean;
   showValueLabels: boolean;
@@ -95,6 +119,8 @@ export interface BarChartSettings extends PlotSettings<BarDataPoint> {
   showPlotBox: boolean;
   plotBoxLineWidth: number;
   plotBoxColor: string;
+  // Legend settings
+  legend: LegendSettings;
 }
 
 // Legacy type aliases for backward compatibility
